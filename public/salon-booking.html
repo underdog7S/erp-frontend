@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Salon Booking - Public</title>
+    <style>
+      :root {
+        --primary: #1a237e;
+        --accent: #ffd700;
+        --text: #333;
+      }
+      body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Arial, sans-serif; color: var(--text); background:#fafafa; }
+      .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; padding: 48px 16px; }
+      .container { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+      .brand { display:flex; align-items:center; gap:12px; }
+      .brand img { height: 42px; border-radius: 8px; }
+      h1 { margin: 16px 0 8px; font-size: 28px; }
+      p.lead { margin: 0; opacity: .9; }
+      .content { padding: 24px 0 48px; }
+      .grid { display:grid; grid-template-columns: 1fr; gap: 16px; }
+      @media (min-width: 900px) { .grid { grid-template-columns: 1.2fr .8fr; } }
+      .card { background:#fff; border:1px solid #e0e0e0; border-radius: 10px; padding: 16px; }
+      .card h2 { margin: 0 0 8px; font-size: 20px; color: var(--primary); }
+      .note { font-size: 13px; color:#666; }
+      .footer { text-align:center; color:#777; font-size: 13px; padding: 16px; }
+      code.embed { display:block; white-space: pre-wrap; word-break: break-all; background:#f5f5f5; border:1px solid #eee; padding: 10px; border-radius: 8px; }
+      .badge { display:inline-block; background: var(--accent); color:#333; font-weight:600; padding:4px 8px; border-radius: 999px; font-size: 12px; }
+    </style>
+    <!--
+      HOW TO USE
+      1) Replace data-slug with your tenant slug (from /admin/public-settings)
+      2) Replace data-api-key with your generated API key
+      3) (Optional) Replace data-recaptcha-site-key with your site key; set RECAPTCHA_SECRET in backend env
+    -->
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <div class="brand">
+          <img src="/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.jpeg" alt="Logo" />
+          <span class="badge">Public</span>
+        </div>
+        <h1>Book Your Appointment</h1>
+        <p class="lead">Fast, secure bookings powered by your ERP.</p>
+      </div>
+    </header>
+
+    <main class="container content">
+      <div class="grid">
+        <section class="card">
+          <h2>Salon Booking</h2>
+          <p class="note">Choose a service, stylist, and a time. You’ll receive a confirmation once accepted.</p>
+          <div id="salon-booking-widget"></div>
+        </section>
+
+        <aside class="card">
+          <h2>Embed Anywhere</h2>
+          <p class="note">Copy this snippet to place the booking form on any site:</p>
+          <code class="embed">&lt;script src="/widgets/salon-booking-widget.js"
+  data-slug="defevjvv2535xsjvhj"
+  data-api-key="VAx2jHQknvd_nd1UpTsJa_g7EDk0UIPQGln-iVHIXfE"
+  data-target="salon-booking-widget"&gt;&lt;/script&gt;</code>
+          <p class="note">Use this snippet as-is on your site (no reCAPTCHA needed for now).</p>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Booking widget script (relative path served by React dev server / static hosting) -->
+    <script src="/widgets/salon-booking-widget.js"
+      data-slug="defevjvv2535xsjvhj"
+      data-api-key="VAx2jHQknvd_nd1UpTsJa_g7EDk0UIPQGln-iVHIXfE"
+      data-target="salon-booking-widget"></script>
+
+    <footer class="footer">
+      &copy; <span id="year"></span> Public Booking. Powered by Zenith ERP.
+    </footer>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </body>
+  </html>
+
+

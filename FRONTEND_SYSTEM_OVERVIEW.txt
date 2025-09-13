@@ -1,0 +1,99 @@
+Zenith ERP Frontend System Overview
+==================================
+
+This document provides a comprehensive overview of the frontend system for Zenith ERP, including its structure, main components, pages, services, theming, and key features. It is intended for developers and maintainers.
+
+
+1. Project Structure
+--------------------
+- **public/**: Static assets (index.html, logos, user photos, etc.)
+- **src/**: Main source code directory
+  - **components/**: Reusable UI components (Navigation, Footer, Dashboard, User Management, Charts, etc.)
+  - **pages/**: Top-level pages/views (Dashboard, Admin, Education, Home, Login, Register, etc.)
+  - **services/**: API service layer (api.js)
+  - **theme/**: Theming and style configuration (adminTheme.js, theme.js)
+  - **index.js**: App entry point
+  - **index.css**: Global styles
+  - **App.js**: Main app component and router
+
+
+2. Main Components
+------------------
+- **Navigation.js**: Top navigation bar, handles user info, check-in/out, and logout.
+- **Footer.jsx**: Footer with links and copyright.
+- **AdminDashboard.js**: Admin dashboard with stats, quick actions, module status, and alerts.
+- **AdminUserManagement.js**: User management table with avatars, roles, status, search, filter, pagination, and CRUD dialogs.
+- **DashboardCharts.js**: Reusable chart components (Attendance, Fee, Class Performance, Staff Distribution, Quick Stats) using recharts.
+- **FeeManagement.js**: Fee structures, payments, and discounts management with dialogs and tables.
+- **RoleBasedDashboard.js**: Renders the correct dashboard based on user role (admin, teacher, student, etc.).
+- **TawkToChat.js**: Live chat widget integration.
+- **ErrorBoundary.js**: Catches and displays React errors.
+
+
+3. Main Pages
+-------------
+- **Dashboard.js**: Main dashboard for all users, shows stats, charts, plan info, attendance, and analytics.
+- **Admin.js**: Classic admin panel for user, plan, and storage management.
+- **AdminEnhanced.js**: Advanced admin panel with tabs for users, plans, analytics, and more.
+- **Education.js**: Education module (classes, students, attendance, report cards, etc.).
+- **HomePage.js**: Landing page with product info and call to action.
+- **Login.js / Register.js / RegistrationForm.js**: Authentication and registration flows.
+- **Pricing.js**: Plan pricing and upgrade page.
+- **Payment.js**: Payment and plan upgrade flow.
+- **StaffDashboard.js / TeacherDashboard.js / StudentDashboard.js / AccountantDashboard.js**: Role-specific dashboards.
+- **About.jsx, FAQ.jsx, Contact.jsx, Terms.jsx, PrivacyPolicy.jsx**: Informational pages.
+- **EmailVerification.js**: Handles email verification after registration.
+
+
+4. Services
+-----------
+- **api.js**: Centralized API service for all backend calls (login, register, user, plan, attendance, etc.). Handles token management and error handling.
+
+
+5. Theming & Styles
+-------------------
+- **theme.js / adminTheme.js**: MUI theme configuration for consistent look and feel.
+- **index.css**: Global CSS for layout, tables, forms, and responsive design.
+
+
+6. Key Features
+---------------
+- **Role-based dashboards**: Users see different dashboards based on their role (admin, teacher, student, etc.).
+- **User management**: Add, edit, delete, search, filter, and bulk actions for users.
+- **Attendance system**: Staff/teachers can check in/out; attendance is tracked and visualized.
+- **Fee management**: Manage fee structures, payments, and discounts.
+- **Charts & analytics**: Visualize attendance, fees, class performance, and staff distribution.
+- **Plan management**: View and upgrade plans, see usage limits.
+- **Responsive design**: Works well on desktop and mobile.
+- **Live chat**: Integrated Tawk.to chat widget for support.
+- **Error boundaries**: Catches and displays React errors gracefully.
+
+
+7. Routing
+----------
+- **App.js**: Sets up React Router for all main pages and modules.
+- **RoleBasedDashboard.js**: Handles dashboard routing based on user role.
+
+
+8. Authentication
+-----------------
+- **Login/Register/EmailVerification**: Secure login, registration, and email verification flows.
+- **Token management**: Handled in api.js and localStorage.
+
+
+9. Utilities
+------------
+- **Snackbar/Alerts**: User feedback for actions and errors.
+- **Dialogs**: For add/edit forms and confirmations.
+- **Pagination/Filtering**: For large tables and lists.
+
+
+10. Customization & Extensibility
+---------------------------------
+- Easily add new modules, pages, or components.
+- Theming and branding can be customized in theme.js and adminTheme.js.
+
+
+---
+
+**For more details, see the code in each component/page, and refer to the backend documentation for API endpoints and data models.** 
