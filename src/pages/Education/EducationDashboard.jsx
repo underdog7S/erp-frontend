@@ -55,8 +55,11 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 
-// Configure axios base URL
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
+// Configure axios base URL using environment variable (same as api.js)
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+// Remove /api suffix for axios since we'll add it in each call, or keep it if API_BASE_URL already ends with /api
+const baseURL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.replace('/api', '') : API_BASE_URL;
+axios.defaults.baseURL = baseURL;
 
 const EducationDashboard = () => {
   const [analytics, setAnalytics] = useState(null);

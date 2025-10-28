@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID';
 const isRazorpayConfigured = RAZORPAY_KEY_ID !== 'YOUR_RAZORPAY_KEY_ID';
@@ -44,18 +45,9 @@ const Payment = () => {
     setSuccess('');
     try {
       // 1. Create order from backend
-      // Use the correct access token from localStorage
-      const token = localStorage.getItem('access_token');
-      const res = await fetch('http://localhost:8000/api/payments/razorpay/order/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create order');
+      const res = await api.post('/payments/razorpay/order/', { amount });
+      const data = res.data;
+      if (!data.order) throw new Error(data.error || 'Failed to create order');
       const { order } = data;
 
       // 2. Open Razorpay Checkout
@@ -69,25 +61,16 @@ const Payment = () => {
         handler: async function (response) {
           // 3. Handle payment success (send to backend for verification)
           try {
-            const verifyRes = await fetch('http://localhost:8000/api/payments/razorpay/verify/', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
-              },
-              body: JSON.stringify({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                plan,
-                amount,
-              }),
+            const verifyRes = await api.post('/payments/razorpay/verify/', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              plan,
+              amount,
             });
-            const verifyData = await verifyRes.json();
-            if (!verifyRes.ok) throw new Error(verifyData.error || 'Payment verification failed');
             setSuccess('Payment verified and plan upgraded! Redirecting to dashboard...');
           } catch (err) {
-            setError('Payment succeeded but verification failed: ' + err.message);
+            setError('Payment succeeded but verification failed: ' + (err.response?.data?.error || err.message));
           }
         },
         prefill: {
