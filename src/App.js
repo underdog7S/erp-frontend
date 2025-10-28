@@ -6,7 +6,6 @@ import Dashboard from "./pages/Dashboard";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Navigation from "./components/Navigation";
-import Admin from "./pages/Admin";
 import AdminEnhanced from "./pages/AdminEnhanced";
 import AdminPublicSettings from "./pages/AdminPublicSettings";
 import HomePage from './pages/HomePage';
@@ -75,8 +74,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/register/google" element={<RegistrationForm googleUser={JSON.parse(localStorage.getItem('googleUser') || '{}')} />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin-enhanced" element={<AdminEnhanced />} />
+          <Route path="/admin" element={<AdminEnhanced />} />
           <Route path="/admin/public-settings" element={<AuthCheck><AdminPublicSettings /></AuthCheck>} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/pricing" element={<Pricing />} />

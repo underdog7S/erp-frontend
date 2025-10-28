@@ -1,121 +1,132 @@
-import React, { useEffect, useState } from "react";
-import api from "../services/api";
+import React, { useState, useEffect } from 'react';
 import {
-  Box, Card, CardContent, Typography, Grid, Button, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, CircularProgress, Chip, Avatar, LinearProgress, Checkbox, ListItemText, FormControl, InputLabel, FormHelperText, IconButton, Tooltip, Divider, Paper, Badge, Tabs, Tab, Fab, SpeedDial, SpeedDialAction, SpeedDialIcon, Switch, FormControlLabel
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Switch,
+  FormControlLabel,
+  Grid,
+  Chip,
+  Alert,
+  Snackbar,
+  CircularProgress,
+  Checkbox,
+  ListItemText,
+  FormHelperText
 } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
-import {
-  Group as GroupIcon,
-  WorkspacePremium as WorkspacePremiumIcon,
-  Storage as StorageIcon,
-  Add as AddIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  Refresh as RefreshIcon,
-  Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  Settings as SettingsIcon,
-  Analytics as AnalyticsIcon,
-  Notifications as NotificationsIcon,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Info as InfoIcon,
-  Visibility as VisibilityIcon,
-  MoreVert as MoreVertIcon,
-  Download as DownloadIcon,
-  Upload as UploadIcon,
-  Security as SecurityIcon,
-  Business as BusinessIcon,
-  School as SchoolIcon,
-  LocalHospital as LocalHospitalIcon,
-  Build as BuildIcon,
-  Person as PersonIcon,
-  Star as StarIcon
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const AdminEnhanced = () => {
-  // State management
-  const [activeTab, setActiveTab] = useState(0);
   const [users, setUsers] = useState([]);
-  const [userForm, setUserForm] = useState({
-    username: "", email: "", password: "", role: "staff", assigned_classes: [],
-    photo: null, phone: "", address: "", date_of_birth: "", gender: "",
-    emergency_contact: "", job_title: "", joining_date: "", qualifications: "", bio: "", linkedin: ""
-  });
-  const [userLoading, setUserLoading] = useState(true);
-  const [userError, setUserError] = useState("");
-  const [addingUser, setAddingUser] = useState(false);
-  const [openAddUser, setOpenAddUser] = useState(false);
-  const [removeUser, setRemoveUser] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  const [editRole, setEditRole] = useState({ username: '', role: '' });
-  const [classes, setClasses] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [rolesLoading, setRolesLoading] = useState(true);
-  const [rolesError, setRolesError] = useState("");
-  const [plan, setPlan] = useState(null);
-  const [plans, setPlans] = useState([]);
-  const [planLoading, setPlanLoading] = useState(true);
-  const [planError, setPlanError] = useState("");
-  const [upgrading, setUpgrading] = useState(false);
-  const [dashboard, setDashboard] = useState(null);
-  const [openEditUser, setOpenEditUser] = useState(false);
-  const [editUserForm, setEditUserForm] = useState({ username: '', email: '', role: '', assigned_classes: [] });
-  const [editingUser, setEditingUser] = useState(null);
-  const [editingUserLoading, setEditingUserLoading] = useState(false);
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('');
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(100);
   const [totalUsers, setTotalUsers] = useState(0);
-  const [departmentFilter, setDepartmentFilter] = useState("");
+  const [totalActiveUsers, setTotalActiveUsers] = useState(0);
+  const [totalInactiveUsers, setTotalInactiveUsers] = useState(0);
+  const [totalAdmins, setTotalAdmins] = useState(0);
+  const [userLimit, setUserLimit] = useState(5);
+  const [storageUsed, setStorageUsed] = useState(0);
+  const [currentPlan, setCurrentPlan] = useState('Free');
+  
+  // Edit user states
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editForm, setEditForm] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    first_name: '',
+    last_name: '',
+    role: '',
+    department: '',
+    job_title: '',
+    is_active: true,
+    assigned_classes: []
+  });
+  const [editingUserLoading, setEditingUserLoading] = useState(false);
+  
+  // Remove user states
+  const [removeUser, setRemoveUser] = useState(null);
+  const [removeUserLoading, setRemoveUserLoading] = useState(false);
+  
+  // Snackbar states
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  
+  // Education-specific states
+  const [classes, setClasses] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [showFilters, setShowFilters] = useState(false);
-  const [exportLoading, setExportLoading] = useState(false);
-  const [importLoading, setImportLoading] = useState(false);
-  const [importFile, setImportFile] = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [rolesLoading, setRolesLoading] = useState(false);
+  const [rolesError, setRolesError] = useState('');
+  
+  // Add user states
+  const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [addUserForm, setAddUserForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+    role: 'staff',
+    department: '',
+    company_name: '',
+    industry: 'education',
+    plan: 'free',
+    assigned_classes: []
+  });
+  const [addUserLoading, setAddUserLoading] = useState(false);
+  
+  // Get user role from localStorage
+  const userRole = JSON.parse(localStorage.getItem('user') || '{}').role;
 
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = userProfile.role || '';
-  const navigate = useNavigate();
-
-  // Old columns definition removed - now using simplified columns in renderUserManagement
-
-  // Fetch data
   const fetchAll = async () => {
-    setUserLoading(true);
-    setPlanLoading(true);
-    setUserError("");
-    setPlanError("");
+    setLoading(true);
+    setError('');
     try {
-      const params = { page: page + 1, page_size: pageSize };
-      if (search) params.search = search;
-      if (roleFilter) params.role = roleFilter;
-      if (departmentFilter) params.department = departmentFilter;
+      const params = new URLSearchParams({
+        search: search,
+        role: roleFilter,
+        department: departmentFilter,
+        page: page + 1,
+        page_size: pageSize
+      });
+
+      const response = await api.get(`/users/?${params}`);
+      setUsers(response.data.results || []);
+      setTotalUsers(response.data.count || 0);
       
-      const [userRes, planRes, dashRes] = await Promise.all([
-        api.get("/users/", { params }),
-        api.get("/plans/"),
-        api.get("/dashboard/")
-      ]);
+      // Calculate stats
+      const activeUsers = response.data.results?.filter(user => user.user?.is_active) || [];
+      const inactiveUsers = response.data.results?.filter(user => !user.user?.is_active) || [];
+      const adminUsers = response.data.results?.filter(user => user.role === 'admin') || [];
       
-      setUsers(userRes.data.results || []);
-      setTotalUsers(userRes.data.count || 0);
-      setPlans(planRes.data);
-      setDashboard(dashRes.data);
-      setPlan(dashRes.data.plan);
+      setTotalActiveUsers(activeUsers.length);
+      setTotalInactiveUsers(inactiveUsers.length);
+      setTotalAdmins(adminUsers.length);
+      
     } catch (err) {
-      setUserError("Failed to load admin data.");
-      setPlanError("Failed to load plan data.");
+      setError('Failed to fetch users');
+      console.error('Error fetching users:', err);
     } finally {
-      setUserLoading(false);
-      setPlanLoading(false);
+      setLoading(false);
     }
   };
 
@@ -135,23 +146,20 @@ const AdminEnhanced = () => {
       setRolesLoading(true);
       setRolesError("");
       const token = localStorage.getItem('access_token');
-      if (!token) {
-        setRolesError('You are not logged in. Please log in again.');
-        setRolesLoading(false);
-        return;
-      }
       try {
-        const res = await fetch('http://localhost:8000/api/roles/', {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await fetch('/api/users/roles/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
-        if (res.ok) {
-          const data = await res.json();
-          setRoles(data.roles || []);
-        } else {
-          setRolesError('Failed to load roles.');
+        if (!response.ok) {
+          throw new Error('Failed to fetch roles');
         }
-      } catch (err) {
-        setRolesError('Failed to load roles.');
+        const data = await response.json();
+        setRoles(data);
+      } catch (error) {
+        setRolesError(error.message);
       } finally {
         setRolesLoading(false);
       }
@@ -159,676 +167,472 @@ const AdminEnhanced = () => {
     fetchRoles();
   }, []);
 
-  // Handlers
-  const handleUserFormChange = (e) => {
-    setUserForm({ ...userForm, [e.target.name]: e.target.value });
-  };
-
-  const handleAddUser = async (e) => {
-    e.preventDefault();
-    setAddingUser(true);
-    setUserError("");
-    try {
-      const formData = new FormData();
-      Object.entries(userForm).forEach(([key, value]) => {
-        if (key === 'assigned_classes') {
-          value.forEach(v => formData.append('assigned_classes', v));
-        } else if (value !== null && value !== undefined && value !== "") {
-          formData.append(key, value);
-        }
-      });
-      await api.post('/users/add/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setUserForm({
-        username: "", email: "", password: "", role: "staff", assigned_classes: [],
-        photo: null, phone: "", address: "", date_of_birth: "", gender: "",
-        emergency_contact: "", job_title: "", joining_date: "", qualifications: "", bio: "", linkedin: ""
-      });
-      setOpenAddUser(false);
-      setSnackbar({ open: true, message: 'User added successfully!', severity: 'success' });
-      fetchAll();
-    } catch (err) {
-      let msg = 'Failed to add user.';
-      if (err.response?.data?.error) {
-        msg = err.response.data.error;
-      }
-      setSnackbar({ open: true, message: msg, severity: 'error' });
-    } finally {
-      setAddingUser(false);
+  const handleEditUser = (user) => {
+    // Check if current user has admin privileges
+    if (userRole !== 'admin' && userRole !== '1') {
+      setSnackbar({ open: true, message: 'Only administrators can edit users.', severity: 'warning' });
+      return;
     }
-  };
-
-  const handleRemoveUser = async () => {
-    if (!removeUser) return;
-    try {
-      await api.post("/users/remove/", { username: removeUser });
-      setSnackbar({ open: true, message: 'User removed successfully.', severity: 'success' });
-      fetchAll();
-    } catch {
-      setSnackbar({ open: true, message: 'Failed to remove user.', severity: 'error' });
-    } finally {
-      setRemoveUser(null);
-    }
-  };
-
-  const handleOpenEditUser = (user) => {
-    setEditUserForm({
-      username: user.username,
-      email: user.email,
-      role: user.role,
+    setSelectedUser(user);
+    setEditForm({
+      username: user.user?.username && user.user.username !== 'N/A' ? user.user.username : '',
+      email: user.user?.email && user.user.email !== 'No email' ? user.user.email : '',
+      phone: user.phone && user.phone !== 'N/A' ? user.phone : '',
+      first_name: user.user?.first_name || '',
+      last_name: user.user?.last_name || '',
+      role: mapRoleValue(user.role),
+      department: user.department?.id || null,
+      job_title: user.job_title && user.job_title !== 'N/A' ? user.job_title : '',
+      is_active: user.user?.is_active !== false,
       assigned_classes: user.assigned_classes || [],
-      photo: null,
-      phone: user.phone || "",
-      address: user.address || "",
-      date_of_birth: user.date_of_birth || "",
-      gender: user.gender || "",
-      emergency_contact: user.emergency_contact || "",
-      job_title: user.job_title || "",
-      joining_date: user.joining_date || "",
-      qualifications: user.qualifications || "",
-      bio: user.bio || "",
-      linkedin: user.linkedin || ""
     });
-    setEditingUser(user.username);
-    setOpenEditUser(true);
+    setEditDialogOpen(true);
   };
 
-  const handleEditUser = async (e) => {
-    e.preventDefault();
-    setEditingUserLoading(true);
+  const handleToggleUserStatus = async (user, isActive) => {
     try {
-      const formData = new FormData();
-      Object.entries(editUserForm).forEach(([key, value]) => {
-        if (key === 'assigned_classes') {
-          value.forEach(v => formData.append('assigned_classes', v));
-        } else if (value !== null && value !== undefined && value !== "") {
-          formData.append(key, value);
-        }
-      });
-      await api.post('/users/edit/', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setSnackbar({ open: true, message: 'User updated successfully!', severity: 'success' });
-      setOpenEditUser(false);
+      console.log('Toggle user status - user object:', user);
+      console.log('Toggle user status - user.user:', user.user);
+      console.log('Toggle user status - user.user?.id:', user.user?.id);
+      console.log('Toggle user status - isActive:', isActive);
+      
+      const token = localStorage.getItem('access_token');
+      console.log('Toggle user status - token:', token);
+      
+      const payload = {
+        user_id: user.user?.id,
+        is_active: isActive
+      };
+      console.log('Toggle user status - payload:', payload);
+      
+      const response = await api.post('/users/toggle-status/', payload);
+      
+      if (response.status === 200) {
+        // Update the user in the local state
+        setUsers(users.map(u => 
+          u.id === user.id 
+            ? { ...u, user: { ...u.user, is_active: isActive } }
+            : u
+        ));
+        
+        // Refresh statistics
       fetchAll();
-    } catch (err) {
-      let msg = 'Failed to update user.';
-      if (err.response?.data?.error) {
-        msg = err.response.data.error;
+        
+        setSnackbar({ open: true, message: `User ${isActive ? 'activated' : 'deactivated'} successfully`, severity: 'success' });
       }
-      setSnackbar({ open: true, message: msg, severity: 'error' });
-    } finally {
-      setEditingUserLoading(false);
-    }
-  };
-
-  const handleUpgrade = (planKey, planPrice) => {
-    if (planPrice > 0) {
-      navigate(`/payment?plan=${planKey}&amount=${planPrice}`);
-    } else {
-      handleUpgradePlan(planKey);
-    }
-  };
-
-  const handleUpgradePlan = async (newPlan) => {
-    setUpgrading(true);
-    try {
-      await api.post('/plans/upgrade/', { plan: newPlan });
-      setSnackbar({ open: true, message: 'Plan upgraded successfully!', severity: 'success' });
-      fetchAll();
-    } catch {
-      setSnackbar({ open: true, message: 'Failed to upgrade plan.', severity: 'error' });
-    } finally {
-      setUpgrading(false);
-    }
-  };
-
-  // Export Data Handler
-  const handleExportData = async () => {
-    setExportLoading(true);
-    try {
-      const response = await api.get("/admin/export-data/", {
-        responseType: 'blob'
-      });
-      
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `zenith-erp-export-${new Date().toISOString().split('T')[0]}.zip`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      
-      setSnackbar({ open: true, message: "Data exported successfully!", severity: 'success' });
     } catch (error) {
-      setSnackbar({ open: true, message: "Failed to export data. Please try again.", severity: 'error' });
-    } finally {
-      setExportLoading(false);
+      console.error('Error toggling user status:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      setSnackbar({ open: true, message: 'Failed to update user status', severity: 'error' });
     }
   };
 
-  // Import Data Handler
-  const handleImportData = async () => {
-    if (!importFile) {
-      setSnackbar({ open: true, message: "Please select a file to import", severity: 'warning' });
+  const handleAddUser = async () => {
+    try {
+      setAddUserLoading(true);
+      
+      // Validate required fields
+      if (!addUserForm.username || !addUserForm.email || !addUserForm.password) {
+        setSnackbar({ open: true, message: 'Please fill in all required fields (Username, Email, Password)', severity: 'error' });
       return;
     }
 
-    setImportLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', importFile);
+      const payload = {
+        username: addUserForm.username,
+        email: addUserForm.email,
+        password: addUserForm.password,
+        first_name: addUserForm.first_name,
+        last_name: addUserForm.last_name,
+        role: addUserForm.role,
+        department: addUserForm.department || null,
+        assigned_classes: addUserForm.assigned_classes
+      };
+
+      const response = await api.post('/users/add/', payload);
       
-      const response = await api.post("/admin/import-data/", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      
-      setSnackbar({ open: true, message: "Data imported successfully!", severity: 'success' });
-      setImportFile(null);
-      fetchAll(); // Refresh data
+      if (response.status === 201) {
+        setSnackbar({ open: true, message: 'User created successfully', severity: 'success' });
+        setAddUserDialogOpen(false);
+        setAddUserForm({
+          username: '',
+          email: '',
+          password: '',
+          first_name: '',
+          last_name: '',
+          role: 'staff',
+          department: '',
+          company_name: '',
+          industry: 'education',
+          plan: 'free',
+          assigned_classes: []
+        });
+        fetchAll(); // Refresh the user list
+      }
     } catch (error) {
-      setSnackbar({ open: true, message: error.response?.data?.error || "Failed to import data", severity: 'error' });
+      console.error('Error adding user:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to create user';
+      setSnackbar({ open: true, message: errorMessage, severity: 'error' });
     } finally {
-      setImportLoading(false);
+      setAddUserLoading(false);
     }
   };
 
-  // File input handler
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setImportFile(file);
-    }
-  };
-
-  // Dashboard Stats Component
-  const DashboardStats = () => (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
-      <Grid gridColumn="span 3">
-        <Card sx={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="h4" fontWeight="bold" sx={{ 
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
-                }}>
-                  {dashboard?.user_count || 0}
-                </Typography>
-                <Typography variant="body2" sx={{ 
-                  opacity: 0.9,
-                  fontSize: { xs: '0.75rem', md: '0.875rem' }
-                }}>
-                  Total Users
-                </Typography>
-              </Box>
-              <Avatar sx={{ 
-                bgcolor: 'rgba(255,255,255,0.2)', 
-                width: { xs: 40, md: 56 }, 
-                height: { xs: 40, md: 56 } 
-              }}>
-                <PeopleIcon sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }} />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      
-      <Grid gridColumn="span 3">
-        <Card sx={{ 
-          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          color: 'white',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="h4" fontWeight="bold" sx={{ 
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
-                }}>
-                  {dashboard?.plan_limits?.max_users || '∞'}
-                </Typography>
-                <Typography variant="body2" sx={{ 
-                  opacity: 0.9,
-                  fontSize: { xs: '0.75rem', md: '0.875rem' }
-                }}>
-                  User Limit
-                </Typography>
-              </Box>
-              <Avatar sx={{ 
-                bgcolor: 'rgba(255,255,255,0.2)', 
-                width: { xs: 40, md: 56 }, 
-                height: { xs: 40, md: 56 } 
-              }}>
-                <SecurityIcon sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }} />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      
-      <Grid gridColumn="span 3">
-        <Card sx={{ 
-          background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-          color: 'white',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="h4" fontWeight="bold" sx={{ 
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
-                }}>
-                  {dashboard?.storage_used_mb || 0} MB
-                </Typography>
-                <Typography variant="body2" sx={{ 
-                  opacity: 0.9,
-                  fontSize: { xs: '0.75rem', md: '0.875rem' }
-                }}>
-                  Storage Used
-                </Typography>
-              </Box>
-              <Avatar sx={{ 
-                bgcolor: 'rgba(255,255,255,0.2)', 
-                width: { xs: 40, md: 56 }, 
-                height: { xs: 40, md: 56 } 
-              }}>
-                <StorageIcon sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }} />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-      
-      <Grid gridColumn="span 3">
-        <Card sx={{ 
-          background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-          color: 'white',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Box>
-                <Typography variant="h4" fontWeight="bold" sx={{ 
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
-                }}>
-                  {dashboard?.current_plan?.name || 'Free'}
-                </Typography>
-                <Typography variant="body2" sx={{ 
-                  opacity: 0.9,
-                  fontSize: { xs: '0.75rem', md: '0.875rem' }
-                }}>
-                  Current Plan
-                </Typography>
-              </Box>
-              <Avatar sx={{ 
-                bgcolor: 'rgba(255,255,255,0.2)', 
-                width: { xs: 40, md: 56 }, 
-                height: { xs: 40, md: 56 } 
-              }}>
-                <StarIcon sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }} />
-              </Avatar>
-            </Box>
-          </CardContent>
-        </Card>
-      </Grid>
-    </Grid>
-  );
-
-  // Tab Panel Component
-  const TabPanel = ({ children, value, index, ...other }) => (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`admin-tabpanel-${index}`}
-      aria-labelledby={`admin-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
-
-  // User Management Tab
-  const renderUserManagement = () => {
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [editForm, setEditForm] = useState({});
-
-    // Role mapping function to convert numeric IDs to string roles
     const mapRoleValue = (role) => {
-      if (typeof role === 'number') {
-        // Map numeric roles to string roles based on the data structure
+    if (role) {
         const roleMap = {
-          1: 'admin',
-          2: 'teacher', 
-          3: 'student',
-          4: 'accountant',
-          5: 'staff'
+        'admin': 'admin',
+        'teacher': 'teacher',
+        'student': 'student',
+        'accountant': 'accountant',
+        'staff': 'staff'
         };
         return roleMap[role] || 'staff';
       }
       return role || 'staff';
     };
 
-    const handleEditUser = (user) => {
-      // Check if current user has admin privileges
-      if (userRole !== 'admin' && userRole !== '1') {
-        setSnackbar({ open: true, message: 'Only administrators can edit users.', severity: 'warning' });
-        return;
+  const handleSaveUser = async (e) => {
+    e.preventDefault();
+    setEditingUserLoading(true);
+    try {
+      const formData = new FormData();
+      // Add the user profile ID (not user ID)
+      formData.append('id', selectedUser?.id || editForm?.id);
+      formData.append('username', editForm.username || '');
+      formData.append('email', editForm.email || '');
+      formData.append('role', editForm.role?.toLowerCase() || 'staff'); // ensure this is valid lowercase
+      formData.append('is_active', editForm.is_active !== false);
+      formData.append('phone', editForm.phone || '');
+      formData.append('first_name', editForm.first_name || '');
+      formData.append('last_name', editForm.last_name || '');
+      formData.append('department', editForm.department || null);
+      formData.append('job_title', editForm.job_title || '');
+      
+      // Add assigned classes
+      if (editForm.assigned_classes && editForm.assigned_classes.length > 0) {
+        editForm.assigned_classes.forEach(classId => {
+          formData.append('assigned_classes', classId);
+        });
       }
-      setSelectedUser(user);
-      setEditForm({
-        username: user.username && user.username !== 'N/A' ? user.username : '',
-        email: user.email && user.email !== 'No email' ? user.email : '',
-        phone: user.phone && user.phone !== 'N/A' ? user.phone : '',
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        role: mapRoleValue(user.role),
-        department: user.department && user.department !== 'N/A' ? user.department : null,
-        job_title: user.job_title && user.job_title !== 'N/A' ? user.job_title : '',
-        is_active: user.is_active !== false,
-        assigned_classes: user.assigned_classes || [],
-      });
-      setEditDialogOpen(true);
-    };
 
-    const handleSaveUser = async () => {
-      try {
-        // Build payload with required fields and fallbacks
-        const payload = {
+      // Debug: Log the form data being sent
+      console.log('Sending user edit data:', {
           id: selectedUser?.id || editForm?.id,
-          username: editForm.username || '',
-          email: editForm.email || '',
-          role: editForm.role, // ensure this is valid
-          is_active: editForm.is_active !== false,
-          phone: editForm.phone || '',
-          first_name: editForm.first_name || '',
-          last_name: editForm.last_name || '',
-          department: editForm.department ? editForm.department : null,
-          job_title: editForm.job_title || '',
-          assigned_classes: editForm.assigned_classes || [],
-          // add any other required fields here
-        };
-        // Remove any 'N/A' or 'No email' values from payload
-        Object.keys(payload).forEach(key => {
-          if (payload[key] === 'N/A' || payload[key] === 'No email') {
-            payload[key] = '';
-          }
-        });
-        const response = await fetch('/api/users/edit/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-          },
-          body: JSON.stringify(payload)
-        });
-        if (response.ok) {
-          setEditDialogOpen(false);
-          setSelectedUser(null);
-          // Use setTimeout to delay fetchAll to prevent focus issues
-          setTimeout(() => {
-            fetchAll();
-          }, 100);
+        username: editForm.username,
+        email: editForm.email,
+        role: editForm.role?.toLowerCase(),
+        department: editForm.department,
+        assigned_classes: editForm.assigned_classes
+      });
+
+      const response = await api.post('/users/edit/', formData);
+      
+      if (response.status === 200) {
           setSnackbar({ open: true, message: 'User updated successfully!', severity: 'success' });
+        setEditDialogOpen(false);
+        fetchAll(); // Refresh the user list
         } else {
-          const error = await response.json();
-          setSnackbar({ open: true, message: `Error: ${error.message || error.error || 'Failed to update user'}`, severity: 'error' });
+        setSnackbar({ open: true, message: 'Failed to update user', severity: 'error' });
         }
       } catch (error) {
-        console.error('Error updating user:', error);
-        setSnackbar({ open: true, message: 'Error updating user', severity: 'error' });
-      }
-    };
+      console.error('User edit error:', error.response?.data || error.message);
+      setSnackbar({ 
+        open: true, 
+        message: 'Error updating user: ' + (error.response?.data?.error || error.message), 
+        severity: 'error' 
+      });
+    } finally {
+      setEditingUserLoading(false);
+    }
+  };
 
-    const handleDeleteUser = async (userId) => {
-      // Check if current user has admin privileges
-      if (userRole !== 'admin' && userRole !== '1') {
-        setSnackbar({ open: true, message: 'Only administrators can delete users.', severity: 'warning' });
-        return;
-      }
+  const handleRemoveUser = async () => {
+    if (!removeUser) return;
+    
+    setRemoveUserLoading(true);
+    try {
+      const response = await api.delete(`/users/${removeUser}/`);
       
-      if (window.confirm('Are you sure you want to delete this user?')) {
-        try {
-          const response = await fetch(`/api/users/delete/${userId}/`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            }
-          });
-
-          if (response.ok) {
-            fetchAll();
-            setSnackbar({ open: true, message: 'User deleted successfully!', severity: 'success' });
+      if (response.status === 204) {
+        setSnackbar({ open: true, message: 'User removed successfully!', severity: 'success' });
+        setRemoveUser(null);
+        fetchAll(); // Refresh the user list
           } else {
-            setSnackbar({ open: true, message: 'Error deleting user', severity: 'error' });
+        setSnackbar({ open: true, message: 'Failed to remove user', severity: 'error' });
           }
         } catch (error) {
-          console.error('Error deleting user:', error);
-          setSnackbar({ open: true, message: 'Error deleting user', severity: 'error' });
-        }
-      }
-    };
+      setSnackbar({ open: true, message: 'Error removing user: ' + error.message, severity: 'error' });
+    } finally {
+      setRemoveUserLoading(false);
+    }
+  };
 
-    // Simplified columns for better UX
     const columns = [
-      {
-        field: 'name',
-        headerName: '👤 Name',
-        width: 200,
-        renderCell: (params) => {
-          const user = params.row && params.row.user ? params.row.user : {};
-          let name = 'No Name';
-          if (user.first_name && user.last_name) {
-            name = `${user.first_name} ${user.last_name}`;
-          } else if (user.first_name) {
-            name = user.first_name;
-          } else if (user.last_name) {
-            name = user.last_name;
-          } else if (user.username) {
-            name = user.username;
-          } else if (user.email) {
-            name = user.email.split('@')[0];
-          }
-          return (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
-                {name.charAt(0).toUpperCase()}
-              </Avatar>
-              <Box component="span" sx={{ fontWeight: 500 }}>
-                {name}
-              </Box>
-            </Box>
-          );
-        }
-      },
+    { field: 'id', headerName: 'ID', width: 70 },
       {
         field: 'username',
-        headerName: '🔑 Username',
+      headerName: 'Username', 
         width: 150,
-        valueGetter: (params) => (params.row && params.row.user && params.row.user.username) ? params.row.user.username : 'No Username',
-        renderCell: (params) => <span>{params.value || 'No Username'}</span>
+      valueGetter: (value, row) => row?.user?.username || 'No Username'
       },
       {
         field: 'email',
         headerName: 'Email',
         width: 200,
-        valueGetter: (params) => (params.row && params.row.user && params.row.user.email) ? params.row.user.email : 'No Email',
-        renderCell: (params) => <span>{params.value || 'No Email'}</span>
+      valueGetter: (value, row) => row?.user?.email || 'No Email'
       },
       {
         field: 'department',
         headerName: 'Department',
         width: 150,
-        valueGetter: (params) => (params.row && params.row.department && params.row.department.name) ? params.row.department.name : 'No Department',
-        renderCell: (params) => <span>{params.value || 'No Department'}</span>
-      },
-      {
-        field: 'role',
-        headerName: '🎭 Role',
-        width: 120,
-        renderCell: (params) => {
-          const role = params.row && params.row.role ? params.row.role : 'No Role';
-          const roleColors = {
-            admin: '#d32f2f',
-            teacher: '#1976d2',
-            student: '#388e3c',
-            accountant: '#f57c00',
-            staff: '#7b1fa2'
-          };
-          let roleLabel = 'No Role';
-          if (typeof role === 'string' && role.trim()) {
-            roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
-          }
-          return (
-            <Chip
-              label={roleLabel}
-              size="small"
-              sx={{
-                bgcolor: roleColors[roleLabel.toLowerCase()] || '#757575',
-                color: 'white',
-                fontWeight: 500
-              }}
-            />
-          );
-        }
-      },
-      {
-        field: 'status',
-        headerName: '📊 Status',
+      valueGetter: (value, row) => row?.department?.name || 'No Department'
+    },
+    { field: 'role', headerName: 'Role', width: 120 },
+    { 
+      field: 'is_active', 
+      headerName: 'Status', 
         width: 100,
         renderCell: (params) => (
           <Chip
-            label={params.row && params.row.is_active ? 'Active' : 'Inactive'}
+          label={params.row.user?.is_active ? 'Active' : 'Inactive'} 
+          color={params.row.user?.is_active ? 'success' : 'default'} 
             size="small"
-            color={params.row && params.row.is_active ? 'success' : 'default'}
-            variant={params.row && params.row.is_active ? 'filled' : 'outlined'}
           />
         )
       },
       {
         field: 'actions',
-        headerName: '⚙️ Actions',
-        width: 150,
-        sortable: false,
+      headerName: 'Actions',
+      width: 200,
         renderCell: (params) => (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            {(userRole === 'admin' || userRole === '1') && (
-              <>
-                <IconButton
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={params.row.user?.is_active || false}
+                onChange={(e) => handleToggleUserStatus(params.row, e.target.checked)}
                   size="small"
+              />
+            }
+            label={params.row.user?.is_active ? 'Active' : 'Inactive'}
+            sx={{ margin: 0 }}
+          />
+          <Button
+            size="small"
+            variant="outlined"
                   onClick={() => handleEditUser(params.row)}
-                  sx={{ color: 'primary.main' }}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
+          >
+            Edit
+          </Button>
+          <Button
                   size="small"
-                  onClick={() => handleDeleteUser(params.row.id)}
-                  sx={{ color: 'error.main' }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </>
-            )}
-            {(userRole !== 'admin' && userRole !== '1') && (
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
-                Admin only
-              </Typography>
-            )}
+            variant="outlined"
+            color="error"
+            onClick={() => setRemoveUser(params.row.id)}
+          >
+            Remove
+          </Button>
           </Box>
-        )
-      }
-    ];
+      ),
+    },
+  ];
+
+  const TabPanel = ({ children, value, index, ...other }) => {
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      </div>
+    );
+  };
 
     return (
       <Box sx={{ p: 3 }}>
         {/* Header */}
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" sx={{ fontWeight: 600, color: 'text.primary' }}>
-            👥 User Management
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Admin Dashboard
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => {
-              if (userRole !== 'admin' && userRole !== '1') {
-                setSnackbar({ open: true, message: 'Only administrators can add new users.', severity: 'warning' });
-                return;
-              }
-              setSnackbar({ open: true, message: 'Add user functionality coming soon!', severity: 'info' });
-            }}
-            disabled={userRole !== 'admin' && userRole !== '1'}
-          >
-            Add User
-          </Button>
+        <Typography variant="body1" color="text.secondary">
+          Manage users, plans, and system settings
+        </Typography>
         </Box>
 
-        {/* Quick Stats */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+      {/* Stats Cards */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
               <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography color="textSecondary" gutterBottom variant="h6">
+                    Total Users
+                  </Typography>
                 <Typography variant="h4">
-                  {users.length}
+                    {totalUsers}
                 </Typography>
-                <Typography variant="body2">Total Users</Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'primary.main', borderRadius: 2, p: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'white' }}>
+                    👥
+                  </Typography>
+                </Box>
+              </Box>
               </CardContent>
             </Card>
           </Grid>
-          <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
               <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography color="textSecondary" gutterBottom variant="h6">
+                    User Limit
+                  </Typography>
                 <Typography variant="h4">
-                  {users.filter(u => u.is_active).length}
+                    {userLimit}
                 </Typography>
-                <Typography variant="body2">Active Users</Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'secondary.main', borderRadius: 2, p: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'white' }}>
+                    📊
+                  </Typography>
+                </Box>
+              </Box>
               </CardContent>
             </Card>
           </Grid>
-          <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
               <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography color="textSecondary" gutterBottom variant="h6">
+                    Storage Used
+                  </Typography>
                 <Typography variant="h4">
-                  {users.filter(u => !u.is_active).length}
+                    {storageUsed} MB
                 </Typography>
-                <Typography variant="body2">Inactive Users</Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'success.main', borderRadius: 2, p: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'white' }}>
+                    💾
+                  </Typography>
+                </Box>
+              </Box>
               </CardContent>
             </Card>
           </Grid>
-          <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <Card>
               <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Box>
+                  <Typography color="textSecondary" gutterBottom variant="h6">
+                    Current Plan
+                  </Typography>
                 <Typography variant="h4">
-                  {users.filter(u => u.role === 'admin' || (u.role && u.role.name === 'admin')).length}
+                    {currentPlan}
                 </Typography>
-                <Typography variant="body2">Administrators</Typography>
+                </Box>
+                <Box sx={{ bgcolor: 'warning.main', borderRadius: 2, p: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'white' }}>
+                    📋
+                  </Typography>
+                </Box>
+              </Box>
               </CardContent>
             </Card>
+        </Grid>
+      </Grid>
+
+      {/* User Management Section */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h5">
+                👥 User Management
+              </Typography>
+              <Box component="span" sx={{ fontWeight: 500 }}>
+                ({totalUsers} Total Users)
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={() => setAddUserDialogOpen(true)}
+              sx={{ textTransform: 'none' }}
+            >
+              Add New User
+            </Button>
+          </Box>
+
+          {/* User Stats */}
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'primary.light', borderRadius: 2 }}>
+                <Typography variant="h6" color="primary.contrastText">
+                  {totalActiveUsers}
+                </Typography>
+                <Typography variant="body2" color="primary.contrastText">
+                  Active Users
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.300', borderRadius: 2 }}>
+                <Typography variant="h6" color="text.primary">
+                  {totalInactiveUsers}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Inactive Users
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'secondary.light', borderRadius: 2 }}>
+                <Typography variant="h6" color="secondary.contrastText">
+                  {totalAdmins}
+                </Typography>
+                <Typography variant="body2" color="secondary.contrastText">
+                  Administrators
+                </Typography>
+              </Box>
           </Grid>
         </Grid>
 
         {/* Filters */}
-        <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
+                fullWidth
+                label="Search users..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                variant="outlined"
             size="small"
-            placeholder="Search users..."
-            InputProps={{
-              startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-            }}
-            sx={{ minWidth: 200 }}
           />
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth size="small">
             <InputLabel>Role</InputLabel>
-            <Select label="Role" defaultValue="">
+                <Select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  label="Role"
+                >
               <MenuItem value="">All Roles</MenuItem>
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="teacher">Teacher</MenuItem>
@@ -837,104 +641,49 @@ const AdminEnhanced = () => {
               <MenuItem value="staff">Staff</MenuItem>
             </Select>
           </FormControl>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl fullWidth size="small">
             <InputLabel>Status</InputLabel>
-            <Select label="Status" defaultValue="">
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="active">Active</MenuItem>
-              <MenuItem value="inactive">Inactive</MenuItem>
+                <Select
+                  value={departmentFilter}
+                  onChange={(e) => setDepartmentFilter(e.target.value)}
+                  label="Status"
+                >
+                  <MenuItem value="">All Departments</MenuItem>
+                  <MenuItem value="education">Education</MenuItem>
+                  <MenuItem value="healthcare">Healthcare</MenuItem>
+                  <MenuItem value="retail">Retail</MenuItem>
+                  <MenuItem value="salon">Salon</MenuItem>
             </Select>
           </FormControl>
-        </Box>
+            </Grid>
+          </Grid>
 
-        {/* Users Table */}
-        <Card sx={{ overflow: 'hidden' }}>
+          {/* Data Grid */}
+          <Box sx={{ height: 400, width: '100%' }}>
           <DataGrid
-            rows={users.map(u => {
-              // Handle different possible data structures
-              let userData = {
-                id: u.id, // This should be the UserProfile ID from the API
-                username: '',
-                email: '',
-                phone: '',
-                job_title: '',
-                department: '',
-                role: '',
-                assigned_classes: [],
-                is_active: true,
-                first_name: '',
-                last_name: '',
-                ...u // Keep all original data
-              };
-
-              // Try to extract user information from different possible structures
-              if (u.user) {
-                // If data is nested under 'user' key
-                userData = {
-                  ...userData,
-                  username: u.user.username || u.username || 'No Username',
-                  email: u.user.email || u.email || 'No Email',
-                  phone: u.user.phone || u.phone || 'N/A',
-                  job_title: u.user.job_title || u.job_title || 'N/A',
-                  department: u.user.department || u.department || 'N/A',
-                  role: mapRoleValue(u.user.role || u.role),
-                  assigned_classes: u.user.assigned_classes || u.assigned_classes || [],
-                  is_active: u.user.is_active !== undefined ? u.user.is_active : true,
-                  first_name: u.user.first_name || u.first_name || '',
-                  last_name: u.user.last_name || u.last_name || '',
-                };
-              } else if (u.staff) {
-                // If data is nested under 'staff' key
-                userData = {
-                  ...userData,
-                  username: u.staff.username || u.username || 'No Username',
-                  email: u.staff.email || u.email || 'No Email',
-                  phone: u.staff.phone || u.phone || 'N/A',
-                  job_title: u.staff.job_title || u.job_title || 'N/A',
-                  department: u.staff.department || u.department || 'N/A',
-                  role: mapRoleValue(u.staff.role || u.role),
-                  assigned_classes: u.staff.assigned_classes || u.assigned_classes || [],
-                  is_active: u.staff.is_active !== undefined ? u.staff.is_active : true,
-                  first_name: u.staff.first_name || u.first_name || '',
-                  last_name: u.staff.last_name || u.last_name || '',
-                };
-              } else {
-                // Direct data structure
-                userData = {
-                  ...userData,
-                  username: u.username || 'No Username',
-                  email: u.email || 'No Email',
-                  phone: u.phone || 'N/A',
-                  job_title: u.job_title || 'N/A',
-                  department: u.department || 'N/A',
-                  role: mapRoleValue(u.role),
-                  assigned_classes: u.assigned_classes || [],
-                  is_active: u.is_active !== undefined ? u.is_active : true,
-                  first_name: u.first_name || '',
-                  last_name: u.last_name || '',
-                };
-              }
-
-              return userData;
-            })}
+              rows={users}
             columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[5, 10, 25]}
+              pageSize={pageSize}
+              page={page}
+              onPageChange={(newPage) => setPage(newPage)}
+              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+              rowsPerPageOptions={[25, 50, 100]}
+              loading={loading}
             disableSelectionOnClick
-            autoHeight
             sx={{
               '& .MuiDataGrid-cell': {
                 borderBottom: '1px solid #e0e0e0',
               },
               '& .MuiDataGrid-columnHeaders': {
-                bgcolor: 'grey.50',
+                  backgroundColor: '#f5f5f5',
                 borderBottom: '2px solid #e0e0e0',
               },
-              '& .MuiDataGrid-row:hover': {
-                bgcolor: 'grey.50',
-              }
             }}
           />
+          </Box>
+        </CardContent>
         </Card>
 
         {/* Edit User Dialog */}
@@ -947,7 +696,7 @@ const AdminEnhanced = () => {
           <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
             ✏️ Edit User: {selectedUser?.username}
           </DialogTitle>
-          <DialogContent sx={{ pt: 3 }}>
+        <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
             <Grid container spacing={2}>
               <Grid gridColumn="span 6">
                 <TextField
@@ -1043,6 +792,55 @@ const AdminEnhanced = () => {
                   </Select>
                 </FormControl>
               </Grid>
+            
+            {/* ASSIGNED CLASSES FIELD */}
+            <Grid gridColumn="span 12">
+              <Box sx={{ mt: 3, p: 3, backgroundColor: '#e3f2fd', borderRadius: 2, border: '2px solid #1976d2' }}>
+                <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 700, textAlign: 'center', mb: 2 }}>
+                  🎓 Assign Classes to Teacher
+        </Typography>
+                <Typography variant="body2" sx={{ color: '#1976d2', textAlign: 'center', mb: 2 }}>
+                  Select the classes this teacher should be assigned to. Required for teachers.
+        </Typography>
+                <FormControl fullWidth>
+                  <InputLabel>Assigned Classes</InputLabel>
+                  <Select
+                    multiple
+                    value={editForm.assigned_classes || []}
+                    onChange={(e) => {
+                      const newValue = e.target.value;
+                      setEditForm(prev => ({...prev, assigned_classes: newValue}));
+                    }}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => {
+                          const classObj = classes.find(c => c.id === value);
+                          return (
+                          <Chip 
+                              key={value} 
+                              label={classObj ? classObj.name : value} 
+                              size="small" 
+                            color="primary" 
+                            />
+                  );
+                })}
+          </Box>
+                    )}
+                  >
+                    {classes.map((classObj) => (
+                      <MenuItem key={classObj.id} value={classObj.id}>
+                        <Checkbox checked={(editForm.assigned_classes || []).indexOf(classObj.id) > -1} />
+                        <ListItemText primary={classObj.name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  <FormHelperText>
+                    {editForm.role === 'teacher' ? 'Required: Teachers must be assigned to at least one class' : 'Optional: Assign classes for teachers'}
+                  </FormHelperText>
+                </FormControl>
+              </Box>
+            </Grid>
+            
               <Grid gridColumn="span 6">
                 <TextField
                   fullWidth
@@ -1078,675 +876,13 @@ const AdminEnhanced = () => {
             <Button 
               onClick={handleSaveUser} 
               variant="contained"
-              disabled={!editForm.username}
+                disabled={editingUserLoading}
+                startIcon={editingUserLoading ? <CircularProgress size={20} /> : null}
             >
-              Save Changes
+                {editingUserLoading ? "Saving..." : "Save Changes"}
             </Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    );
-  };
-
-  return (
-    <Box sx={{ 
-      p: { xs: 1, sm: 2, md: 3 }, 
-      minHeight: '100vh', 
-      bgcolor: 'background.default',
-      maxWidth: '100vw',
-      overflow: 'hidden'
-    }}>
-      {/* Header */}
-      <Box sx={{ mb: { xs: 2, md: 4 } }}>
-        <Typography variant="h3" fontWeight="bold" sx={{ 
-          mb: 1, 
-          color: 'primary.main',
-          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
-        }}>
-          Admin Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{
-          fontSize: { xs: '0.875rem', md: '1rem' }
-        }}>
-          Manage users, plans, and system settings
-        </Typography>
-      </Box>
-
-      {/* Dashboard Stats */}
-      <DashboardStats />
-
-      {/* Main Content Tabs */}
-      <Card sx={{ mb: 3, overflow: 'hidden' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', overflow: 'auto' }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={(e, newValue) => setActiveTab(newValue)}
-            sx={{ px: { xs: 1, sm: 2, md: 3 } }}
-            variant="scrollable"
-            scrollButtons="auto"
-          >
-            <Tab 
-              icon={<DashboardIcon />} 
-              label="Overview" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<PeopleIcon />} 
-              label="User Management" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<WorkspacePremiumIcon />} 
-              label="Plan Management" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<AnalyticsIcon />} 
-              label="Analytics" 
-              iconPosition="start"
-            />
-            <Tab 
-              icon={<SettingsIcon />} 
-              label="Settings" 
-              iconPosition="start"
-            />
-          </Tabs>
-        </Box>
-
-        {/* Tab Content */}
-        <TabPanel value={activeTab} index={0}>
-          <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
-            <Typography variant="h5" sx={{ mb: 3 }}>System Overview</Typography>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2 }}>Quick Actions</Typography>
-                    <Box display="flex" gap={1} flexWrap="wrap">
-                      <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => setOpenAddUser(true)}
-                        size="small"
-                      >
-                        Add User
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<DownloadIcon />}
-                        size="small"
-                        onClick={handleExportData}
-                        disabled={exportLoading}
-                      >
-                        {exportLoading ? "Exporting..." : "Export Data"}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<UploadIcon />}
-                        size="small"
-                        onClick={() => document.getElementById('import-file-input').click()}
-                        disabled={importLoading}
-                      >
-                        {importLoading ? "Importing..." : "Import Data"}
-                      </Button>
-                      <input
-                        id="import-file-input"
-                        type="file"
-                        accept=".zip,.json,.csv"
-                        onChange={handleFileSelect}
-                        style={{ display: 'none' }}
-                      />
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2 }}>System Health</Typography>
-                    <Box>
-                      <Typography variant="body2" sx={{ mb: 1 }}>User Limit Usage</Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={dashboard ? (dashboard.user_count / dashboard.plan_limits.max_users * 100) : 0}
-                        sx={{ height: 8, borderRadius: 4, mb: 2 }}
-                      />
-                      <Typography variant="body2" sx={{ mb: 1 }}>Storage Usage</Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={dashboard ? (dashboard.storage_used_mb / dashboard.storage_limit_mb * 100) : 0}
-                        color="warning"
-                        sx={{ height: 8, borderRadius: 4 }}
-                      />
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={1}>
-          {renderUserManagement()}
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={2}>
-          <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
-            <Typography variant="h5" sx={{ mb: 3 }}>Plan Management</Typography>
-            {planLoading ? (
-              <Box display="flex" justifyContent="center" p={3}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <Grid container spacing={2}>
-                {plans.map((p) => {
-                  const isCurrentPlan = p.key === plan;
-                  const formatPrice = (price, billingCycle, monthlyEquivalent) => {
-                    if (price === null || price === undefined) return 'Custom';
-                    if (price === 0) return 'Free';
-                    if (billingCycle === 'annual' && monthlyEquivalent) {
-                      return `₹${price.toLocaleString()}/year (~₹${monthlyEquivalent}/month)`;
-                    }
-                    return `₹${price.toLocaleString()}/${billingCycle === 'annual' ? 'year' : 'month'}`;
-                  };
-                  
-                  return (
-                    <Grid gridColumn="span 4" key={p.key}>
-                      <Card 
-                        sx={{ 
-                          p: { xs: 2, md: 3 },
-                          border: isCurrentPlan ? '2px solid' : '1px solid',
-                          borderColor: isCurrentPlan ? 'primary.main' : 'divider',
-                          bgcolor: isCurrentPlan ? 'primary.50' : 'background.paper',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            transition: 'transform 0.2s ease-in-out',
-                            boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                          }
-                        }}
-                      >
-                        {p.popular && (
-                          <Chip 
-                            label="Popular" 
-                            color="primary" 
-                            sx={{ 
-                              position: 'absolute', 
-                              top: 16, 
-                              right: 16,
-                              fontWeight: 'bold'
-                            }} 
-                          />
-                        )}
-                        <Box textAlign="center" sx={{ mb: 3 }}>
-                          <Typography variant="h4" sx={{ 
-                            fontWeight: 'bold', 
-                            color: p.color, 
-                            mb: 1,
-                            fontSize: { xs: '1.5rem', md: '2rem' }
-                          }}>
-                            {p.name}
-                          </Typography>
-                          <Typography variant="h5" sx={{ 
-                            fontWeight: 'bold', 
-                            mb: 1,
-                            fontSize: { xs: '1rem', md: '1.5rem' }
-                          }}>
-                            {formatPrice(p.price, p.billing_cycle, p.monthly_equivalent)}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {p.max_users === null ? 'Unlimited' : p.max_users} users • {(p.storage_limit_mb / 1024).toFixed(1)} GB storage
-                          </Typography>
-                        </Box>
-                        <Button
-                          variant={isCurrentPlan ? "contained" : "outlined"}
-                          fullWidth
-                          size="large"
-                          disabled={upgrading || isCurrentPlan}
-                          onClick={() => {
-                            if (p.price > 0 && !isCurrentPlan) {
-                              navigate(`/payment?plan=${p.key}&amount=${p.price}`);
-                            } else if (!isCurrentPlan) {
-                              handleUpgrade(p.key, p.price);
-                            }
-                          }}
-                          sx={{ borderRadius: 2 }}
-                        >
-                          {isCurrentPlan ? 'Current Plan' : p.price === 0 ? 'Get Free' : 'Upgrade'}
-                        </Button>
-                      </Card>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            )}
-          </Box>
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={3}>
-          <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
-            <Typography variant="h5" sx={{ mb: 3 }}>Analytics</Typography>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2 }}>User Growth</Typography>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <TrendingUpIcon color="success" sx={{ fontSize: 40 }} />
-                      <Box>
-                        <Typography variant="h4" fontWeight="bold">
-                          +12%
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          This month
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2 }}>Storage Usage</Typography>
-                    <Box>
-                      <Typography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
-                        {dashboard?.storage_used_mb || 0} MB
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={dashboard ? (dashboard.storage_used_mb / dashboard.storage_limit_mb * 100) : 0}
-                        sx={{ height: 8, borderRadius: 4 }}
-                      />
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        of {dashboard?.storage_limit_mb || 0} MB used
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-        </TabPanel>
-
-        <TabPanel value={activeTab} index={4}>
-          <Box sx={{ p: { xs: 1, sm: 2, md: 3 } }}>
-            <Typography variant="h5" sx={{ mb: 3 }}>System Settings</Typography>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ mb: 2 }}>General Settings</Typography>
-                    <Box display="flex" flexDirection="column" gap={2}>
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<DownloadIcon />}
-                        onClick={handleExportData}
-                        disabled={exportLoading}
-                      >
-                        {exportLoading ? "Exporting..." : "Export System Data"}
-                      </Button>
-                      <Button 
-                        variant="outlined" 
-                        startIcon={<UploadIcon />}
-                        onClick={() => document.getElementById('import-file-input-2').click()}
-                        disabled={importLoading}
-                      >
-                        {importLoading ? "Importing..." : "Import System Data"}
-                      </Button>
-                      <input
-                        id="import-file-input-2"
-                        type="file"
-                        accept=".zip,.json,.csv"
-                        onChange={handleFileSelect}
-                        style={{ display: 'none' }}
-                      />
-                      <Button variant="outlined" startIcon={<SecurityIcon />}>
-                        Security Settings
-                      </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid gridColumn="span 6">
-                <Card>
-                  <CardContent>
-                    <Typography variant="h5" sx={{ mb: 3 }}>System Information</Typography>
-                    <Grid container spacing={2}>
-                      <Grid gridColumn="span 6">
-                        <Card>
-                          <CardContent>
-                            <Typography variant="h6" sx={{ mb: 2 }}>Server Status</Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Version:</strong> 2.1.0
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Environment:</strong> Production
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Last Updated:</strong> {new Date().toLocaleDateString()}
-                            </Typography>
-                            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography variant="body2" component="span">
-                                <strong>Status:</strong>
-                              </Typography>
-                              <Chip label="Active" color="success" size="small" />
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                      <Grid gridColumn="span 6">
-                        <Card>
-                          <CardContent>
-                            <Typography variant="h6" sx={{ mb: 2 }}>Database</Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Type:</strong> PostgreSQL
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Size:</strong> 2.4 GB
-                            </Typography>
-                            <Typography variant="body2" sx={{ mb: 1 }}>
-                              <strong>Connections:</strong> 12/50
-                            </Typography>
-                            <LinearProgress 
-                              variant="determinate" 
-                              value={24} 
-                              sx={{ mt: 1 }}
-                            />
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-        </TabPanel>
-      </Card>
-
-      {/* Speed Dial for Quick Actions */}
-      <SpeedDial
-        ariaLabel="Quick Actions"
-        sx={{ position: 'fixed', bottom: 16, right: 16 }}
-        icon={<SpeedDialIcon />}
-      >
-        <SpeedDialAction
-          icon={<AddIcon />}
-          tooltipTitle="Add User"
-          onClick={() => setOpenAddUser(true)}
-        />
-        <SpeedDialAction
-          icon={<DownloadIcon />}
-          tooltipTitle="Export Data"
-          onClick={handleExportData}
-        />
-        <SpeedDialAction
-          icon={<RefreshIcon />}
-          tooltipTitle="Refresh"
-          onClick={fetchAll}
-        />
-      </SpeedDial>
-
-      {/* Dialogs */}
-      {/* Add User Dialog */}
-      <Dialog 
-        open={openAddUser} 
-        onClose={() => setOpenAddUser(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography variant="body1" fontWeight="bold" fontSize="1.25rem">Add New User</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Create a new user account with appropriate permissions
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Box component="form" onSubmit={handleAddUser} sx={{ mt: 1 }}>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Username"
-                  name="username"
-                  value={userForm.username}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={userForm.email}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={userForm.password}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <FormControl fullWidth error={!!rolesError || (roles.length === 0)} required sx={{ mt: 2 }}>
-                  <InputLabel id="role-label">Role</InputLabel>
-                  <Select
-                    labelId="role-label"
-                    label="Role"
-                    name="role"
-                    value={roles.length > 0 && roles.includes(userForm.role) ? userForm.role : ''}
-                    onChange={handleUserFormChange}
-                    disabled={rolesLoading || roles.length === 0}
-                  >
-                    {roles.map((role) => (
-                      <MenuItem key={role} value={role}>
-                        {typeof role === 'string' ? role.charAt(0).toUpperCase() + role.slice(1) : role}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {(rolesError || roles.length === 0) && (
-                    <FormHelperText>{rolesError || 'No roles available.'}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-            </Grid>
-            
-            <Divider sx={{ my: 3 }} />
-            
-            <Typography variant="h6" sx={{ mb: 2 }}>Additional Information</Typography>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Phone"
-                  name="phone"
-                  value={userForm.phone}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Job Title"
-                  name="job_title"
-                  value={userForm.job_title}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-              <Grid gridColumn="span 12">
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Address"
-                  name="address"
-                  multiline
-                  rows={2}
-                  value={userForm.address}
-                  onChange={handleUserFormChange}
-                />
-              </Grid>
-            </Grid>
-            
-            <DialogActions sx={{ mt: 3 }}>
-              <Button onClick={() => setOpenAddUser(false)} variant="outlined">
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                disabled={addingUser || rolesLoading || !!rolesError || roles.length === 0}
-                startIcon={addingUser ? <CircularProgress size={20} /> : null}
-              >
-                {addingUser ? "Adding..." : "Add User"}
-              </Button>
-            </DialogActions>
-          </Box>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit User Dialog */}
-      <Dialog 
-        open={openEditUser} 
-        onClose={() => setOpenEditUser(false)}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography variant="body1" fontWeight="bold" fontSize="1.25rem">Edit User</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Update user information and permissions
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <Box component="form" onSubmit={handleEditUser} sx={{ mt: 1 }}>
-            <Grid container spacing={2}>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Username"
-                  value={editUserForm.username || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, username: e.target.value})}
-                  required
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Email"
-                  type="email"
-                  value={editUserForm.email || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, email: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Phone"
-                  value={editUserForm.phone || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, phone: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Job Title"
-                  value={editUserForm.job_title || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, job_title: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="First Name"
-                  value={editUserForm.first_name || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, first_name: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Last Name"
-                  value={editUserForm.last_name || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, last_name: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <FormControl fullWidth margin="normal">
-                  <InputLabel>Role</InputLabel>
-                  <Select
-                    value={editUserForm.role || ''}
-                    onChange={(e) => setEditUserForm({ ...editUserForm, role: e.target.value })}
-                    label="Role"
-                  >
-                    <MenuItem value="">Select Role</MenuItem>
-                    <MenuItem value="admin">Admin</MenuItem>
-                    <MenuItem value="teacher">Teacher</MenuItem>
-                    <MenuItem value="student">Student</MenuItem>
-                    <MenuItem value="accountant">Accountant</MenuItem>
-                    <MenuItem value="staff">Staff</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Department"
-                  value={editUserForm.department || ''}
-                  onChange={(e) => setEditUserForm({...editUserForm, department: e.target.value})}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 12">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={editUserForm.is_active}
-                      onChange={(e) => setEditUserForm({...editUserForm, is_active: e.target.checked})}
-                    />
-                  }
-                  label="Active User"
-                />
-              </Grid>
-            </Grid>
-            
-            <DialogActions sx={{ mt: 3 }}>
-              <Button onClick={() => setOpenEditUser(false)} variant="outlined">
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                disabled={editingUserLoading}
-                startIcon={editingUserLoading ? <CircularProgress size={20} /> : null}
-              >
-                {editingUserLoading ? "Saving..." : "Save Changes"}
-              </Button>
-            </DialogActions>
-          </Box>
-        </DialogContent>
-      </Dialog>
 
       {/* Remove User Confirmation */}
       <Dialog open={!!removeUser} onClose={() => setRemoveUser(null)}>
@@ -1754,33 +890,326 @@ const AdminEnhanced = () => {
         <DialogContent>
           <Typography>
             Are you sure you want to remove user <strong>{removeUser}</strong>? This action cannot be undone.
-          </Typography>
+        </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setRemoveUser(null)} variant="outlined">
-            Cancel
-          </Button>
-          <Button color="error" variant="contained" onClick={handleRemoveUser}>
-            Remove User
-          </Button>
+          <Button onClick={() => setRemoveUser(null)}>Cancel</Button>
+                      <Button
+            onClick={handleRemoveUser} 
+            color="error" 
+                        variant="contained"
+            disabled={removeUserLoading}
+            startIcon={removeUserLoading ? <CircularProgress size={20} /> : null}
+                      >
+            {removeUserLoading ? "Removing..." : "Remove User"}
+                      </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for feedback */}
+      {/* Snackbar */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={4000}
+        autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
-          severity={snackbar.severity} 
           onClose={() => setSnackbar({ ...snackbar, open: false })} 
-          sx={{ width: '100%' }}
+          severity={snackbar.severity}
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Plan Upgrade Section */}
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom>
+            🚀 Upgrade Your Plan
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            Unlock premium features and increase your limits with our flexible pricing plans.
+          </Typography>
+          
+          <Grid container spacing={3}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card variant="outlined" sx={{ height: '100%', position: 'relative' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Starter
+                  </Typography>
+                  <Typography variant="h4" color="primary" gutterBottom>
+                    ₹999/year
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    20 users • 2.0 GB storage
+                  </Typography>
+                  <ul style={{ paddingLeft: '20px', margin: '16px 0' }}>
+                    <li>Advanced Analytics</li>
+                    <li>Bulk Operations</li>
+                    <li>Priority Support</li>
+                    <li>Custom Reports</li>
+                  </ul>
+                      <Button
+                        variant="outlined"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={() => window.location.href = '/pricing'}
+                  >
+                    Choose Starter
+                      </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card variant="outlined" sx={{ height: '100%', position: 'relative', border: '2px solid', borderColor: 'primary.main' }}>
+                          <Chip 
+                            label="Popular" 
+                            color="primary" 
+                  sx={{ position: 'absolute', top: 16, right: 16 }}
+                />
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Pro
+                          </Typography>
+                  <Typography variant="h4" color="primary" gutterBottom>
+                    ₹2,499/year
+                          </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    50 users • 10.0 GB storage
+                          </Typography>
+                  <ul style={{ paddingLeft: '20px', margin: '16px 0' }}>
+                    <li>Everything in Starter</li>
+                    <li>Advanced Integrations</li>
+                    <li>API Access</li>
+                    <li>Custom Branding</li>
+                    <li>24/7 Support</li>
+                  </ul>
+                        <Button
+                    variant="contained" 
+                          fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={() => window.location.href = '/pricing'}
+                  >
+                    Choose Pro
+                        </Button>
+                </CardContent>
+                      </Card>
+                    </Grid>
+            
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card variant="outlined" sx={{ height: '100%', position: 'relative' }}>
+                  <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Business
+                        </Typography>
+                  <Typography variant="h4" color="primary" gutterBottom>
+                    ₹4,999/year
+                        </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    150 users • 20.0 GB storage
+                      </Typography>
+                  <Chip 
+                    label="Save ₹2,989 annually" 
+                    color="success" 
+                    size="small"
+                    sx={{ mb: 2 }}
+                  />
+                  <ul style={{ paddingLeft: '20px', margin: '16px 0' }}>
+                    <li>Everything in Pro</li>
+                    <li>White-label Solution</li>
+                    <li>Dedicated Manager</li>
+                    <li>Custom Development</li>
+                    <li>SLA Guarantee</li>
+                  </ul>
+                  <Button 
+                    variant="outlined" 
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    onClick={() => window.location.href = '/pricing'}
+                  >
+                    Choose Business
+                  </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              Need a custom solution? 
+                      <Button 
+                variant="text" 
+                color="primary"
+                onClick={() => window.open('mailto:support@zenitherp.com', '_blank')}
+              >
+                Contact Sales
+                      </Button>
+                            </Typography>
+                            </Box>
+                          </CardContent>
+      </Card>
+
+      {/* Add User Dialog */}
+      <Dialog 
+        open={addUserDialogOpen} 
+        onClose={() => setAddUserDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          ➕ Add New User
+        </DialogTitle>
+        <DialogContent sx={{ pt: 3, maxHeight: '70vh', overflow: 'auto' }}>
+            <Grid container spacing={2}>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                fullWidth
+                label="Username *"
+                value={addUserForm.username}
+                onChange={(e) => setAddUserForm(prev => ({...prev, username: e.target.value}))}
+                  margin="normal"
+                  required
+                />
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                label="Email *"
+                  type="email"
+                value={addUserForm.email}
+                onChange={(e) => setAddUserForm(prev => ({...prev, email: e.target.value}))}
+                  margin="normal"
+                  required
+                />
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                label="Password *"
+                type="password"
+                value={addUserForm.password}
+                onChange={(e) => setAddUserForm(prev => ({...prev, password: e.target.value}))}
+                  margin="normal"
+                  required
+                />
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="First Name"
+                value={addUserForm.first_name}
+                onChange={(e) => setAddUserForm(prev => ({...prev, first_name: e.target.value}))}
+                  margin="normal"
+                />
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Last Name"
+                value={addUserForm.last_name}
+                onChange={(e) => setAddUserForm(prev => ({...prev, last_name: e.target.value}))}
+                  margin="normal"
+                />
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth margin="normal" required>
+                  <InputLabel>Role</InputLabel>
+                  <Select
+                  value={addUserForm.role}
+                  onChange={(e) => setAddUserForm(prev => ({...prev, role: e.target.value}))}
+                    label="Role"
+                  >
+                    <MenuItem value="admin">Admin</MenuItem>
+                    <MenuItem value="teacher">Teacher</MenuItem>
+                    <MenuItem value="student">Student</MenuItem>
+                    <MenuItem value="staff">Staff</MenuItem>
+                  <MenuItem value="accountant">Accountant</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Department</InputLabel>
+                <Select
+                  value={addUserForm.department}
+                  onChange={(e) => setAddUserForm(prev => ({...prev, department: e.target.value}))}
+                  label="Department"
+                >
+                  {departments.map((dept) => (
+                    <MenuItem key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              </Grid>
+            
+            {/* Assigned Classes Section */}
+            {(addUserForm.role === 'teacher' || addUserForm.role === 'student') && (
+              <Grid size={{ xs: 12 }}>
+                <Box sx={{ 
+                  p: 2, 
+                  bgcolor: 'primary.light', 
+                  borderRadius: 2, 
+                  border: '2px solid', 
+                  borderColor: 'primary.main',
+                  boxShadow: 3
+                }}>
+                  <Typography variant="h6" gutterBottom sx={{ color: 'primary.contrastText', fontWeight: 'bold' }}>
+                    🎓 Assign Classes
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'primary.contrastText', mb: 2 }}>
+                    Select the classes for this {addUserForm.role}.
+                  </Typography>
+                  <FormControl fullWidth>
+                    <InputLabel>Assigned Classes</InputLabel>
+                    <Select
+                      multiple
+                      value={addUserForm.assigned_classes}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, assigned_classes: e.target.value}))}
+                      label="Assigned Classes"
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => {
+                            const classObj = classes.find(c => c.id === value);
+                            return (
+                              <Chip key={value} label={classObj?.name || value} size="small" />
+                            );
+                          })}
+                        </Box>
+                      )}
+                    >
+                      {classes.map((classObj) => (
+                        <MenuItem key={classObj.id} value={classObj.id}>
+                          <Checkbox checked={addUserForm.assigned_classes.indexOf(classObj.id) > -1} />
+                          <ListItemText primary={classObj.name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Grid>
+            )}
+            </Grid>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={() => setAddUserDialogOpen(false)}
+            color="secondary"
+          >
+                Cancel
+              </Button>
+              <Button 
+            onClick={handleAddUser}
+                variant="contained" 
+            disabled={addUserLoading}
+            startIcon={addUserLoading ? <CircularProgress size={20} /> : <AddIcon />}
+              >
+            {addUserLoading ? 'Adding User...' : 'Add User'}
+              </Button>
+            </DialogActions>
+      </Dialog>
     </Box>
   );
 };

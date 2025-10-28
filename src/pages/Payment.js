@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID';
+const isRazorpayConfigured = RAZORPAY_KEY_ID !== 'YOUR_RAZORPAY_KEY_ID';
 console.log('Razorpay Key:', RAZORPAY_KEY_ID); // Debug: Log the Razorpay key being used
 
 const Payment = () => {
@@ -31,6 +32,13 @@ const Payment = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
+    
+    // Check if Razorpay is configured
+    if (!isRazorpayConfigured) {
+      setError('Payment system is not configured yet. Please contact administrator to set up Razorpay keys.');
+      return;
+    }
+    
     setLoading(true);
     setError('');
     setSuccess('');
@@ -135,8 +143,22 @@ const Payment = () => {
             readOnly
           />
         </div>
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: 12, background: '#3399cc', color: '#fff', border: 'none', borderRadius: 4 }}>
-          {loading ? 'Processing...' : `Pay ₹${amount} & Upgrade`}
+        <button 
+          type="submit" 
+          disabled={loading || !isRazorpayConfigured} 
+          style={{ 
+            width: '100%', 
+            padding: 12, 
+            background: isRazorpayConfigured ? '#3399cc' : '#ccc', 
+            color: '#fff', 
+            border: 'none', 
+            borderRadius: 4,
+            cursor: isRazorpayConfigured ? 'pointer' : 'not-allowed'
+          }}
+        >
+          {loading ? 'Processing...' : 
+           !isRazorpayConfigured ? 'Payment Not Configured' : 
+           `Pay ₹${amount} & Upgrade`}
         </button>
       </form>
       {error && <div style={{ color: 'red', marginTop: 16 }}>{error}</div>}

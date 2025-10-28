@@ -197,3 +197,25 @@ export const checkOutRetailStaff = async () => (await api.post('/retail/staff-at
 
 // Integrations - WhatsApp
 export const sendWhatsAppMessage = async (to, message) => (await api.post('/integrations/whatsapp/send/', { to, message })).data;
+
+// Alert Management APIs
+export const fetchAlerts = async (params = {}) => {
+  const response = await api.get('/alerts/list/', { params });
+  return response.data;
+};
+
+export const createAlert = async (payload) => (await api.post('/alerts/create/', payload)).data;
+
+export const deleteAlert = async (alertId) => (await api.delete(`/alerts/${alertId}/delete/`)).data;
+
+export const markAlertRead = async (alertId, read = true) => (await api.post('/alerts/mark-read/', { alert_id: alertId, read })).data;
+
+export const bulkMarkAlertsRead = async (alertIds, read = true) => (await api.post('/alerts/bulk-mark-read/', { alert_ids: alertIds, read })).data;
+
+export const bulkDeleteAlerts = async (alertIds) => (await api.post('/alerts/bulk-delete/', { alert_ids: alertIds })).data;
+
+export const fetchAlertStats = async () => (await api.get('/alerts/stats/')).data;
+
+export const triggerAutoAlerts = async () => (await api.post('/alerts/auto-create/')).data;
+
+export const cleanupOldAlerts = async (daysOld = 30) => (await api.post('/alerts/cleanup/', { days_old: daysOld })).data;

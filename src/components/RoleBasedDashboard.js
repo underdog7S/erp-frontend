@@ -4,8 +4,8 @@ import TeacherDashboard from '../pages/TeacherDashboard';
 import AccountantDashboard from '../pages/AccountantDashboard';
 import StudentDashboard from '../pages/StudentDashboard';
 import StaffDashboard from '../pages/StaffDashboard';
-import PrincipalDashboard from '../pages/PrincipalDashboard'; // Placeholder, create if missing
-import LibrarianDashboard from '../pages/LibrarianDashboard'; // Placeholder, create if missing
+// import PrincipalDashboard from '../pages/PrincipalDashboard'; // Placeholder, create if missing
+// import LibrarianDashboard from '../pages/LibrarianDashboard'; // Placeholder, create if missing
 import { Box, Typography, Alert } from '@mui/material';
 import { hasPermission, PERMISSIONS } from '../permissions';
 import Tooltip from '@mui/material/Tooltip';

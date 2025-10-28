@@ -30,7 +30,7 @@ const navLinks = [
   { to: "/manufacturing", label: "Manufacturing", icon: <FactoryIcon fontSize="small" /> },
   { to: "/education", label: "Education", icon: <SchoolIcon fontSize="small" /> },
   { to: "/healthcare", label: "Healthcare", icon: <LocalHospitalIcon fontSize="small" /> },
-  { to: "/admin-enhanced", label: "Admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
+  { to: "/admin", label: "Admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
   { to: "/pricing", label: "Pricing", icon: <MonetizationOnIcon fontSize="small" /> },
 ];
 
@@ -239,7 +239,7 @@ const Navigation = () => {
   };
 
   // Only show Dashboard, the user's industry module, and Admin if allowed
-  let filteredLinks = [];
+  const filteredLinks = [];
   if (industry && typeof industry === 'string') {
     filteredLinks.push({ to: "/dashboard", label: "Dashboard", icon: <DashboardIcon fontSize="small" /> });
     if (industry.toLowerCase() === 'education') filteredLinks.push({ to: "/education", label: "Education", icon: <SchoolIcon fontSize="small" /> });
@@ -254,7 +254,7 @@ const Navigation = () => {
     }
     // Use permission utility for Admin links
     if (user && hasPermission(user, PERMISSIONS.MANAGE_USERS)) {
-      filteredLinks.push({ to: "/admin-enhanced", label: "Admin", icon: <AdminPanelSettingsIcon fontSize="small" /> });
+      filteredLinks.push({ to: "/admin", label: "Admin", icon: <AdminPanelSettingsIcon fontSize="small" /> });
       filteredLinks.push({ to: "/admin/public-settings", label: "Public Settings", icon: <AdminPanelSettingsIcon fontSize="small" /> });
     }
     // Don't add Pricing to navigation; upgrades handled inside Dashboard

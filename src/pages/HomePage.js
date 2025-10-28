@@ -36,7 +36,6 @@ import {
   AttachMoney as AttachMoneyIcon,
   EventAvailable as EventAvailableIcon,
   Assessment as AssessmentIcon,
-  LocalHospital as LocalHospitalIcon,
   Event as EventIcon,
   MonetizationOn as MonetizationOnIcon,
   Description as DescriptionIcon
@@ -67,7 +66,7 @@ const HomePage = () => {
     {
       title: "Pharmacy Management",
       subtitle: "Complete Pharmacy Solution",
-      icon: <LocalHospitalIcon sx={{ fontSize: 60 }} />,
+      icon: <HealthcareIcon sx={{ fontSize: 60 }} />,
       color: "#7b1fa2",
       bgColor: "#f3e5f5",
       features: [

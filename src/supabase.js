@@ -88,7 +88,7 @@ export const supabaseDB = {
 
   // Real-time subscriptions
   subscribe: (table, callback, filters = {}) => {
-    let subscription = supabase
+    const subscription = supabase
       .channel(`${table}_changes`)
       .on('postgres_changes', 
         { 

@@ -112,8 +112,8 @@ const Pricing = () => {
     if (plan.key === 'free') {
       navigate('/register');
     } else {
-      // For paid plans, you can implement payment logic here
-      alert(`Upgrade to ${plan.name} plan - ₹${plan.price}/${plan.billing_cycle}`);
+      // Redirect to payment page with plan details
+      navigate(`/payment?plan=${plan.key}&amount=${plan.price}`);
     }
   };
 
