@@ -1,12 +1,10 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { register } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Card, CardContent, Typography, TextField, Button, Alert, Avatar, CircularProgress, MenuItem, Select, InputLabel, FormControl, Divider, Checkbox } from '@mui/material';
+import { Box, Card, CardContent, Typography, TextField, Button, Alert, Avatar, CircularProgress, MenuItem, Select, InputLabel, FormControl, Divider } from '@mui/material';
 import PricingModal from '../components/PricingModal';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import GoogleIcon from '@mui/icons-material/Google';
-import api from "../services/api";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -25,20 +23,9 @@ const Register = () => {
   const planFromQuery = queryParams.get('plan');
   const [selectedPlan, setSelectedPlan] = useState(planFromQuery || 'Free');
   const [industry, setIndustry] = useState('Education');
-  const [departments, setDepartments] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [department, setDepartment] = useState("");
-  const [role, setRole] = useState("");
   const [showPricing, setShowPricing] = useState(false);
-  // Remove classes and assignedClasses state
-  // Remove useEffect fetching classes
-  // Remove handleAssignedClassesChange
-  // Remove the FormControl for 'Assign Classes' from the form
-
-  useEffect(() => {
-    api.get('/education/departments/').then(res => setDepartments(res.data)).catch(() => setDepartments([]));
-    api.get('/roles/').then(res => setRoles(res.data.roles || [])).catch(() => setRoles([]));
-  }, []);
+  // Note: Departments and roles are no longer needed for registration
+  // Backend automatically assigns admin role to first user of new tenant
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -61,6 +48,14 @@ const Register = () => {
       
       // Check if registration was successful
       if (response && response.data) {
+        // Check for email sending warning
+        if (response.data.warning) {
+          // Email failed to send - show warning
+          alert(`⚠️ ${response.data.warning}\n\nYour account has been created, but the verification email could not be sent.\n\nYou can still log in with your credentials.`);
+          navigate("/login");
+          return;
+        }
+        
         // Check if email verification is required
         if (response.data.message && response.data.message.includes("check your email")) {
           // Email verification required
@@ -73,8 +68,8 @@ const Register = () => {
           alert(`Registration successful! You can now log in.`);
           navigate("/dashboard");
         } else {
-          // Fallback
-          alert(`Registration successful! You can now log in.`);
+          // Registration successful - user can login (email may have been sent)
+          alert(`Registration successful! Please check your email (${form.email}) for verification link.\n\nYou can also log in directly if email verification is optional.`);
           navigate("/login");
         }
       } else {
