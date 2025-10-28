@@ -2,24 +2,19 @@ import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import { Box, Tabs, Tab, Card, CardContent, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Snackbar, Alert, CircularProgress, Avatar, Grid, Select, MenuItem, InputLabel, FormControl, Menu, InputAdornment } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
-import { DataGrid } from '@mui/x-data-grid';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SearchIcon from '@mui/icons-material/Search';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Checkbox from '@mui/material/Checkbox';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import { format } from 'date-fns';
 import FeeManagement from '../components/FeeManagement';
 import { hasPermission, PERMISSIONS } from '../permissions';
@@ -701,15 +696,35 @@ const Education = () => {
           ) : classError ? (
             <Alert severity="error">{classError}</Alert>
           ) : (
-            <DataGrid
-              autoHeight
-              rows={classes.map(cls => ({ ...cls, id: cls.id || cls.user || cls.staff || Math.random() }))}
-              columns={classColumns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10]}
-              disableSelectionOnClick
-              getRowId={row => row.id || row.user || row.staff || Math.random()}
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {classColumns.map((col) => (
+                      <TableCell key={col.field}>{col.headerName}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {classes.map((row) => {
+                    const rowId = row.id || row.user || row.staff || Math.random();
+                    return (
+                      <TableRow key={rowId}>
+                        {classColumns.map((col) => (
+                          <TableCell key={col.field}>
+                            {col.renderCell 
+                              ? col.renderCell({ row, value: row[col.field] }) 
+                              : col.valueGetter 
+                                ? col.valueGetter({ row }, row) 
+                                : row[col.field]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
           {/* Add/Edit Class Dialog */}
           <Dialog open={openClassDialog} onClose={handleCloseClassDialog}>
@@ -811,15 +826,35 @@ const Education = () => {
           ) : studentError ? (
             <Alert severity="error">{studentError}</Alert>
           ) : (
-            <DataGrid
-              autoHeight
-              rows={students.map(s => ({ ...s, id: s.id || s.user || s.staff || s.username || Math.random() }))}
-              columns={studentColumns}
-              pageSize={5}
-              rowsPerPageOptions={[5, 10]}
-              disableSelectionOnClick
-              getRowId={row => row.id || row.user || row.staff || row.username || Math.random()}
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {studentColumns.map((col) => (
+                      <TableCell key={col.field}>{col.headerName}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {students.map((row) => {
+                    const rowId = row.id || row.user || row.staff || row.username || Math.random();
+                    return (
+                      <TableRow key={rowId}>
+                        {studentColumns.map((col) => (
+                          <TableCell key={col.field}>
+                            {col.renderCell 
+                              ? col.renderCell({ row, value: row[col.field] }) 
+                              : col.valueGetter 
+                                ? col.valueGetter({ row }, row) 
+                                : row[col.field]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
           {/* Add/Edit Student Dialog */}
           <Dialog open={openStudentDialog} onClose={handleCloseStudentDialog}>
@@ -989,16 +1024,35 @@ const Education = () => {
           <CardContent>
             <Typography variant="h6" mb={2}>Report Cards</Typography>
             {reportCardLoading ? <CircularProgress /> : reportCardError ? <Alert severity="error">{reportCardError}</Alert> : (
-              <DataGrid
-                autoHeight
-                rows={reportCards.filter(rc => rc && typeof rc.student !== 'undefined' && rc.student !== null).map(rc => ({ ...rc, id: rc.id || rc.user || rc.staff || rc.student || Math.random() }))}
-                columns={reportCardColumns}
-                pageSize={5}
-                rowsPerPageOptions={[5, 10, 20]}
-                disableSelectionOnClick
-                sx={{ background: '#fafbfc', borderRadius: 2 }}
-                getRowId={row => row.id || row.user || row.staff || row.student || Math.random()}
-              />
+              <TableContainer component={Paper} sx={{ background: '#fafbfc', borderRadius: 2 }}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {reportCardColumns.map((col) => (
+                        <TableCell key={col.field}>{col.headerName}</TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {reportCards.filter(rc => rc && typeof rc.student !== 'undefined' && rc.student !== null).map((row) => {
+                      const rowId = row.id || row.user || row.staff || row.student || Math.random();
+                      return (
+                        <TableRow key={rowId}>
+                          {reportCardColumns.map((col) => (
+                            <TableCell key={col.field}>
+                              {col.renderCell 
+                                ? col.renderCell({ row, value: row[col.field] }) 
+                                : col.valueGetter 
+                                  ? col.valueGetter({ row }, row) 
+                                  : row[col.field]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             )}
             <Button variant="contained" sx={{ mt: 2 }} onClick={() => handleOpenReportCardDialog()}>Add Report Card</Button>
           </CardContent>

@@ -11,10 +11,8 @@ import {
   Download as DownloadIcon, AttachMoney as MoneyIcon, Discount as DiscountIcon,
   Receipt as ReceiptIcon, TrendingUp as TrendingUpIcon
 } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import api from '../services/api';
 import ExportImportManager from './ExportImportManager';
 
@@ -543,15 +541,28 @@ const FeeManagement = () => {
                 </Button>
               </Box>
             </Box>
-            <DataGrid
-              rows={feeStructures}
-              columns={structureColumns}
-              pageSize={10}
-              rowsPerPageOptions={[10, 25, 50]}
-              checkboxSelection={false}
-              disableSelectionOnClick
-              autoHeight
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {structureColumns.map((col) => (
+                      <TableCell key={col.field}>{col.headerName}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {feeStructures.map((row) => (
+                    <TableRow key={row.id}>
+                      {structureColumns.map((col) => (
+                        <TableCell key={col.field}>
+                          {col.renderCell ? col.renderCell({ row, value: row[col.field] }) : row[col.field]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         );
       case 1:
@@ -570,15 +581,28 @@ const FeeManagement = () => {
                 </Button>
               </Box>
             </Box>
-            <DataGrid
-              rows={feePayments}
-              columns={paymentColumns}
-              pageSize={10}
-              rowsPerPageOptions={[10, 25, 50]}
-              checkboxSelection={false}
-              disableSelectionOnClick
-              autoHeight
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {paymentColumns.map((col) => (
+                      <TableCell key={col.field}>{col.headerName}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {feePayments.map((row) => (
+                    <TableRow key={row.id}>
+                      {paymentColumns.map((col) => (
+                        <TableCell key={col.field}>
+                          {col.renderCell ? col.renderCell({ row, value: row[col.field] }) : row[col.field]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         );
       case 2:
@@ -597,15 +621,28 @@ const FeeManagement = () => {
                 </Button>
               </Box>
             </Box>
-            <DataGrid
-              rows={feeDiscounts}
-              columns={discountColumns}
-              pageSize={10}
-              rowsPerPageOptions={[10, 25, 50]}
-              checkboxSelection={false}
-              disableSelectionOnClick
-              autoHeight
-            />
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {discountColumns.map((col) => (
+                      <TableCell key={col.field}>{col.headerName}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {feeDiscounts.map((row) => (
+                    <TableRow key={row.id}>
+                      {discountColumns.map((col) => (
+                        <TableCell key={col.field}>
+                          {col.renderCell ? col.renderCell({ row, value: row[col.field] }) : row[col.field]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         );
       default:
@@ -614,8 +651,7 @@ const FeeManagement = () => {
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box>
+    <Box>
         <Card>
           <CardContent>
             <Typography variant="h5" gutterBottom fontWeight="bold">
@@ -686,7 +722,6 @@ const FeeManagement = () => {
           </DialogActions>
         </Dialog>
       </Box>
-    </LocalizationProvider>
   );
 };
 

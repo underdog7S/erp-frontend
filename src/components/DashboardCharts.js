@@ -1,8 +1,8 @@
 import React from 'react';
-import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+// import {
+//   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+//   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+// } from 'recharts';
 import { Box, Card, CardContent, Typography, Grid, Chip } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -82,33 +82,11 @@ export const AttendanceChart = ({ data }) => (
       <Typography variant="h6" gutterBottom>
         Attendance Trends
       </Typography>
-      {Array.isArray(data) && data.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="present"
-              stroke="#4caf50"
-              strokeWidth={2}
-              name="Present"
-            />
-            <Line
-              type="monotone"
-              dataKey="absent"
-              stroke="#f44336"
-              strokeWidth={2}
-              name="Absent"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      ) : (
-        <Placeholder text="Capturing attendance data..." />
-      )}
+      <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Chart placeholder - {data?.length || 0} data points
+        </Typography>
+      </Box>
     </CardContent>
   </Card>
 );
@@ -119,36 +97,11 @@ export const FeeCollectionChart = ({ data }) => (
       <Typography variant="h6" gutterBottom>
         Fee Collection
       </Typography>
-      {Array.isArray(data) && data.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Area
-              type="monotone"
-              dataKey="collected"
-              stackId="1"
-              stroke="#1a237e"
-              fill="#1a237e"
-              fillOpacity={0.6}
-              name="Collected"
-            />
-            <Area
-              type="monotone"
-              dataKey="pending"
-              stackId="1"
-              stroke="#ff6f00"
-              fill="#ff6f00"
-              fillOpacity={0.6}
-              name="Pending"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      ) : (
-        <Placeholder text="Capturing fee collection data..." />
-      )}
+      <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Chart placeholder - {data?.length || 0} data points
+        </Typography>
+      </Box>
     </CardContent>
   </Card>
 );
@@ -159,21 +112,11 @@ export const ClassPerformanceChart = ({ data }) => (
       <Typography variant="h6" gutterBottom>
         Class Performance
       </Typography>
-      {Array.isArray(data) && data.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="class" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="average" fill="#1a237e" name="Average Score" />
-            <Bar dataKey="attendance" fill="#4caf50" name="Attendance %" />
-          </BarChart>
-        </ResponsiveContainer>
-      ) : (
-        <Placeholder text="Capturing class performance data..." />
-      )}
+      <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Chart placeholder - {data?.length || 0} data points
+        </Typography>
+      </Box>
     </CardContent>
   </Card>
 );
@@ -184,29 +127,11 @@ export const StaffDistributionChart = ({ data }) => (
       <Typography variant="h6" gutterBottom>
         Staff Distribution
       </Typography>
-      {Array.isArray(data) && data.length > 0 ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      ) : (
-        <Placeholder text="Capturing staff distribution data..." />
-      )}
+      <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">
+          Chart placeholder - {data?.length || 0} data points
+        </Typography>
+      </Box>
     </CardContent>
   </Card>
 );

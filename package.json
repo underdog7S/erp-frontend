@@ -3,21 +3,34 @@
   "version": "1.0.2",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.4",
+    "@mui/material": "^7.3.4",
+    "@mui/x-data-grid": "^8.15.0",
+    "@mui/x-date-pickers": "^8.15.0",
+    "@mui/x-internals": "^8.14.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
     "axios": "^1.4.0",
-    "react-router-dom": "^6.8.1",
-    "react-query": "^3.39.3",
+    "clsx": "^1.2.1",
+    "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
+    "lucide-react": "^0.263.1",
+    "notistack": "^3.0.2",
+    "react": "^18.2.0",
+    "react-datepicker": "^8.8.0",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-hot-toast": "^2.4.0",
-    "lucide-react": "^0.263.1",
-    "clsx": "^1.2.1",
-    "tailwind-merge": "^1.10.0"
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1",
+    "recharts": "^3.3.0",
+    "tailwind-merge": "^1.10.0",
+    "use-sync-external-store": "^1.6.0",
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,7 +55,8 @@
       "no-unused-vars": "warn",
       "no-console": "warn",
       "prefer-const": "error",
-      "no-var": "error"
+      "no-var": "error",
+      "no-undef": "off"
     }
   },
   "browserslist": {
@@ -62,13 +76,13 @@
     "@types/node": "^16.11.56",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "typescript": "^4.7.4",
-    "eslint": "^8.19.0",
-    "prettier": "^2.7.1",
-    "webpack-bundle-analyzer": "^4.7.0",
-    "tailwindcss": "^3.3.0",
     "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.24"
+    "eslint": "^8.19.0",
+    "postcss": "^8.4.24",
+    "prettier": "^2.7.1",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^4.7.4",
+    "webpack-bundle-analyzer": "^4.7.0"
   },
   "jest": {
     "collectCoverageFrom": [

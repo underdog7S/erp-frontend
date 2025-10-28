@@ -26,7 +26,7 @@ import {
   FormHelperText
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import api from '../services/api';
 
 const AdminEnhanced = () => {
@@ -661,27 +661,39 @@ const AdminEnhanced = () => {
           </Grid>
 
           {/* Data Grid */}
-          <Box sx={{ height: 400, width: '100%' }}>
-          <DataGrid
-              rows={users}
-            columns={columns}
-              pageSize={pageSize}
-              page={page}
-              onPageChange={(newPage) => setPage(newPage)}
-              onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
-              rowsPerPageOptions={[25, 50, 100]}
-              loading={loading}
-            disableSelectionOnClick
-            sx={{
-              '& .MuiDataGrid-cell': {
-                borderBottom: '1px solid #e0e0e0',
-              },
-              '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: '#f5f5f5',
-                borderBottom: '2px solid #e0e0e0',
-              },
-            }}
-          />
+          <Box sx={{ height: 400, width: '100%', overflow: 'auto' }}>
+            {loading ? (
+              <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                <CircularProgress />
+              </Box>
+            ) : (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {columns.map((col) => (
+                        <TableCell key={col.field} sx={{ backgroundColor: '#f5f5f5', fontWeight: 'bold' }}>{col.headerName}</TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {users.slice(page * pageSize, page * pageSize + pageSize).map((row) => (
+                      <TableRow key={row.id}>
+                        {columns.map((col) => (
+                          <TableCell key={col.field}>
+                            {col.renderCell 
+                              ? col.renderCell({ row, value: col.valueGetter ? col.valueGetter(null, row) : row[col.field] }) 
+                              : col.valueGetter 
+                                ? col.valueGetter(null, row) 
+                                : row[col.field]}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </Box>
         </CardContent>
         </Card>
