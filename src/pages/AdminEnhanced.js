@@ -199,8 +199,11 @@ const AdminEnhanced = () => {
       const token = localStorage.getItem('access_token');
       console.log('Toggle user status - token:', token);
       
+      // Send User ID if available, otherwise send UserProfile ID (backend will handle both)
+      const userId = user.user?.id || user.id;
+      
       const payload = {
-        user_id: user.user?.id,
+        user_id: userId,
         is_active: isActive
       };
       console.log('Toggle user status - payload:', payload);
