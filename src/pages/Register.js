@@ -35,6 +35,17 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    
+    // Suppress unhandled promise rejections from browser extensions
+    const originalConsoleError = console.error;
+    console.error = (...args) => {
+      if (args[0] && typeof args[0] === 'string' && args[0].includes('message port closed')) {
+        // Ignore browser extension errors
+        return;
+      }
+      originalConsoleError.apply(console, args);
+    };
+    
     try {
       const payload = {
         ...form,
@@ -99,12 +110,14 @@ const Register = () => {
       // Prevent uncaught promise errors
       if (err && err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
-      } else if (err && err.message) {
+      } else if (err && err.message && !err.message.includes('message port closed')) {
         setError(err.message);
       } else {
         setError("Registration failed. Please check your details.");
       }
     } finally {
+      // Restore original console.error
+      console.error = originalConsoleError;
       setLoading(false);
     }
   };
