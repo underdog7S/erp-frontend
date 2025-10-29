@@ -64,6 +64,7 @@ const Login = () => {
               margin="normal"
               required
               autoFocus
+              autoComplete="username"
             />
             <TextField
               label="Password"
@@ -73,6 +74,7 @@ const Login = () => {
               fullWidth
               margin="normal"
               required
+              autoComplete="current-password"
             />
             {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
             <Button

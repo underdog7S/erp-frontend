@@ -153,6 +153,7 @@ const Register = () => {
               margin="normal"
               required
               autoFocus
+              autoComplete="username"
             />
             <TextField
               label="Email"
@@ -163,6 +164,7 @@ const Register = () => {
               fullWidth
               margin="normal"
               required
+              autoComplete="email"
             />
             <TextField
               label="Password"
@@ -173,6 +175,7 @@ const Register = () => {
               fullWidth
               margin="normal"
               required
+              autoComplete="new-password"
             />
             <TextField
               label="Company Name"
