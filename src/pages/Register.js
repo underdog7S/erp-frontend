@@ -51,34 +51,56 @@ const Register = () => {
         // Check for email sending warning
         if (response.data.warning) {
           // Email failed to send - show warning
-          alert(`⚠️ ${response.data.warning}\n\nYour account has been created, but the verification email could not be sent.\n\nYou can still log in with your credentials.`);
-          navigate("/login");
+          const warningMessage = `⚠️ ${response.data.warning}\n\nYour account has been created, but the verification email could not be sent.\n\nYou can still log in with your credentials.`;
+          
+          // Use setTimeout to ensure navigation happens after alert is handled
+          setTimeout(() => {
+            alert(warningMessage);
+            setTimeout(() => {
+              navigate("/login");
+            }, 100);
+          }, 0);
           return;
         }
         
         // Check if email verification is required
         if (response.data.message && response.data.message.includes("check your email")) {
           // Email verification required
-          alert(`Registration successful! Please check your email (${form.email}) to verify your account before logging in.`);
-          navigate("/login");
+          setTimeout(() => {
+            alert(`Registration successful! Please check your email (${form.email}) to verify your account before logging in.`);
+            setTimeout(() => {
+              navigate("/login");
+            }, 100);
+          }, 0);
         } else if (response.data.access && response.data.refresh) {
           // Immediate login (no email verification)
           localStorage.setItem('access_token', response.data.access);
           localStorage.setItem('refresh_token', response.data.refresh);
-          alert(`Registration successful! You can now log in.`);
-          navigate("/dashboard");
+          setTimeout(() => {
+            alert(`Registration successful! You can now log in.`);
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 100);
+          }, 0);
         } else {
           // Registration successful - user can login (email may have been sent)
-          alert(`Registration successful! Please check your email (${form.email}) for verification link.\n\nYou can also log in directly if email verification is optional.`);
-          navigate("/login");
+          setTimeout(() => {
+            alert(`Registration successful! Please check your email (${form.email}) for verification link.\n\nYou can also log in directly if email verification is optional.`);
+            setTimeout(() => {
+              navigate("/login");
+            }, 100);
+          }, 0);
         }
       } else {
         setError("Registration failed. Please check your details.");
       }
     } catch (err) {
       console.error("Registration error:", err);
-      if (err.response && err.response.data && err.response.data.error) {
+      // Prevent uncaught promise errors
+      if (err && err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
+      } else if (err && err.message) {
+        setError(err.message);
       } else {
         setError("Registration failed. Please check your details.");
       }

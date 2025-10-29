@@ -73,12 +73,17 @@ export const login = async (username, password) => {
 };
 
 export const register = async (data) => {
-  const res = await api.post("/register/", data);
-  // Set tokens if provided (for immediate login)
-  if (res.data.access && res.data.refresh) {
-    setTokens(res.data.access, res.data.refresh);
+  try {
+    const res = await api.post("/register/", data);
+    // Set tokens if provided (for immediate login)
+    if (res.data && res.data.access && res.data.refresh) {
+      setTokens(res.data.access, res.data.refresh);
+    }
+    return res;
+  } catch (error) {
+    // Ensure error is properly propagated
+    throw error;
   }
-  return res;
 };
 
 export const logout = () => {
