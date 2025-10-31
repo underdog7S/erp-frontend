@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -13,7 +15,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Alert,
   Chip,
   CircularProgress,
   IconButton,
@@ -37,20 +38,17 @@ import {
   Divider
 } from '@mui/material';
 import {
-  School as SchoolIcon,
   People as PeopleIcon,
   AttachMoney as MoneyIcon,
   Assignment as AssignmentIcon,
   Warning as WarningIcon,
   CalendarToday as CalendarIcon,
-  BarChart as ChartIcon,
   Add as AddIcon,
   Visibility as ViewIcon,
   Print as PrintIcon,
   ExpandMore as ExpandMoreIcon,
   Person as PersonIcon,
   Class as ClassIcon,
-  TrendingUp as TrendingUpIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
 import axios from 'axios';
@@ -62,6 +60,7 @@ const baseURL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.replace('/api', '')
 axios.defaults.baseURL = baseURL;
 
 const EducationDashboard = () => {
+  const navigate = useNavigate();
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tabValue, setTabValue] = useState(0);
@@ -84,6 +83,9 @@ const EducationDashboard = () => {
     phone: '',
     address: '',
     date_of_birth: '',
+    gender: '',
+    cast: 'General',
+    religion: '',
     parent_name: '',
     parent_phone: '',
     assigned_class_id: '',
@@ -114,6 +116,8 @@ const EducationDashboard = () => {
   const [students, setStudents] = useState([]);
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
   const [recentPayments, setRecentPayments] = useState([]);
+  const [recentReportCards, setRecentReportCards] = useState([]);
+  const [overduePayments, setOverduePayments] = useState([]);
   const [schoolName, setSchoolName] = useState('Zenith ERP System');
   const [currentUser, setCurrentUser] = useState(null);
   
@@ -134,6 +138,8 @@ const EducationDashboard = () => {
     fetchClasses();
     fetchStudents();
     fetchRecentPayments();
+    fetchRecentReportCards();
+    fetchOverduePayments();
     fetchSchoolName();
     fetchTeachers();
   }, []);
@@ -232,6 +238,30 @@ const EducationDashboard = () => {
     }
   };
 
+  const fetchRecentReportCards = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      const response = await axios.get('/api/education/reportcards/', { headers });
+      setRecentReportCards(response.data.slice(0, 5)); // Get only the 5 most recent
+    } catch (error) {
+      // Keep existing report cards or set default
+      // Error fetching recent report cards
+    }
+  };
+
+  const fetchOverduePayments = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      const response = await axios.get('/api/education/installments/overdue/', { headers });
+      setOverduePayments(response.data.slice(0, 5)); // Get only the 5 most overdue
+    } catch (error) {
+      // Keep existing overdue payments or set default
+      // Error fetching overdue payments
+    }
+  };
+
   const fetchTeachers = async () => {
     try {
       const token = localStorage.getItem('access_token');
@@ -303,6 +333,9 @@ const EducationDashboard = () => {
         phone: studentForm.phone || '',
         address: studentForm.address || '',
         date_of_birth: studentForm.date_of_birth || null,
+        gender: studentForm.gender || '',
+        cast: studentForm.cast || 'General',
+        religion: studentForm.religion || '',
         parent_name: studentForm.parent_name || '',
         parent_phone: studentForm.parent_phone || '',
         upper_id: studentForm.upper_id || '' // Will be auto-generated if empty
@@ -319,6 +352,9 @@ const EducationDashboard = () => {
           phone: '',
           address: '',
           date_of_birth: '',
+          gender: '',
+          cast: 'General',
+          religion: '',
           parent_name: '',
           parent_phone: '',
           assigned_class_id: '',
@@ -443,7 +479,7 @@ const EducationDashboard = () => {
       const response = await axios.get('/api/education/fees/', { headers });
       setFeeStructures(response.data);
     } catch (error) {
-      console.error('Error fetching fee structures:', error);
+      // Error fetching fee structures
     }
   };
 
@@ -466,8 +502,6 @@ const EducationDashboard = () => {
         due_date: feeStructureForm.due_date || null
       };
 
-      console.log('Sending fee structure data:', feeStructureData);
-
       if (editingFeeStructure) {
         // Update existing fee structure
         await axios.put(`/api/education/fees/${editingFeeStructure.id}/`, feeStructureData, { headers });
@@ -482,8 +516,6 @@ const EducationDashboard = () => {
       fetchFeeStructures();
       fetchDashboardData(); // Refresh dashboard data
     } catch (error) {
-      console.error('Error saving fee structure:', error);
-      console.error('Error response:', error.response?.data);
       alert('Failed to save fee structure: ' + (error.response?.data?.error || error.response?.data || error.message));
     }
   };
@@ -513,8 +545,33 @@ const EducationDashboard = () => {
       fetchFeeStructures();
       fetchDashboardData(); // Refresh dashboard data
     } catch (error) {
-      console.error('Error deleting fee structure:', error);
       alert('Failed to delete fee structure. Please try again.');
+    }
+  };
+
+  // Overdue payment handlers
+  const handleCollectOverduePayment = (payment) => {
+    // Pre-fill the fee collection form with overdue payment data
+    setFeeForm({
+      student_id: payment.student?.id || '',
+      fee_structure_id: payment.fee_structure?.id || '',
+      amount: payment.remaining_amount || '',
+      payment_method: '',
+      reference: '',
+      notes: `Overdue payment collection - ${payment.days_overdue || 0} days overdue`
+    });
+    setCollectFeeDialog(true);
+  };
+
+  const handleSendReminder = async (payment) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      await axios.post(`/api/education/students/${payment.student?.id}/fee-reminder/`, {}, { headers });
+      alert('Fee reminder sent successfully!');
+    } catch (error) {
+      alert('Failed to send reminder. Please try again.');
     }
   };
 
@@ -622,7 +679,7 @@ const EducationDashboard = () => {
       }
       
       // Prepare attendance data
-      const attendanceData = {
+      const attendanceDataPayload = {
         class_id: attendanceForm.selectedClass,
         date: attendanceForm.date,
         attendance_records: Object.entries(attendanceForm.attendance).map(([student_id, status]) => ({
@@ -648,7 +705,7 @@ const EducationDashboard = () => {
   const handleStudentSelection = async (studentId) => {
     setFeeForm({...feeForm, student_id: studentId, fee_structure_id: ''}); // Reset fee structure
     
-    const selectedStudent = students.find(s => s.id == studentId);
+    const selectedStudent = students.find(s => s.id === studentId);
     if (!selectedStudent || !selectedStudent.assigned_class) {
       setAvailableFeeStructures([]);
       return;
@@ -703,7 +760,6 @@ const EducationDashboard = () => {
       const paymentMethod = paymentMethodMap[feeForm.payment_method.toLowerCase()] || feeForm.payment_method.toUpperCase();
       
       // Calculate remaining amount
-      const totalDue = parseFloat(selectedFeeStructure.amount);
       const amountPaid = parseFloat(feeForm.amount);
       
       // Prepare fee payment data
@@ -896,6 +952,24 @@ const EducationDashboard = () => {
                 Manage Fee Structure
               </Button>
             </Tooltip>
+            <Tooltip title="Generate and manage report cards">
+              <Button
+                variant="contained"
+                startIcon={<AssignmentIcon />}
+                onClick={() => navigate('/education?tab=10&open=addReportCard')}
+              >
+                Report Cards
+              </Button>
+            </Tooltip>
+            <Tooltip title="View installments and payment plans">
+              <Button
+                variant="contained"
+                startIcon={<MoneyIcon />}
+                onClick={() => navigate('/education?tab=2')}
+              >
+                Fee Management
+              </Button>
+            </Tooltip>
           </Box>
         </CardContent>
       </Card>
@@ -908,6 +982,7 @@ const EducationDashboard = () => {
             <Tab label="Student Analytics" />
             <Tab label="Teacher Analytics" />
             <Tab label="Fee Analytics" />
+            <Tab label="Report Card Analytics" />
           </Tabs>
 
             {/* Class Analytics Tab */}
@@ -1173,6 +1248,137 @@ const EducationDashboard = () => {
                       </CardContent>
                     </Card>
                   </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Overdue Payments
+                        </Typography>
+                        <Typography variant="h4" color="error.main">
+                          {overduePayments.length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Payments overdue
+                        </Typography>
+                        <Box sx={{ mt: 2 }}>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => window.location.href = '/education?tab=14'}
+                          >
+                            View All Overdue
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Recent Activity
+                        </Typography>
+                        <Typography variant="h4" color="primary.main">
+                          {recentPayments.length}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Recent payments
+                        </Typography>
+                        <Box sx={{ mt: 2 }}>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            onClick={() => window.location.href = '/education?tab=2'}
+                          >
+                            View Fee Management
+                          </Button>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Box>
+            )}
+
+            {/* Report Card Analytics Tab */}
+            {tabValue === 4 && (
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  Report Card Analytics
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Grade Distribution
+                        </Typography>
+                        {recentReportCards && recentReportCards.length > 0 ? (
+                          <Box>
+                            {['A+', 'A', 'B+', 'B', 'C+', 'C', 'F'].map(grade => {
+                              const count = recentReportCards.filter(rc => rc.grade === grade).length;
+                              const percentage = recentReportCards.length > 0 ? (count / recentReportCards.length) * 100 : 0;
+                              return (
+                                <Box key={grade} sx={{ mb: 1 }}>
+                                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="body2">{grade}</Typography>
+                                    <Typography variant="body2">{count} ({percentage.toFixed(1)}%)</Typography>
+                                  </Box>
+                                  <LinearProgress 
+                                    variant="determinate" 
+                                    value={percentage}
+                                    sx={{ height: 8, borderRadius: 4 }}
+                                  />
+                                </Box>
+                              );
+                            })}
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            No report card data available
+                          </Typography>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid size={{ xs: 12, md: 6 }}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Performance Overview
+                        </Typography>
+                        {recentReportCards && recentReportCards.length > 0 ? (
+                          <Box>
+                            <Box display="flex" justifyContent="space-between" mb={2}>
+                              <Typography variant="body2">Average Percentage:</Typography>
+                              <Typography variant="h6" color="primary">
+                                {(recentReportCards.reduce((sum, rc) => sum + (rc.percentage || 0), 0) / recentReportCards.length).toFixed(1)}%
+                              </Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between" mb={2}>
+                              <Typography variant="body2">Highest Grade:</Typography>
+                              <Typography variant="h6" color="success.main">
+                                {recentReportCards.reduce((highest, rc) => {
+                                  const gradeOrder = ['F', 'C', 'C+', 'B', 'B+', 'A', 'A+'];
+                                  const currentOrder = gradeOrder.indexOf(rc.grade);
+                                  const highestOrder = gradeOrder.indexOf(highest);
+                                  return currentOrder > highestOrder ? rc.grade : highest;
+                                }, 'F')}
+                              </Typography>
+                            </Box>
+                            <Box display="flex" justifyContent="space-between">
+                              <Typography variant="body2">Total Report Cards:</Typography>
+                              <Typography variant="h6">{recentReportCards.length}</Typography>
+                            </Box>
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            No report card data available
+                          </Typography>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 </Grid>
               </Box>
             )}
@@ -1224,6 +1430,136 @@ const EducationDashboard = () => {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Recent Report Cards */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Recent Report Cards
+              </Typography>
+              <TableContainer component={Paper}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Student</TableCell>
+                      <TableCell>Academic Year</TableCell>
+                      <TableCell>Term</TableCell>
+                      <TableCell>Grade</TableCell>
+                      <TableCell>Percentage</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {recentReportCards && recentReportCards.length > 0 ? (
+                      recentReportCards.map((reportCard) => (
+                        <TableRow key={reportCard.id}>
+                          <TableCell>{reportCard.student?.name || 'N/A'}</TableCell>
+                          <TableCell>{reportCard.academic_year_name || reportCard.legacy_term || 'N/A'}</TableCell>
+                          <TableCell>{reportCard.term_name || 'N/A'}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={reportCard.grade || 'N/A'} 
+                              color={reportCard.grade === 'A+' ? 'success' : reportCard.grade === 'A' ? 'primary' : 'default'}
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>{reportCard.percentage || 0}%</TableCell>
+                          <TableCell>
+                            <Box display="flex" gap={1}>
+                              <Tooltip title="View Report Card">
+                                <IconButton size="small" aria-label="View report card" onClick={() => window.location.href = `/education?tab=10&view=${reportCard.id}`}>
+                                  <ViewIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Print Report Card">
+                                <IconButton size="small" aria-label="Print report card" onClick={() => window.print()}>
+                                  <PrintIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                          <Typography variant="body2" color="text.secondary">
+                            No report cards available
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Overdue Payments */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Overdue Payments
+              </Typography>
+              <TableContainer component={Paper}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Student</TableCell>
+                      <TableCell>Fee Type</TableCell>
+                      <TableCell>Amount Due</TableCell>
+                      <TableCell>Days Overdue</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {overduePayments && overduePayments.length > 0 ? (
+                      overduePayments.map((payment) => (
+                        <TableRow key={payment.id}>
+                          <TableCell>{payment.student?.name || 'N/A'}</TableCell>
+                          <TableCell>{payment.fee_structure?.fee_type || 'N/A'}</TableCell>
+                          <TableCell>₹{payment.remaining_amount || 0}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={`${payment.days_overdue || 0} days`} 
+                              color="error" 
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Box display="flex" gap={1}>
+                              <Tooltip title="Collect Payment">
+                                <IconButton size="small" onClick={() => handleCollectOverduePayment(payment)}>
+                                  <MoneyIcon />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Send Reminder">
+                                <IconButton size="small" onClick={() => handleSendReminder(payment)}>
+                                  <WarningIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">
+                          <Typography variant="body2" color="text.secondary">
+                            No overdue payments
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -1374,6 +1710,24 @@ const EducationDashboard = () => {
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Gender</InputLabel>
+                  <Select
+                    value={studentForm.gender}
+                    onChange={(e) => {
+                      setStudentForm({...studentForm, gender: e.target.value});
+                    }}
+                    label="Gender"
+                    MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
+                  >
+                    <MenuItem value="">Select Gender</MenuItem>
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Assigned Class</InputLabel>
                   <Select
@@ -1382,6 +1736,7 @@ const EducationDashboard = () => {
                       setStudentForm({...studentForm, assigned_class_id: e.target.value});
                     }}
                     label="Assigned Class"
+                    MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
                   >
                     {classes.map((cls) => (
                       <MenuItem key={cls.id} value={cls.id}>{cls.name}</MenuItem>

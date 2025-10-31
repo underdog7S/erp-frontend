@@ -65,7 +65,7 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/dashboard" element={<AuthCheck><Dashboard /></AuthCheck>} />
-          <Route path="/education" element={<AuthCheck><EducationDashboard /></AuthCheck>} />
+          <Route path="/education" element={<AuthCheck><Education /></AuthCheck>} />
           <Route path="/pharmacy" element={<AuthCheck><PharmacyDashboard /></AuthCheck>} />
           <Route path="/retail" element={<AuthCheck><RetailDashboard /></AuthCheck>} />
           <Route path="/hotel" element={<AuthCheck><HotelDashboard /></AuthCheck>} />

@@ -262,6 +262,62 @@ const ExportImportManager = ({ module, dataType, onExport, onImport }) => {
     return configs[module]?.[dataType] || { title: 'Data', filters: [] };
   };
 
+  const getImportColumns = () => {
+    if (module === 'education' && dataType === 'fees') {
+      return [
+        { key: 'class_obj_id', label: 'Class ID (numeric)' },
+        { key: 'fee_type', label: 'Fee Type (TUITION/EXAM/LIBRARY/TRANSPORT/HOSTEL/OTHER)' },
+        { key: 'amount', label: 'Amount (number)' },
+        { key: 'description', label: 'Description (optional)' },
+        { key: 'is_optional', label: 'Is Optional (true/false)' },
+        { key: 'due_date', label: 'Due Date (YYYY-MM-DD, optional)' },
+        { key: 'academic_year', label: 'Academic Year (e.g., 2024-25)' }
+      ];
+    }
+    if (module === 'education' && dataType === 'fee-payments') {
+      return [
+        { key: 'student_id', label: 'Student ID (numeric)' },
+        { key: 'fee_structure_id', label: 'Fee Structure ID (numeric)' },
+        { key: 'amount_paid', label: 'Amount Paid (number)' },
+        { key: 'payment_date', label: 'Payment Date (YYYY-MM-DD)' },
+        { key: 'payment_method', label: 'Payment Method (CASH/CARD/ONLINE)' },
+        { key: 'receipt_number', label: 'Receipt Number (optional)' },
+        { key: 'notes', label: 'Notes (optional)' }
+      ];
+    }
+    if (module === 'education' && dataType === 'fee-discounts') {
+      return [
+        { key: 'name', label: 'Discount Name' },
+        { key: 'discount_type', label: 'Discount Type (percentage/fixed)' },
+        { key: 'discount_value', label: 'Discount Value (number)' },
+        { key: 'applicable_fee_types', label: 'Applicable Fee Structure IDs (comma-separated)' },
+        { key: 'min_amount', label: 'Minimum Amount (number, optional)' },
+        { key: 'max_discount', label: 'Maximum Discount (number, optional)' },
+        { key: 'valid_from', label: 'Valid From (YYYY-MM-DD)' },
+        { key: 'valid_until', label: 'Valid Until (YYYY-MM-DD, optional)' },
+        { key: 'is_active', label: 'Is Active (true/false)' },
+        { key: 'description', label: 'Description (optional)' }
+      ];
+    }
+    return [];
+  };
+
+  const downloadTemplate = () => {
+    const cols = getImportColumns();
+    if (cols.length === 0) return;
+    const header = cols.map(c => c.key).join(',');
+    const csv = header + '\n';
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${module}_${dataType}_template.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   const config = getModuleConfig();
 
   return (
@@ -417,6 +473,34 @@ const ExportImportManager = ({ module, dataType, onExport, onImport }) => {
                   accept=".csv,.xlsx,.xls"
                   onChange={handleFileChange}
                 />
+              </Box>
+
+              {/* Column guide and template download */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom>Required Columns</Typography>
+                <TableContainer component={Paper}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Column</TableCell>
+                        <TableCell>Description</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {getImportColumns().map(col => (
+                        <TableRow key={col.key}>
+                          <TableCell>{col.key}</TableCell>
+                          <TableCell>{col.label}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                {getImportColumns().length > 0 && (
+                  <Button sx={{ mt: 1 }} size="small" startIcon={<DownloadIcon />} onClick={downloadTemplate}>
+                    Download CSV Template
+                  </Button>
+                )}
               </Box>
 
               {importFile && (

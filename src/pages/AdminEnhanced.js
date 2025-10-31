@@ -25,8 +25,15 @@ import {
   ListItemText,
   FormHelperText
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { 
+  Add as AddIcon, Cake as CakeIcon, Work as WorkIcon, EmojiEvents as TrophyIcon, 
+  TrendingUp as TrendingUpIcon, AttachMoney as MoneyIcon, 
+  Warning as WarningIcon, Event as EventIcon, Notifications as NotificationsIcon,
+  People as PeopleIcon, History as HistoryIcon, ArrowForward as ArrowForwardIcon,
+  Download as DownloadIcon, Assessment as AssessmentIcon
+} from '@mui/icons-material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar, LinearProgress } from '@mui/material';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import api from '../services/api';
 
 const AdminEnhanced = () => {
@@ -59,7 +66,16 @@ const AdminEnhanced = () => {
     department: '',
     job_title: '',
     is_active: true,
-    assigned_classes: []
+    assigned_classes: [],
+    // Personal Info fields
+    address: '',
+    date_of_birth: '',
+    gender: '',
+    emergency_contact: '',
+    joining_date: '',
+    qualifications: '',
+    bio: '',
+    linkedin: ''
   });
   const [editingUserLoading, setEditingUserLoading] = useState(false);
   
@@ -69,6 +85,19 @@ const AdminEnhanced = () => {
   
   // Snackbar states
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
+  
+  // Employee Analytics states
+  const [employeeAnalytics, setEmployeeAnalytics] = useState(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [employeeSearch, setEmployeeSearch] = useState('');
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [employeeDetailDialog, setEmployeeDetailDialog] = useState(false);
+  
+  // Fee Analytics states
+  const [feeAnalytics, setFeeAnalytics] = useState(null);
+  const [feeLoading, setFeeLoading] = useState(false);
+  const [oldBalanceSummary, setOldBalanceSummary] = useState(null);
+  const [upcomingDues, setUpcomingDues] = useState([]);
   
   // Education-specific states
   const [classes, setClasses] = useState([]);
@@ -90,7 +119,18 @@ const AdminEnhanced = () => {
     company_name: '',
     industry: 'education',
     plan: 'free',
-    assigned_classes: []
+    assigned_classes: [],
+    // Personal Info fields
+    phone: '',
+    address: '',
+    date_of_birth: '',
+    gender: '',
+    emergency_contact: '',
+    job_title: '',
+    joining_date: '',
+    qualifications: '',
+    bio: '',
+    linkedin: ''
   });
   const [addUserLoading, setAddUserLoading] = useState(false);
   
@@ -135,12 +175,31 @@ const AdminEnhanced = () => {
   }, [search, roleFilter, page, pageSize, departmentFilter]);
 
   useEffect(() => {
-    // Only fetch education data if user is in education industry
-    const userIndustry = JSON.parse(localStorage.getItem('user') || '{}').industry;
-    if (userIndustry && userIndustry.toLowerCase() === 'education') {
-      api.get("/education/classes/").then(res => setClasses(res.data));
-      api.get("/education/departments/").then(res => setDepartments(res.data));
-    }
+    // Fetch education data (classes and departments) - try to fetch regardless of industry
+    // This allows staff/teachers to be assigned classes even if tenant industry isn't set to education
+    const fetchEducationData = async () => {
+      try {
+        const classesRes = await api.get("/education/classes/");
+        if (classesRes.data && Array.isArray(classesRes.data)) {
+          setClasses(classesRes.data);
+        }
+      } catch (err) {
+        console.log('Could not fetch classes:', err);
+        setClasses([]);
+      }
+      
+      try {
+        const deptRes = await api.get("/education/departments/");
+        if (deptRes.data && Array.isArray(deptRes.data)) {
+          setDepartments(deptRes.data);
+        }
+      } catch (err) {
+        console.log('Could not fetch departments:', err);
+        setDepartments([]);
+      }
+    };
+    
+    fetchEducationData();
     
     const fetchRoles = async () => {
       setRolesLoading(true);
@@ -165,7 +224,172 @@ const AdminEnhanced = () => {
       }
     };
     fetchRoles();
+    
+    // Fetch employee analytics
+    fetchEmployeeAnalytics();
+    // Fetch fee analytics
+    fetchFeeAnalytics();
+    // Fetch old balance summary
+    fetchOldBalanceSummary();
+    // Fetch upcoming dues
+    fetchUpcomingDues();
   }, []);
+  
+  const fetchEmployeeAnalytics = async () => {
+    try {
+      setAnalyticsLoading(true);
+      const response = await api.get('/users/employee-analytics/');
+      setEmployeeAnalytics(response.data);
+    } catch (err) {
+      console.error('Error fetching employee analytics:', err);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  const fetchFeeAnalytics = async () => {
+    setFeeLoading(true);
+    try {
+      // Fetch fee data from education analytics
+      const [analyticsRes, installmentsRes, paymentsRes] = await Promise.allSettled([
+        api.get('/education/analytics/').catch(err => {
+          // Handle 403 gracefully - expected for some roles
+          if (err?.response?.status === 403) {
+            return { status: 'rejected', reason: err };
+          }
+          throw err;
+        }),
+        api.get('/education/installments/').catch(err => {
+          if (err?.response?.status === 403) {
+            return { status: 'rejected', reason: err };
+          }
+          throw err;
+        }),
+        api.get('/education/fee-payments/').catch(err => {
+          if (err?.response?.status === 403) {
+            return { status: 'rejected', reason: err };
+          }
+          throw err;
+        })
+      ]);
+      
+      // Handle analytics response
+      let analytics = {};
+      if (analyticsRes.status === 'fulfilled' && analyticsRes.value && analyticsRes.value.data) {
+        analytics = analyticsRes.value.data;
+      }
+      
+      // Handle installments response
+      let installments = [];
+      if (installmentsRes.status === 'fulfilled' && installmentsRes.value && installmentsRes.value.data) {
+        installments = Array.isArray(installmentsRes.value.data) 
+          ? installmentsRes.value.data 
+          : (installmentsRes.value.data?.results || []);
+      }
+      
+      // Handle payments response
+      let payments = [];
+      if (paymentsRes.status === 'fulfilled' && paymentsRes.value && paymentsRes.value.data) {
+        payments = Array.isArray(paymentsRes.value.data) 
+          ? paymentsRes.value.data 
+          : (paymentsRes.value.data?.results || []);
+      }
+      
+      // Calculate fee statistics
+      const totalDue = installments.reduce((sum, inst) => sum + Number(inst.due_amount || 0), 0);
+      const totalPaid = payments.reduce((sum, pay) => sum + Number(pay.amount_paid || 0), 0);
+      const totalRemaining = installments.reduce((sum, inst) => sum + Number(inst.remaining_amount || 0), 0);
+      
+      // Class-wise fee breakdown
+      const classWiseFees = {};
+      installments.forEach(inst => {
+        const className = inst.student?.assigned_class?.name || 
+                         (inst.student?.assigned_class?.name) ||
+                         (typeof inst.student?.assigned_class === 'string' ? inst.student.assigned_class : 'Not Assigned');
+        if (!classWiseFees[className]) {
+          classWiseFees[className] = { due: 0, paid: 0, remaining: 0 };
+        }
+        classWiseFees[className].due += Number(inst.due_amount || 0);
+        classWiseFees[className].remaining += Number(inst.remaining_amount || 0);
+      });
+      
+      payments.forEach(pay => {
+        const className = pay.student?.assigned_class?.name || 
+                         (typeof pay.student?.assigned_class === 'string' ? pay.student.assigned_class : 'Not Assigned');
+        if (!classWiseFees[className]) {
+          classWiseFees[className] = { due: 0, paid: 0, remaining: 0 };
+        }
+        classWiseFees[className].paid += Number(pay.amount_paid || 0);
+      });
+      
+      // Payment status distribution
+      const paymentStatus = {
+        paid: installments.filter(inst => inst.status === 'PAID' || Number(inst.remaining_amount || 0) <= 0).length,
+        pending: installments.filter(inst => inst.status === 'PENDING' && Number(inst.remaining_amount || 0) > 0).length,
+        overdue: installments.filter(inst => inst.is_overdue && Number(inst.remaining_amount || 0) > 0).length
+      };
+      
+      // Always set analytics, even if empty (so charts can show empty state)
+      setFeeAnalytics({
+        totalDue: totalDue,
+        totalPaid: totalPaid,
+        totalRemaining: totalRemaining,
+        classWiseFees: Object.entries(classWiseFees).map(([name, data]) => ({
+          name,
+          ...data
+        })),
+        paymentStatus: paymentStatus,
+        collectionRate: totalDue > 0 ? ((totalPaid / totalDue) * 100).toFixed(1) : 0,
+        hasData: installments.length > 0 || payments.length > 0
+      });
+    } catch (err) {
+      console.error('Error fetching fee analytics:', err);
+      // Set empty analytics instead of null so UI can still render
+      setFeeAnalytics({
+        totalDue: 0,
+        totalPaid: 0,
+        totalRemaining: 0,
+        classWiseFees: [],
+        paymentStatus: { paid: 0, pending: 0, overdue: 0 },
+        collectionRate: 0,
+        hasData: false
+      });
+    } finally {
+      setFeeLoading(false);
+    }
+  };
+
+  const fetchOldBalanceSummary = async () => {
+    try {
+      const res = await api.get('/education/old-balances/summary/');
+      setOldBalanceSummary(res.data);
+    } catch (err) {
+      console.error('Failed to fetch old balance summary:', err);
+      setOldBalanceSummary(null);
+    }
+  };
+
+  const fetchUpcomingDues = async () => {
+    try {
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 14); // Next 14 days
+      
+      const res = await api.get('/education/installments/', {
+        params: {
+          due_date__gte: today.toISOString().split('T')[0],
+          due_date__lte: nextWeek.toISOString().split('T')[0],
+          status: 'PENDING'
+        }
+      });
+      
+      const installments = Array.isArray(res.data) ? res.data : (res.data?.results || []);
+      setUpcomingDues(installments.slice(0, 10)); // Top 10 upcoming
+    } catch (err) {
+      console.error('Failed to fetch upcoming dues:', err);
+      setUpcomingDues([]);
+    }
+  };
 
   const handleEditUser = (user) => {
     // Check if current user has admin privileges
@@ -174,6 +398,16 @@ const AdminEnhanced = () => {
       return;
     }
     setSelectedUser(user);
+    // Extract assigned class IDs - handle both array of objects and array of IDs
+    let assignedClassIds = [];
+    if (user.assigned_classes) {
+      if (Array.isArray(user.assigned_classes)) {
+        assignedClassIds = user.assigned_classes.map(cls => 
+          typeof cls === 'object' && cls !== null ? cls.id : cls
+        );
+      }
+    }
+    
     setEditForm({
       username: user.user?.username && user.user.username !== 'N/A' ? user.user.username : '',
       email: user.user?.email && user.user.email !== 'No email' ? user.user.email : '',
@@ -184,7 +418,16 @@ const AdminEnhanced = () => {
       department: user.department?.id || null,
       job_title: user.job_title && user.job_title !== 'N/A' ? user.job_title : '',
       is_active: user.user?.is_active !== false,
-      assigned_classes: user.assigned_classes || [],
+      assigned_classes: assignedClassIds,
+      // Personal Info fields
+      address: user.address || '',
+      date_of_birth: user.date_of_birth || '',
+      gender: user.gender || '',
+      emergency_contact: user.emergency_contact || '',
+      joining_date: user.joining_date || '',
+      qualifications: user.qualifications || '',
+      bio: user.bio || '',
+      linkedin: user.linkedin || ''
     });
     setEditDialogOpen(true);
   };
@@ -250,7 +493,18 @@ const AdminEnhanced = () => {
         last_name: addUserForm.last_name,
         role: addUserForm.role,
         department: addUserForm.department || null,
-        assigned_classes: addUserForm.assigned_classes
+        assigned_classes: addUserForm.assigned_classes,
+        // Personal Info fields
+        phone: addUserForm.phone || '',
+        address: addUserForm.address || '',
+        date_of_birth: addUserForm.date_of_birth || null,
+        gender: addUserForm.gender || '',
+        emergency_contact: addUserForm.emergency_contact || '',
+        job_title: addUserForm.job_title || '',
+        joining_date: addUserForm.joining_date || null,
+        qualifications: addUserForm.qualifications || '',
+        bio: addUserForm.bio || '',
+        linkedin: addUserForm.linkedin || ''
       };
 
       const response = await api.post('/users/add/', payload);
@@ -269,13 +523,44 @@ const AdminEnhanced = () => {
           company_name: '',
           industry: 'education',
           plan: 'free',
-          assigned_classes: []
+          assigned_classes: [],
+          // Personal Info fields
+          phone: '',
+          address: '',
+          date_of_birth: '',
+          gender: '',
+          emergency_contact: '',
+          job_title: '',
+          joining_date: '',
+          qualifications: '',
+          bio: '',
+          linkedin: ''
         });
         fetchAll(); // Refresh the user list
       }
     } catch (error) {
       console.error('Error adding user:', error);
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to create user';
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      
+      // Extract error message properly
+      let errorMessage = 'Failed to create user';
+      if (error.response?.data) {
+        if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data;
+        } else if (error.response.data.error) {
+          errorMessage = typeof error.response.data.error === 'string' 
+            ? error.response.data.error 
+            : JSON.stringify(error.response.data.error);
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response.data.errors) {
+          errorMessage = JSON.stringify(error.response.data.errors);
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setSnackbar({ open: true, message: errorMessage, severity: 'error' });
     } finally {
       setAddUserLoading(false);
@@ -312,6 +597,16 @@ const AdminEnhanced = () => {
       formData.append('last_name', editForm.last_name || '');
       formData.append('department', editForm.department || null);
       formData.append('job_title', editForm.job_title || '');
+      
+      // Add Personal Info fields
+      formData.append('address', editForm.address || '');
+      formData.append('date_of_birth', editForm.date_of_birth || '');
+      formData.append('gender', editForm.gender || '');
+      formData.append('emergency_contact', editForm.emergency_contact || '');
+      formData.append('joining_date', editForm.joining_date || '');
+      formData.append('qualifications', editForm.qualifications || '');
+      formData.append('bio', editForm.bio || '');
+      formData.append('linkedin', editForm.linkedin || '');
       
       // Add assigned classes
       if (editForm.assigned_classes && editForm.assigned_classes.length > 0) {
@@ -701,6 +996,623 @@ const AdminEnhanced = () => {
         </CardContent>
         </Card>
 
+        {/* Employee Analytics Section */}
+        <Card sx={{ mt: 4 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5" gutterBottom>
+                📊 Employee Analytics & Insights
+              </Typography>
+              <Button 
+                variant="outlined" 
+                size="small"
+                onClick={fetchEmployeeAnalytics}
+                disabled={analyticsLoading}
+              >
+                {analyticsLoading ? <CircularProgress size={20} /> : 'Refresh'}
+              </Button>
+            </Box>
+            
+            {analyticsLoading ? (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <CircularProgress />
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                  Loading employee analytics...
+                </Typography>
+              </Box>
+            ) : employeeAnalytics ? (
+              <Grid container spacing={3}>
+                {/* Statistics Cards */}
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+                    <CardContent>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Total Employees
+                      </Typography>
+                      <Typography variant="h4">
+                        {employeeAnalytics.statistics?.total_employees || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+                    <CardContent>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Active Employees
+                      </Typography>
+                      <Typography variant="h4">
+                        {employeeAnalytics.statistics?.active_employees || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+                    <CardContent>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        New Hires (This Month)
+                      </Typography>
+                      <Typography variant="h4">
+                        {employeeAnalytics.statistics?.new_hires_this_month || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Card sx={{ bgcolor: 'error.main', color: 'white' }}>
+                    <CardContent>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        Inactive Employees
+                      </Typography>
+                      <Typography variant="h4">
+                        {employeeAnalytics.statistics?.inactive_employees || 0}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Birthdays Today */}
+                {employeeAnalytics.birthdays_today && employeeAnalytics.birthdays_today.length > 0 && (
+                  <Grid size={{ xs: 12 }}>
+                    <Card sx={{ bgcolor: 'error.light', color: 'error.contrastText', mb: 2 }}>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                          <CakeIcon sx={{ fontSize: 32 }} />
+                          <Typography variant="h6">
+                            🎉 Birthdays Today!
+                          </Typography>
+                        </Box>
+                        <Grid container spacing={2}>
+                          {employeeAnalytics.birthdays_today.map((emp) => (
+                            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={emp.id}>
+                              <Card variant="outlined" sx={{ bgcolor: 'white' }}>
+                                <CardContent>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                    <Avatar sx={{ bgcolor: 'error.main', width: 56, height: 56 }}>
+                                      {emp.name.charAt(0).toUpperCase()}
+                                    </Avatar>
+                                    <Box>
+                                      <Typography variant="h6">{emp.name}</Typography>
+                                      <Typography variant="body2" color="text.secondary">
+                                        {emp.job_title} • {emp.department}
+                                      </Typography>
+                                      <Typography variant="body2" color="primary">
+                                        Turning {emp.age + 1} today! 🎂
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+                                </CardContent>
+                              </Card>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                )}
+
+                {/* Upcoming Birthdays */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <CakeIcon color="primary" />
+                        <Typography variant="h6">
+                          Upcoming Birthdays (Next 30 Days)
+                        </Typography>
+                      </Box>
+                      {employeeAnalytics.upcoming_birthdays && employeeAnalytics.upcoming_birthdays.length > 0 ? (
+                        <TableContainer>
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Employee</TableCell>
+                                <TableCell>Days Until</TableCell>
+                                <TableCell>Age</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {employeeAnalytics.upcoming_birthdays.slice(0, 5).map((emp) => (
+                                <TableRow key={emp.id} hover>
+                                  <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                                        {emp.name.charAt(0).toUpperCase()}
+                                      </Avatar>
+                                      <Box>
+                                        <Typography variant="body2" fontWeight="bold">
+                                          {emp.name}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                          {emp.job_title}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Chip 
+                                      label={`${emp.days_until} days`} 
+                                      color={emp.days_until <= 7 ? 'error' : 'primary'}
+                                      size="small"
+                                    />
+                                  </TableCell>
+                                  <TableCell>Turning {emp.age + 1}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                          No upcoming birthdays in the next 30 days
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Work Anniversaries */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <TrophyIcon color="primary" />
+                        <Typography variant="h6">
+                          Work Anniversaries (Next 30 Days)
+                        </Typography>
+                      </Box>
+                      {employeeAnalytics.upcoming_anniversaries && employeeAnalytics.upcoming_anniversaries.length > 0 ? (
+                        <TableContainer>
+                          <Table size="small">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Employee</TableCell>
+                                <TableCell>Days Until</TableCell>
+                                <TableCell>Years</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {employeeAnalytics.upcoming_anniversaries.slice(0, 5).map((emp) => (
+                                <TableRow key={emp.id} hover>
+                                  <TableCell>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'success.main' }}>
+                                        {emp.name.charAt(0).toUpperCase()}
+                                      </Avatar>
+                                      <Box>
+                                        <Typography variant="body2" fontWeight="bold">
+                                          {emp.name}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                          {emp.job_title}
+                                        </Typography>
+                                      </Box>
+                                    </Box>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Chip 
+                                      label={`${emp.days_until} days`} 
+                                      color={emp.days_until <= 7 ? 'error' : 'success'}
+                                      size="small"
+                                    />
+                                  </TableCell>
+                                  <TableCell>{emp.years_of_service} years</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                          No upcoming anniversaries in the next 30 days
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Gender Distribution */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Gender Distribution
+                      </Typography>
+                      {employeeAnalytics.gender_distribution && (
+                        <Box sx={{ mt: 2 }}>
+                          {Object.entries(employeeAnalytics.gender_distribution).map(([gender, count]) => {
+                            const total = Object.values(employeeAnalytics.gender_distribution).reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? (count / total) * 100 : 0;
+                            return (
+                              <Box key={gender} sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography variant="body2">{gender}</Typography>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {count} ({percentage.toFixed(1)}%)
+                                  </Typography>
+                                </Box>
+                                <LinearProgress 
+                                  variant="determinate" 
+                                  value={percentage} 
+                                  sx={{ height: 8, borderRadius: 1 }}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Role Distribution */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Role Distribution
+                      </Typography>
+                      {employeeAnalytics.role_distribution && employeeAnalytics.role_distribution.length > 0 ? (
+                        <Box sx={{ mt: 2 }}>
+                          {employeeAnalytics.role_distribution.map((item) => {
+                            const total = employeeAnalytics.statistics?.total_employees || 1;
+                            const percentage = (item.count / total) * 100;
+                            return (
+                              <Box key={item.role} sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography variant="body2">{item.role}</Typography>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {item.count} ({percentage.toFixed(1)}%)
+                                  </Typography>
+                                </Box>
+                                <LinearProgress 
+                                  variant="determinate" 
+                                  value={percentage} 
+                                  color="secondary"
+                                  sx={{ height: 8, borderRadius: 1 }}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                          No role data available
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Age Distribution */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Age Distribution
+                      </Typography>
+                      {employeeAnalytics.age_distribution && (
+                        <Box sx={{ mt: 2 }}>
+                          {Object.entries(employeeAnalytics.age_distribution).map(([ageGroup, count]) => {
+                            const total = Object.values(employeeAnalytics.age_distribution).reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? (count / total) * 100 : 0;
+                            return (
+                              <Box key={ageGroup} sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography variant="body2">{ageGroup} years</Typography>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {count} ({percentage.toFixed(1)}%)
+                                  </Typography>
+                                </Box>
+                                <LinearProgress 
+                                  variant="determinate" 
+                                  value={percentage} 
+                                  color="info"
+                                  sx={{ height: 8, borderRadius: 1 }}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Years of Service Distribution */}
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Years of Service
+                      </Typography>
+                      {employeeAnalytics.service_years_distribution && (
+                        <Box sx={{ mt: 2 }}>
+                          {Object.entries(employeeAnalytics.service_years_distribution).map(([range, count]) => {
+                            const total = Object.values(employeeAnalytics.service_years_distribution).reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? (count / total) * 100 : 0;
+                            return (
+                              <Box key={range} sx={{ mb: 2 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                  <Typography variant="body2">{range}</Typography>
+                                  <Typography variant="body2" fontWeight="bold">
+                                    {count} ({percentage.toFixed(1)}%)
+                                  </Typography>
+                                </Box>
+                                <LinearProgress 
+                                  variant="determinate" 
+                                  value={percentage} 
+                                  color="warning"
+                                  sx={{ height: 8, borderRadius: 1 }}
+                                />
+                              </Box>
+                            );
+                          })}
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                {/* Employee Directory with Search */}
+                <Grid size={{ xs: 12 }}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="h6">
+                          👥 Employee Directory
+                        </Typography>
+                        <TextField
+                          size="small"
+                          label="Search employees..."
+                          variant="outlined"
+                          value={employeeSearch}
+                          onChange={(e) => setEmployeeSearch(e.target.value)}
+                          placeholder="Search by name, email, phone, emergency contact, job title..."
+                          sx={{ minWidth: 300 }}
+                        />
+                      </Box>
+                      
+                      {employeeAnalytics.employee_directory && employeeAnalytics.employee_directory.length > 0 ? (
+                        <TableContainer component={Paper} sx={{ maxHeight: 600 }}>
+                          <Table stickyHeader>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Phone</TableCell>
+                                <TableCell>Emergency Contact</TableCell>
+                                <TableCell>Job Title</TableCell>
+                                <TableCell>Department</TableCell>
+                                <TableCell>Role</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {employeeAnalytics.employee_directory
+                                .filter((emp) => {
+                                  if (!employeeSearch) return true;
+                                  const searchLower = employeeSearch.toLowerCase();
+                                  return (
+                                    emp.full_name.toLowerCase().includes(searchLower) ||
+                                    emp.email.toLowerCase().includes(searchLower) ||
+                                    emp.phone.toLowerCase().includes(searchLower) ||
+                                    emp.emergency_contact.toLowerCase().includes(searchLower) ||
+                                    emp.job_title.toLowerCase().includes(searchLower) ||
+                                    emp.department.toLowerCase().includes(searchLower) ||
+                                    emp.role.toLowerCase().includes(searchLower) ||
+                                    (emp.address && emp.address.toLowerCase().includes(searchLower)) ||
+                                    (emp.qualifications && emp.qualifications.toLowerCase().includes(searchLower))
+                                  );
+                                })
+                                .map((emp) => (
+                                  <TableRow key={emp.id} hover>
+                                    <TableCell>
+                                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                                          {emp.full_name.charAt(0).toUpperCase()}
+                                        </Avatar>
+                                        <Typography variant="body2" fontWeight="bold">
+                                          {emp.full_name}
+                                        </Typography>
+                                      </Box>
+                                    </TableCell>
+                                    <TableCell>{emp.email}</TableCell>
+                                    <TableCell>{emp.phone}</TableCell>
+                                    <TableCell>
+                                      <Typography variant="body2" sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {emp.emergency_contact}
+                                      </Typography>
+                                    </TableCell>
+                                    <TableCell>{emp.job_title}</TableCell>
+                                    <TableCell>{emp.department}</TableCell>
+                                    <TableCell>{emp.role}</TableCell>
+                                    <TableCell>
+                                      <Chip 
+                                        label={emp.is_active ? 'Active' : 'Inactive'} 
+                                        color={emp.is_active ? 'success' : 'default'}
+                                        size="small"
+                                      />
+                                    </TableCell>
+                                    <TableCell>
+                                      <Button
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={() => {
+                                          setSelectedEmployee(emp);
+                                          setEmployeeDetailDialog(true);
+                                        }}
+                                      >
+                                        View Details
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                          No employees found
+                        </Typography>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            ) : (
+              <Alert severity="info">
+                No employee analytics data available. Please ensure employees have their date of birth and joining dates filled in.
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Employee Detail Dialog */}
+        <Dialog
+          open={employeeDetailDialog}
+          onClose={() => setEmployeeDetailDialog(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+            👤 Employee Details: {selectedEmployee?.full_name}
+          </DialogTitle>
+          <DialogContent sx={{ pt: 3 }}>
+            {selectedEmployee && (
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                    <Avatar sx={{ width: 80, height: 80, bgcolor: 'primary.main', fontSize: 32 }}>
+                      {selectedEmployee.full_name.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="h5">{selectedEmployee.full_name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {selectedEmployee.job_title} • {selectedEmployee.department}
+                      </Typography>
+                      <Chip 
+                        label={selectedEmployee.is_active ? 'Active' : 'Inactive'} 
+                        color={selectedEmployee.is_active ? 'success' : 'default'}
+                        size="small"
+                        sx={{ mt: 1 }}
+                      />
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Email</Typography>
+                  <Typography variant="body1">{selectedEmployee.email}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Phone</Typography>
+                  <Typography variant="body1">{selectedEmployee.phone}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Emergency Contact</Typography>
+                  <Typography variant="body1" fontWeight="bold" color="error">
+                    {selectedEmployee.emergency_contact}
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Gender</Typography>
+                  <Typography variant="body1">{selectedEmployee.gender}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Address</Typography>
+                  <Typography variant="body1">{selectedEmployee.address}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Date of Birth</Typography>
+                  <Typography variant="body1">
+                    {selectedEmployee.date_of_birth ? `${selectedEmployee.date_of_birth} (Age: ${selectedEmployee.age || 'N/A'})` : 'N/A'}
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Joining Date</Typography>
+                  <Typography variant="body1">
+                    {selectedEmployee.joining_date ? `${selectedEmployee.joining_date} (${selectedEmployee.years_of_service || 0} years)` : 'N/A'}
+                  </Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Role</Typography>
+                  <Typography variant="body1">{selectedEmployee.role}</Typography>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Typography variant="subtitle2" color="text.secondary">Department</Typography>
+                  <Typography variant="body1">{selectedEmployee.department}</Typography>
+                </Grid>
+                {selectedEmployee.qualifications && selectedEmployee.qualifications !== 'N/A' && (
+                  <Grid size={{ xs: 12 }}>
+                    <Typography variant="subtitle2" color="text.secondary">Qualifications</Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                      {selectedEmployee.qualifications}
+                    </Typography>
+                  </Grid>
+                )}
+                {selectedEmployee.bio && selectedEmployee.bio !== 'N/A' && (
+                  <Grid size={{ xs: 12 }}>
+                    <Typography variant="subtitle2" color="text.secondary">Bio</Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                      {selectedEmployee.bio}
+                    </Typography>
+                  </Grid>
+                )}
+                {selectedEmployee.linkedin && selectedEmployee.linkedin !== 'N/A' && (
+                  <Grid size={{ xs: 12 }}>
+                    <Typography variant="subtitle2" color="text.secondary">LinkedIn</Typography>
+                    <Typography variant="body1">
+                      <a href={selectedEmployee.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#1976d2' }}>
+                        {selectedEmployee.linkedin}
+                      </a>
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEmployeeDetailDialog(false)}>Close</Button>
+            {selectedEmployee && (
+              <Button 
+                variant="contained" 
+                onClick={() => {
+                  const user = users.find(u => u.id === selectedEmployee.id);
+                  if (user) {
+                    handleEditUser(user);
+                    setEmployeeDetailDialog(false);
+                  }
+                }}
+              >
+                Edit Employee
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+
         {/* Edit User Dialog */}
         <Dialog 
           open={editDialogOpen} 
@@ -735,18 +1647,6 @@ const AdminEnhanced = () => {
                   onChange={(e) => {
                     const newValue = e.target.value;
                     setEditForm(prev => ({...prev, email: newValue}));
-                  }}
-                  margin="normal"
-                />
-              </Grid>
-              <Grid gridColumn="span 6">
-                <TextField
-                  fullWidth
-                  label="Phone"
-                  value={editForm.phone || ''}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    setEditForm(prev => ({...prev, phone: newValue}));
                   }}
                   margin="normal"
                 />
@@ -808,53 +1708,81 @@ const AdminEnhanced = () => {
                 </FormControl>
               </Grid>
             
-            {/* ASSIGNED CLASSES FIELD */}
-            <Grid gridColumn="span 12">
-              <Box sx={{ mt: 3, p: 3, backgroundColor: '#e3f2fd', borderRadius: 2, border: '2px solid #1976d2' }}>
-                <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 700, textAlign: 'center', mb: 2 }}>
-                  🎓 Assign Classes to Teacher
-        </Typography>
-                <Typography variant="body2" sx={{ color: '#1976d2', textAlign: 'center', mb: 2 }}>
-                  Select the classes this teacher should be assigned to. Required for teachers.
-        </Typography>
-                <FormControl fullWidth>
-                  <InputLabel>Assigned Classes</InputLabel>
-                  <Select
-                    multiple
-                    value={editForm.assigned_classes || []}
-                    onChange={(e) => {
-                      const newValue = e.target.value;
-                      setEditForm(prev => ({...prev, assigned_classes: newValue}));
-                    }}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value) => {
-                          const classObj = classes.find(c => c.id === value);
-                          return (
-                          <Chip 
-                              key={value} 
-                              label={classObj ? classObj.name : value} 
-                              size="small" 
-                            color="primary" 
-                            />
-                  );
-                })}
-          </Box>
-                    )}
-                  >
-                    {classes.map((classObj) => (
-                      <MenuItem key={classObj.id} value={classObj.id}>
-                        <Checkbox checked={(editForm.assigned_classes || []).indexOf(classObj.id) > -1} />
-                        <ListItemText primary={classObj.name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText>
-                    {editForm.role === 'teacher' ? 'Required: Teachers must be assigned to at least one class' : 'Optional: Assign classes for teachers'}
-                  </FormHelperText>
-                </FormControl>
-              </Box>
-            </Grid>
+            {/* ASSIGNED CLASSES FIELD - Show for teacher, student, and staff */}
+            {(editForm.role === 'teacher' || editForm.role === 'student' || editForm.role === 'staff') && (
+              <Grid gridColumn="span 12">
+                <Box sx={{ mt: 3, p: 3, backgroundColor: '#e3f2fd', borderRadius: 2, border: '2px solid #1976d2' }}>
+                  <Typography variant="h6" sx={{ color: '#1976d2', fontWeight: 700, textAlign: 'center', mb: 2 }}>
+                    🎓 Assign Classes
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#1976d2', textAlign: 'center', mb: 2 }}>
+                    Select the classes for this {editForm.role}. Hold down Ctrl (or Cmd on Mac) to select multiple classes.
+                  </Typography>
+                  <FormControl fullWidth>
+                    <InputLabel id="assigned-classes-label-edit">Assigned Classes</InputLabel>
+                    <Select
+                      labelId="assigned-classes-label-edit"
+                      multiple
+                      value={editForm.assigned_classes || []}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setEditForm(prev => ({...prev, assigned_classes: newValue}));
+                      }}
+                      label="Assigned Classes"
+                      MenuProps={{ 
+                        disablePortal: true, 
+                        PaperProps: { sx: { maxHeight: 300, zIndex: 2200 } },
+                        anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                        transformOrigin: { vertical: 'top', horizontal: 'left' }
+                      }}
+                      renderValue={(selected) => {
+                        if (!selected || selected.length === 0) {
+                          return <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>Select classes...</Typography>;
+                        }
+                        return (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value) => {
+                              const classObj = classes.find(c => c.id === value || String(c.id) === String(value));
+                              return (
+                                <Chip 
+                                  key={value} 
+                                  label={classObj ? classObj.name : `Class ${value}`} 
+                                  size="small" 
+                                  color="primary" 
+                                />
+                              );
+                            })}
+                          </Box>
+                        );
+                      }}
+                    >
+                      {classes && classes.length > 0 ? (
+                        classes.map((classObj) => (
+                          <MenuItem key={classObj.id} value={classObj.id}>
+                            <Checkbox checked={(editForm.assigned_classes || []).some(id => String(id) === String(classObj.id))} />
+                            <ListItemText primary={classObj.name || `Class ${classObj.id}`} />
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', p: 1 }}>
+                            No classes available. Please create classes in the Education module first.
+                          </Typography>
+                        </MenuItem>
+                      )}
+                    </Select>
+                    <FormHelperText>
+                      {editForm.role === 'teacher' ? 'Required: Teachers must be assigned to at least one class' : `Optional: Assign classes for ${editForm.role}`}
+                      {classes.length === 0 && (
+                        <span style={{ display: 'block', marginTop: '4px' }}>
+                          💡 Tip: Create classes in the Education Module → Classes tab first.
+                        </span>
+                      )}
+                    </FormHelperText>
+                  </FormControl>
+                </Box>
+              </Grid>
+            )}
             
               <Grid gridColumn="span 6">
                 <TextField
@@ -881,6 +1809,126 @@ const AdminEnhanced = () => {
                   }
                   label="Active User"
                 />
+              </Grid>
+
+              {/* Personal Info Section in Edit Form */}
+              <Grid gridColumn="span 12">
+                <Box sx={{ 
+                  mt: 3, 
+                  p: 3, 
+                  backgroundColor: '#f5f5f5', 
+                  borderRadius: 2, 
+                  border: '1px solid #ddd' 
+                }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+                    Personal Information
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid gridColumn="span 6">
+                      <TextField
+                        fullWidth
+                        label="Phone"
+                        value={editForm.phone || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, phone: e.target.value}))}
+                        margin="normal"
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 6">
+                      <TextField
+                        fullWidth
+                        label="Date of Birth"
+                        type="date"
+                        value={editForm.date_of_birth || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, date_of_birth: e.target.value}))}
+                        margin="normal"
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 6">
+                      <FormControl fullWidth margin="normal">
+                        <InputLabel>Gender</InputLabel>
+                        <Select
+                          value={editForm.gender || ''}
+                          onChange={(e) => setEditForm(prev => ({...prev, gender: e.target.value}))}
+                          label="Gender"
+                          MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
+                        >
+                          <MenuItem value="">Select Gender</MenuItem>
+                          <MenuItem value="Male">Male</MenuItem>
+                          <MenuItem value="Female">Female</MenuItem>
+                          <MenuItem value="Other">Other</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid gridColumn="span 6">
+                      <TextField
+                        fullWidth
+                        label="Joining Date"
+                        type="date"
+                        value={editForm.joining_date || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, joining_date: e.target.value}))}
+                        margin="normal"
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 6">
+                      <TextField
+                        fullWidth
+                        label="Emergency Contact"
+                        value={editForm.emergency_contact || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, emergency_contact: e.target.value}))}
+                        margin="normal"
+                        placeholder="Name and phone number"
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 12">
+                      <TextField
+                        fullWidth
+                        label="Address"
+                        value={editForm.address || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, address: e.target.value}))}
+                        margin="normal"
+                        multiline
+                        rows={2}
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 12">
+                      <TextField
+                        fullWidth
+                        label="Qualifications"
+                        value={editForm.qualifications || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, qualifications: e.target.value}))}
+                        margin="normal"
+                        multiline
+                        rows={2}
+                        placeholder="Enter educational qualifications, certifications, etc."
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 12">
+                      <TextField
+                        fullWidth
+                        label="Bio"
+                        value={editForm.bio || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, bio: e.target.value}))}
+                        margin="normal"
+                        multiline
+                        rows={3}
+                        placeholder="Brief biography or description"
+                      />
+                    </Grid>
+                    <Grid gridColumn="span 12">
+                      <TextField
+                        fullWidth
+                        label="LinkedIn Profile URL"
+                        value={editForm.linkedin || ''}
+                        onChange={(e) => setEditForm(prev => ({...prev, linkedin: e.target.value}))}
+                        margin="normal"
+                        placeholder="https://linkedin.com/in/username"
+                        helperText="Enter the full LinkedIn profile URL"
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
               </Grid>
             </Grid>
           </DialogContent>
@@ -935,6 +1983,516 @@ const AdminEnhanced = () => {
         </Alert>
       </Snackbar>
 
+      {/* Fee Analytics & Charts Section */}
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <MoneyIcon sx={{ color: 'primary.main' }} />
+            💰 Fee Analytics & Collection Insights
+          </Typography>
+          
+          {feeLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : feeAnalytics ? (
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              {/* Fee Collection Overview Pie Chart */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Fee Collection Overview
+                    </Typography>
+                    {feeAnalytics.hasData && feeAnalytics.totalDue > 0 ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={[
+                              { name: 'Collected', value: Number(feeAnalytics.totalPaid), fill: '#4caf50' },
+                              { name: 'Remaining', value: Number(feeAnalytics.totalRemaining), fill: '#ff9800' }
+                            ]}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            <Cell fill="#4caf50" />
+                            <Cell fill="#ff9800" />
+                          </Pie>
+                          <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          No fee data available yet
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Fee structures and payments will appear here once configured
+                        </Typography>
+                      </Box>
+                    )}
+                    {feeAnalytics.hasData ? (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2">
+                          <strong>Total Due:</strong> ₹{Number(feeAnalytics.totalDue).toLocaleString('en-IN')}
+                        </Typography>
+                        <Typography variant="body2" color="success.main">
+                          <strong>Collected:</strong> ₹{Number(feeAnalytics.totalPaid).toLocaleString('en-IN')}
+                        </Typography>
+                        <Typography variant="body2" color="warning.main">
+                          <strong>Remaining:</strong> ₹{Number(feeAnalytics.totalRemaining).toLocaleString('en-IN')}
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          <strong>Collection Rate:</strong> {feeAnalytics.collectionRate}%
+                        </Typography>
+                      </Box>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Payment Status Distribution */}
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Payment Status Distribution
+                    </Typography>
+                    {feeAnalytics.hasData && feeAnalytics.paymentStatus && (
+                      feeAnalytics.paymentStatus.paid > 0 || feeAnalytics.paymentStatus.pending > 0 || feeAnalytics.paymentStatus.overdue > 0
+                    ) ? (
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={[
+                              { name: 'Paid', value: feeAnalytics.paymentStatus.paid || 0, fill: '#4caf50' },
+                              { name: 'Pending', value: feeAnalytics.paymentStatus.pending || 0, fill: '#2196f3' },
+                              { name: 'Overdue', value: feeAnalytics.paymentStatus.overdue || 0, fill: '#f44336' }
+                            ]}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={({ name, value }) => `${name}: ${value}`}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="value"
+                          >
+                            <Cell fill="#4caf50" />
+                            <Cell fill="#2196f3" />
+                            <Cell fill="#f44336" />
+                          </Pie>
+                          <Tooltip />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          No payment data available yet
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          Payment status will appear here once payments are recorded
+                        </Typography>
+                      </Box>
+                    )}
+                    {feeAnalytics.hasData && feeAnalytics.paymentStatus ? (
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="body2" color="success.main">
+                          <strong>Paid:</strong> {feeAnalytics.paymentStatus.paid || 0} installments
+                        </Typography>
+                        <Typography variant="body2" color="primary.main">
+                          <strong>Pending:</strong> {feeAnalytics.paymentStatus.pending || 0} installments
+                        </Typography>
+                        <Typography variant="body2" color="error.main">
+                          <strong>Overdue:</strong> {feeAnalytics.paymentStatus.overdue || 0} installments
+                        </Typography>
+                      </Box>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Old Balance Summary Card */}
+              {oldBalanceSummary && oldBalanceSummary.total_outstanding > 0 && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card variant="outlined" sx={{ bgcolor: 'warning.light' }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <HistoryIcon />
+                        Outstanding Old Balances
+                      </Typography>
+                      <Typography variant="h4" color="error" sx={{ mb: 1 }}>
+                        ₹{Number(oldBalanceSummary.total_outstanding).toLocaleString('en-IN')}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        {oldBalanceSummary.total_students_with_balance} students have balances from previous years
+                      </Typography>
+                      <Box sx={{ mt: 2 }}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          startIcon={<ArrowForwardIcon />}
+                          onClick={() => window.location.href = '/education?tab=2&subtab=old-balances'}
+                        >
+                          View Details
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              )}
+
+              {/* Collection Rate Performance Card */}
+              {feeAnalytics.hasData && (
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Card variant="outlined">
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Collection Performance
+                      </Typography>
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="h3" color={Number(feeAnalytics.collectionRate) >= 80 ? 'success.main' : Number(feeAnalytics.collectionRate) >= 50 ? 'warning.main' : 'error.main'}>
+                          {feeAnalytics.collectionRate}%
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Overall Collection Rate
+                        </Typography>
+                        <LinearProgress
+                          variant="determinate"
+                          value={Number(feeAnalytics.collectionRate)}
+                          sx={{ mt: 2, height: 8, borderRadius: 1 }}
+                          color={Number(feeAnalytics.collectionRate) >= 80 ? 'success' : Number(feeAnalytics.collectionRate) >= 50 ? 'warning' : 'error'}
+                        />
+                      </Box>
+                      <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary">Target: 80%</Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="caption" color="text.secondary">
+                            {Number(feeAnalytics.collectionRate) >= 80 ? '✓ On Target' : `${(80 - Number(feeAnalytics.collectionRate)).toFixed(1)}% below target`}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              )}
+
+              {/* Class-wise Fee Collection Bar Chart */}
+              <Grid size={{ xs: 12 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Class-wise Fee Collection
+                    </Typography>
+                    {feeAnalytics.classWiseFees && feeAnalytics.classWiseFees.length > 0 ? (
+                      <ResponsiveContainer width="100%" height={400}>
+                        <BarChart
+                          data={feeAnalytics.classWiseFees.map(cls => ({
+                            name: cls.name,
+                            Due: Number(cls.due || 0),
+                            Paid: Number(cls.paid || 0),
+                            Remaining: Number(cls.remaining || 0)
+                          }))}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
+                          <Legend />
+                          <Bar dataKey="Due" fill="#9e9e9e" />
+                          <Bar dataKey="Paid" fill="#4caf50" />
+                          <Bar dataKey="Remaining" fill="#ff9800" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+                        No class-wise fee data available
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              {/* Class-wise Fee Table */}
+              <Grid size={{ xs: 12 }}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Class-wise Fee Breakdown
+                    </Typography>
+                    {feeAnalytics.classWiseFees && feeAnalytics.classWiseFees.length > 0 ? (
+                      <TableContainer component={Paper}>
+                        <Table>
+                          <TableHead>
+                            <TableRow>
+                              <TableCell><strong>Class</strong></TableCell>
+                              <TableCell align="right"><strong>Total Due (₹)</strong></TableCell>
+                              <TableCell align="right"><strong>Paid (₹)</strong></TableCell>
+                              <TableCell align="right"><strong>Remaining (₹)</strong></TableCell>
+                              <TableCell align="right"><strong>Collection Rate</strong></TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {feeAnalytics.classWiseFees.map((cls, idx) => {
+                              const totalDue = Number(cls.due || 0);
+                              const totalPaid = Number(cls.paid || 0);
+                              const remaining = Number(cls.remaining || 0);
+                              const rate = totalDue > 0 ? ((totalPaid / totalDue) * 100).toFixed(1) : 0;
+                              
+                              return (
+                                <TableRow key={idx} hover>
+                                  <TableCell><strong>{cls.name}</strong></TableCell>
+                                  <TableCell align="right">₹{totalDue.toLocaleString('en-IN')}</TableCell>
+                                  <TableCell align="right" sx={{ color: 'success.main' }}>
+                                    ₹{totalPaid.toLocaleString('en-IN')}
+                                  </TableCell>
+                                  <TableCell align="right" sx={{ color: 'warning.main' }}>
+                                    ₹{remaining.toLocaleString('en-IN')}
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Chip 
+                                      label={`${rate}%`} 
+                                      color={rate >= 80 ? 'success' : rate >= 50 ? 'warning' : 'error'}
+                                      size="small"
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                            <TableRow sx={{ bgcolor: 'action.hover' }}>
+                              <TableCell><strong>Total</strong></TableCell>
+                              <TableCell align="right">
+                                <strong>₹{Number(feeAnalytics.totalDue).toLocaleString('en-IN')}</strong>
+                              </TableCell>
+                              <TableCell align="right" sx={{ color: 'success.main' }}>
+                                <strong>₹{Number(feeAnalytics.totalPaid).toLocaleString('en-IN')}</strong>
+                              </TableCell>
+                              <TableCell align="right" sx={{ color: 'warning.main' }}>
+                                <strong>₹{Number(feeAnalytics.totalRemaining).toLocaleString('en-IN')}</strong>
+                              </TableCell>
+                              <TableCell align="right">
+                                <Chip 
+                                  label={`${feeAnalytics.collectionRate}%`} 
+                                  color={Number(feeAnalytics.collectionRate) >= 80 ? 'success' : Number(feeAnalytics.collectionRate) >= 50 ? 'warning' : 'error'}
+                                  size="small"
+                                />
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+                        No fee data available
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+          ) : (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              Loading fee analytics...
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions & Alerts Section */}
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AssessmentIcon sx={{ color: 'primary.main' }} />
+            ⚡ Quick Actions & Alerts
+          </Typography>
+          
+          <Grid container spacing={3} sx={{ mt: 1 }}>
+            {/* Quick Actions */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Quick Actions
+                  </Typography>
+                  <Box display="flex" flexDirection="column" gap={1.5}>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<MoneyIcon />}
+                      onClick={() => window.location.href = '/education?tab=2'}
+                      sx={{ justifyContent: 'flex-start' }}
+                    >
+                      Manage Fee Payments
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<HistoryIcon />}
+                      onClick={() => window.location.href = '/education?tab=2&subtab=old-balances'}
+                      sx={{ justifyContent: 'flex-start' }}
+                    >
+                      View Old Balances
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<PeopleIcon />}
+                      onClick={() => window.location.href = '/education?tab=0'}
+                      sx={{ justifyContent: 'flex-start' }}
+                    >
+                      Manage Students
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<AddIcon />}
+                      onClick={() => setAddUserDialogOpen(true)}
+                      sx={{ justifyContent: 'flex-start' }}
+                    >
+                      Add New User
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<DownloadIcon />}
+                      onClick={() => window.location.href = '/education?tab=analytics'}
+                      sx={{ justifyContent: 'flex-start' }}
+                    >
+                      Generate Reports
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Upcoming Dues & Alerts */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <EventIcon sx={{ color: 'warning.main' }} />
+                    Upcoming Fee Dues (Next 14 Days)
+                  </Typography>
+                  {upcomingDues.length > 0 ? (
+                    <Box sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}>
+                      {upcomingDues.map((due, idx) => (
+                        <Box
+                          key={idx}
+                          sx={{
+                            p: 1.5,
+                            mb: 1,
+                            borderRadius: 1,
+                            bgcolor: 'action.hover',
+                            borderLeft: '3px solid',
+                            borderColor: 'warning.main'
+                          }}
+                        >
+                          <Box display="flex" justifyContent="space-between" alignItems="center">
+                            <Box>
+                              <Typography variant="body2" fontWeight="bold">
+                                {due.student?.name || 'Unknown Student'}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {due.fee_structure?.fee_type || 'Fee'} - Installment {due.installment_number}
+                              </Typography>
+                            </Box>
+                            <Box textAlign="right">
+                              <Typography variant="body2" fontWeight="bold" color="warning.main">
+                                ₹{Number(due.remaining_amount || due.due_amount).toLocaleString('en-IN')}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {new Date(due.due_date).toLocaleDateString()}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
+                      ))}
+                      <Button
+                        size="small"
+                        fullWidth
+                        variant="text"
+                        endIcon={<ArrowForwardIcon />}
+                        onClick={() => window.location.href = '/education?tab=2'}
+                        sx={{ mt: 1 }}
+                      >
+                        View All Dues
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box sx={{ textAlign: 'center', py: 3 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        No upcoming dues in the next 14 days
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Old Balance Alert */}
+            {oldBalanceSummary && oldBalanceSummary.total_outstanding > 0 && (
+              <Grid size={{ xs: 12 }}>
+                <Alert 
+                  severity="warning" 
+                  icon={<HistoryIcon />}
+                  sx={{ mb: 2 }}
+                  action={
+                    <Button
+                      color="inherit"
+                      size="small"
+                      onClick={() => window.location.href = '/education?tab=2&subtab=old-balances'}
+                    >
+                      View Details
+                    </Button>
+                  }
+                >
+                  <Typography variant="subtitle2">
+                    Outstanding Old Balances: ₹{Number(oldBalanceSummary.total_outstanding).toLocaleString('en-IN')}
+                  </Typography>
+                  <Typography variant="caption">
+                    {oldBalanceSummary.total_students_with_balance} students have outstanding balances from previous academic years
+                  </Typography>
+                </Alert>
+              </Grid>
+            )}
+
+            {/* Overdue Alerts */}
+            {feeAnalytics && feeAnalytics.paymentStatus && feeAnalytics.paymentStatus.overdue > 0 && (
+              <Grid size={{ xs: 12 }}>
+                <Alert 
+                  severity="error" 
+                  icon={<WarningIcon />}
+                  action={
+                    <Button
+                      color="inherit"
+                      size="small"
+                      onClick={() => window.location.href = '/education?tab=2'}
+                    >
+                      Take Action
+                    </Button>
+                  }
+                >
+                  <Typography variant="subtitle2">
+                    {feeAnalytics.paymentStatus.overdue} Overdue Installments
+                  </Typography>
+                  <Typography variant="caption">
+                    Immediate attention required for overdue fee payments
+                  </Typography>
+                </Alert>
+              </Grid>
+            )}
+          </Grid>
+        </CardContent>
+      </Card>
+
       {/* Plan Upgrade Section */}
       <Card sx={{ mt: 4 }}>
         <CardContent>
@@ -953,10 +2511,10 @@ const AdminEnhanced = () => {
                     Starter
                   </Typography>
                   <Typography variant="h4" color="primary" gutterBottom>
-                    ₹999/year
+                    ₹4,500/year
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    20 users • 2.0 GB storage
+                    25 users • 5.0 GB storage
                   </Typography>
                   <ul style={{ paddingLeft: '20px', margin: '16px 0' }}>
                     <li>Advanced Analytics</li>
@@ -988,10 +2546,10 @@ const AdminEnhanced = () => {
                     Pro
                           </Typography>
                   <Typography variant="h4" color="primary" gutterBottom>
-                    ₹2,499/year
+                    ₹8,999/year
                           </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    50 users • 10.0 GB storage
+                    100 users • 20.0 GB storage
                           </Typography>
                   <ul style={{ paddingLeft: '20px', margin: '16px 0' }}>
                     <li>Everything in Starter</li>
@@ -1019,10 +2577,10 @@ const AdminEnhanced = () => {
                     Business
                         </Typography>
                   <Typography variant="h4" color="primary" gutterBottom>
-                    ₹4,999/year
+                    ₹19,999/year
                         </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    150 users • 20.0 GB storage
+                    Unlimited users • 50.0 GB storage
                       </Typography>
                   <Chip 
                     label="Save ₹2,989 annually" 
@@ -1160,8 +2718,8 @@ const AdminEnhanced = () => {
               </FormControl>
               </Grid>
             
-            {/* Assigned Classes Section */}
-            {(addUserForm.role === 'teacher' || addUserForm.role === 'student') && (
+            {/* Assigned Classes Section - Show for teacher, student, and staff roles */}
+            {(addUserForm.role === 'teacher' || addUserForm.role === 'student' || addUserForm.role === 'staff') && (
               <Grid size={{ xs: 12 }}>
                 <Box sx={{ 
                   p: 2, 
@@ -1175,38 +2733,194 @@ const AdminEnhanced = () => {
                     🎓 Assign Classes
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'primary.contrastText', mb: 2 }}>
-                    Select the classes for this {addUserForm.role}.
+                    Select the classes for this {addUserForm.role}. Hold down Ctrl (or Cmd on Mac) to select multiple classes.
                   </Typography>
                   <FormControl fullWidth>
-                    <InputLabel>Assigned Classes</InputLabel>
+                    <InputLabel id="assigned-classes-label-add">Assigned Classes</InputLabel>
                     <Select
+                      labelId="assigned-classes-label-add"
                       multiple
-                      value={addUserForm.assigned_classes}
+                      value={addUserForm.assigned_classes || []}
                       onChange={(e) => setAddUserForm(prev => ({...prev, assigned_classes: e.target.value}))}
                       label="Assigned Classes"
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((value) => {
-                            const classObj = classes.find(c => c.id === value);
-                            return (
-                              <Chip key={value} label={classObj?.name || value} size="small" />
-                            );
-                          })}
-                        </Box>
-                      )}
+                      MenuProps={{ 
+                        disablePortal: true, 
+                        PaperProps: { sx: { maxHeight: 300, zIndex: 2200 } },
+                        anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
+                        transformOrigin: { vertical: 'top', horizontal: 'left' }
+                      }}
+                      renderValue={(selected) => {
+                        if (!selected || selected.length === 0) {
+                          return <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>Select classes...</Typography>;
+                        }
+                        return (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value) => {
+                              const classObj = classes.find(c => c.id === value || String(c.id) === String(value));
+                              return (
+                                <Chip key={value} label={classObj?.name || `Class ${value}`} size="small" />
+                              );
+                            })}
+                          </Box>
+                        );
+                      }}
                     >
-                      {classes.map((classObj) => (
-                        <MenuItem key={classObj.id} value={classObj.id}>
-                          <Checkbox checked={addUserForm.assigned_classes.indexOf(classObj.id) > -1} />
-                          <ListItemText primary={classObj.name} />
+                      {classes && classes.length > 0 ? (
+                        classes.map((classObj) => (
+                          <MenuItem key={classObj.id} value={classObj.id}>
+                            <Checkbox checked={(addUserForm.assigned_classes || []).some(id => String(id) === String(classObj.id))} />
+                            <ListItemText primary={classObj.name || `Class ${classObj.id}`} />
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem disabled>
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', p: 1 }}>
+                            {classes.length === 0 ? 'No classes available. Please create classes in the Education module first.' : 'Loading classes...'}
+                          </Typography>
                         </MenuItem>
-                      ))}
+                      )}
                     </Select>
+                    {classes.length === 0 && (
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+        💡 Tip: Create classes in the Education Module → Classes tab before assigning them here.
+                      </Typography>
+                    )}
                   </FormControl>
                 </Box>
               </Grid>
             )}
+
+            {/* Personal Info Section */}
+            <Grid size={{ xs: 12 }}>
+              <Box sx={{ 
+                p: 2, 
+                bgcolor: 'grey.50', 
+                borderRadius: 2, 
+                border: '1px solid', 
+                borderColor: 'grey.300',
+                mt: 2
+              }}>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
+                  Personal Information
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Phone"
+                      value={addUserForm.phone}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, phone: e.target.value}))}
+                      margin="normal"
+                      placeholder="Enter phone number"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Date of Birth"
+                      type="date"
+                      value={addUserForm.date_of_birth}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, date_of_birth: e.target.value}))}
+                      margin="normal"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel>Gender</InputLabel>
+                      <Select
+                        value={addUserForm.gender}
+                        onChange={(e) => setAddUserForm(prev => ({...prev, gender: e.target.value}))}
+                        label="Gender"
+                        MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
+                      >
+                        <MenuItem value="">Select Gender</MenuItem>
+                        <MenuItem value="Male">Male</MenuItem>
+                        <MenuItem value="Female">Female</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Job Title"
+                      value={addUserForm.job_title}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, job_title: e.target.value}))}
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Joining Date"
+                      type="date"
+                      value={addUserForm.joining_date}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, joining_date: e.target.value}))}
+                      margin="normal"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Emergency Contact"
+                      value={addUserForm.emergency_contact}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, emergency_contact: e.target.value}))}
+                      margin="normal"
+                      placeholder="Name and phone number"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Address"
+                      value={addUserForm.address}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, address: e.target.value}))}
+                      margin="normal"
+                      multiline
+                      rows={2}
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Qualifications"
+                      value={addUserForm.qualifications}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, qualifications: e.target.value}))}
+                      margin="normal"
+                      multiline
+                      rows={2}
+                      placeholder="Enter educational qualifications, certifications, etc."
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="Bio"
+                      value={addUserForm.bio}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, bio: e.target.value}))}
+                      margin="normal"
+                      multiline
+                      rows={3}
+                      placeholder="Brief biography or description"
+                    />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <TextField
+                      fullWidth
+                      label="LinkedIn Profile URL"
+                      value={addUserForm.linkedin}
+                      onChange={(e) => setAddUserForm(prev => ({...prev, linkedin: e.target.value}))}
+                      margin="normal"
+                      placeholder="https://linkedin.com/in/username"
+                      helperText="Enter the full LinkedIn profile URL"
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
             </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button 

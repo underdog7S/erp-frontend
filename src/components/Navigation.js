@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../services/api";
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -24,6 +24,16 @@ import { hasPermission, PERMISSIONS } from '../permissions';
 import HotelIcon from '@mui/icons-material/Hotel';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import { useTheme, useMediaQuery } from '@mui/material';
 
 const navLinks = [
   { to: "/dashboard", label: "Dashboard", icon: <DashboardIcon fontSize="small" /> },
@@ -36,12 +46,16 @@ const navLinks = [
 
 const Navigation = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [industry, setIndustry] = useState(null);
   const [role, setRole] = useState(null);
   const [user, setUser] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [todayAttendance, setTodayAttendance] = useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   // Fetch today's attendance function
   const fetchTodayAttendance = async () => {
@@ -235,7 +249,18 @@ const Navigation = () => {
   const handleLogout = () => {
     logout();
     localStorage.removeItem('user');
+    setMobileOpen(false);
     navigate("/login");
+  };
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleNavClick = () => {
+    if (isMobile) {
+      setMobileOpen(false);
+    }
   };
 
   // Only show Dashboard, the user's industry module, and Admin if allowed
@@ -260,84 +285,415 @@ const Navigation = () => {
     // Don't add Pricing to navigation; upgrades handled inside Dashboard
   }
 
-  return (
-    <AppBar position="static" color="primary" elevation={2}>
-      <Toolbar>
-        <IconButton edge="start" color="inherit" sx={{ mr: 2, display: { xs: 'block', md: 'none' } }}>
-          <MenuIcon />
-        </IconButton>
-        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-          <a href="/">
-            <img src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.jpeg'} alt="Zenith ERP Logo" style={{ height: 40, borderRadius: 8 }} />
-          </a>
-        </Box>
-        <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
-          {filteredLinks.map((link) => (
-            <Button
-              key={link.to}
-              component={NavLink}
-              to={link.to}
-              startIcon={link.icon}
-              sx={{ color: 'white', textTransform: 'none', fontWeight: 500 }}
-              style={({ isActive }) => ({ background: isActive ? '#3949ab' : 'transparent' })}
-            >
-              {link.label}
-            </Button>
-          ))}
-          {/* Pricing is intentionally not shown in navigation */}
-        </Box>
-        <Box sx={{ flexGrow: 1 }} />
-        {user && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 2 }}>
-            <Typography variant="subtitle1" color="inherit">
-              {(user && (user.name || user.username || user.email)) || ''}
-            </Typography>
-            {/* Show only the relevant button based on today's attendance */}
-            {(!todayAttendance || !todayAttendance.check_in_time) && (
-              <Button color="inherit" variant="outlined" size="small" onClick={handleCheckIn} sx={{ ml: 1 }} disabled={attendanceLoading}>
-                {attendanceLoading ? 'Loading...' : 'Check In'}
-              </Button>
-            )}
-            {todayAttendance && todayAttendance.check_in_time && !todayAttendance.check_out_time && (
-              <Button color="inherit" variant="outlined" size="small" onClick={handleCheckOut} sx={{ ml: 1 }} disabled={attendanceLoading}>
-                {attendanceLoading ? 'Loading...' : 'Check Out'}
-              </Button>
-            )}
+  // Mobile drawer content
+  const drawer = (
+    <Box sx={{ width: 280, height: '100%', bgcolor: 'background.paper' }}>
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+        <img 
+          src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.jpeg'} 
+          alt="Zenith ERP Logo" 
+          style={{ height: 40, borderRadius: 8 }} 
+        />
+        <Typography variant="h6" fontWeight={700} color="primary">
+          Zenith ERP
+        </Typography>
+      </Box>
+      
+      {user && (
+        <Box sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar sx={{ bgcolor: 'secondary.main', width: 40, height: 40 }}>
+              {(user.name || user.username || user.email || 'U').charAt(0).toUpperCase()}
+            </Avatar>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="subtitle1" noWrap fontWeight={600}>
+                {user.name || user.username || user.email || 'User'}
+              </Typography>
+              {user.role && (
+                <Chip 
+                  label={user.role} 
+                  size="small" 
+                  sx={{ 
+                    mt: 0.5, 
+                    bgcolor: 'rgba(255,255,255,0.2)', 
+                    color: 'white',
+                    height: 20,
+                    fontSize: '0.7rem'
+                  }} 
+                />
+              )}
+            </Box>
           </Box>
-        )}
-        {industry ? (
+          {(!todayAttendance || !todayAttendance.check_in_time) && (
+            <Button 
+              fullWidth 
+              variant="contained" 
+              color="secondary" 
+              size="small" 
+              onClick={() => { handleCheckIn(); handleNavClick(); }} 
+              disabled={attendanceLoading}
+              sx={{ mb: 1, textTransform: 'none' }}
+            >
+              {attendanceLoading ? 'Loading...' : 'Check In'}
+            </Button>
+          )}
+          {todayAttendance && todayAttendance.check_in_time && !todayAttendance.check_out_time && (
+            <Button 
+              fullWidth 
+              variant="contained" 
+              color="secondary" 
+              size="small" 
+              onClick={() => { handleCheckOut(); handleNavClick(); }} 
+              disabled={attendanceLoading}
+              sx={{ mb: 1, textTransform: 'none' }}
+            >
+              {attendanceLoading ? 'Loading...' : 'Check Out'}
+            </Button>
+          )}
+        </Box>
+      )}
+      
+      <List sx={{ pt: user ? 1 : 2 }}>
+        {filteredLinks.map((link) => {
+          const isActive = location.pathname === link.to;
+          return (
+            <ListItem key={link.to} disablePadding>
+              <ListItemButton
+                component={NavLink}
+                to={link.to}
+                onClick={handleNavClick}
+                selected={isActive}
+                sx={{
+                  mx: 1,
+                  mb: 0.5,
+                  borderRadius: 1,
+                  bgcolor: isActive ? 'primary.light' : 'transparent',
+                  color: isActive ? 'primary.contrastText' : 'text.primary',
+                  '&:hover': {
+                    bgcolor: isActive ? 'primary.main' : 'action.hover',
+                  },
+                  '&.Mui-selected': {
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+                  {link.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={link.label} 
+                  primaryTypographyProps={{ 
+                    fontWeight: isActive ? 600 : 400,
+                    fontSize: '0.95rem'
+                  }} 
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
+      </List>
+      
+      <Divider sx={{ my: 2 }} />
+      
+      {industry ? (
+        <Box sx={{ p: 2 }}>
           <Button
-            color="secondary"
+            fullWidth
             variant="contained"
+            color="error"
             startIcon={<LogoutIcon />}
             onClick={handleLogout}
-            sx={{ ml: 2, textTransform: 'none', fontWeight: 500 }}
+            sx={{ textTransform: 'none', fontWeight: 500 }}
           >
             Logout
           </Button>
-        ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              color="inherit"
-              variant="outlined"
-              component={NavLink}
-              to="/login"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
+        </Box>
+      ) : (
+        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            component={NavLink}
+            to="/login"
+            onClick={handleNavClick}
+            sx={{ textTransform: 'none', fontWeight: 500 }}
+          >
+            Login
+          </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            component={NavLink}
+            to="/register"
+            onClick={handleNavClick}
+            sx={{ textTransform: 'none', fontWeight: 500 }}
+          >
+            Get Started
+          </Button>
+        </Box>
+      )}
+    </Box>
+  );
+
+  return (
+    <AppBar 
+      position="sticky" 
+      color="primary" 
+      elevation={3}
+      sx={{ 
+        bgcolor: 'primary.main',
+        zIndex: theme.zIndex.drawer + 1
+      }}
+    >
+      <Toolbar sx={{ px: { xs: 1, sm: 2, md: 3 } }}>
+        {/* Mobile Menu Button */}
+        {isMobile && (
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+
+        {/* Logo */}
+        <Box 
+          component={NavLink}
+          to="/"
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            mr: { xs: 1, md: 3 },
+            textDecoration: 'none',
+            '&:hover': { opacity: 0.8 }
+          }}
+        >
+          <img 
+            src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.jpeg'} 
+            alt="Zenith ERP Logo" 
+            style={{ 
+              height: isMobile ? 35 : 42, 
+              borderRadius: 8,
+              marginRight: 8
+            }} 
+          />
+          {!isMobile && (
+            <Typography 
+              variant="h6" 
+              component="div" 
+              sx={{ 
+                fontWeight: 700,
+                color: 'white',
+                display: { xs: 'none', sm: 'block' }
+              }}
             >
-              Login
-            </Button>
-            <Button
-              color="secondary"
-              variant="contained"
-              component={NavLink}
-              to="/register"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
-            >
-              Get Started
-            </Button>
+              Zenith ERP
+            </Typography>
+          )}
+        </Box>
+
+        {/* Desktop Navigation Links */}
+        {!isMobile && (
+          <Box sx={{ flexGrow: 1, display: 'flex', gap: 1, ml: 2 }}>
+            {filteredLinks.map((link) => {
+              const isActive = location.pathname === link.to;
+              return (
+                <Button
+                  key={link.to}
+                  component={NavLink}
+                  to={link.to}
+                  startIcon={link.icon}
+                  sx={{
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: isActive ? 600 : 500,
+                    bgcolor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.15)',
+                    },
+                    '&.active': {
+                      bgcolor: 'rgba(255, 255, 255, 0.25)',
+                    },
+                  }}
+                >
+                  {link.label}
+                </Button>
+              );
+            })}
           </Box>
         )}
+
+        {/* Spacer */}
+        <Box sx={{ flexGrow: { xs: 1, md: isMobile ? 1 : 0 } }} />
+
+        {/* User Info & Actions - Desktop */}
+        {!isMobile && (
+          <>
+            {user && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 2 }}>
+                <Avatar 
+                  sx={{ 
+                    bgcolor: 'secondary.main', 
+                    width: 36, 
+                    height: 36,
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {(user.name || user.username || user.email || 'U').charAt(0).toUpperCase()}
+                </Avatar>
+                <Box sx={{ display: { xs: 'none', lg: 'flex' }, flexDirection: 'column' }}>
+                  <Typography variant="body2" color="inherit" fontWeight={500} noWrap>
+                    {user.name || user.username || user.email || 'User'}
+                  </Typography>
+                  {user.role && (
+                    <Typography variant="caption" color="inherit" sx={{ opacity: 0.8 }}>
+                      {user.role}
+                    </Typography>
+                  )}
+                </Box>
+                {/* Check In/Out Buttons */}
+                {(!todayAttendance || !todayAttendance.check_in_time) && (
+                  <Button 
+                    color="inherit" 
+                    variant="outlined" 
+                    size="small" 
+                    onClick={handleCheckIn} 
+                    disabled={attendanceLoading}
+                    sx={{ 
+                      textTransform: 'none',
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)'
+                      }
+                    }}
+                  >
+                    {attendanceLoading ? 'Loading...' : 'Check In'}
+                  </Button>
+                )}
+                {todayAttendance && todayAttendance.check_in_time && !todayAttendance.check_out_time && (
+                  <Button 
+                    color="inherit" 
+                    variant="outlined" 
+                    size="small" 
+                    onClick={handleCheckOut} 
+                    disabled={attendanceLoading}
+                    sx={{ 
+                      textTransform: 'none',
+                      borderColor: 'rgba(255,255,255,0.5)',
+                      '&:hover': {
+                        borderColor: 'white',
+                        bgcolor: 'rgba(255,255,255,0.1)'
+                      }
+                    }}
+                  >
+                    {attendanceLoading ? 'Loading...' : 'Check Out'}
+                  </Button>
+                )}
+              </Box>
+            )}
+            {industry ? (
+              <Button
+                color="secondary"
+                variant="contained"
+                startIcon={<LogoutIcon />}
+                onClick={handleLogout}
+                sx={{ 
+                  textTransform: 'none', 
+                  fontWeight: 600,
+                  boxShadow: 2,
+                  '&:hover': {
+                    boxShadow: 4,
+                  }
+                }}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  color="inherit"
+                  variant="outlined"
+                  component={NavLink}
+                  to="/login"
+                  sx={{ 
+                    textTransform: 'none', 
+                    fontWeight: 500,
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    '&:hover': {
+                      borderColor: 'white',
+                      bgcolor: 'rgba(255,255,255,0.1)'
+                    }
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  component={NavLink}
+                  to="/register"
+                  sx={{ 
+                    textTransform: 'none', 
+                    fontWeight: 600,
+                    boxShadow: 2,
+                    '&:hover': {
+                      boxShadow: 4,
+                    }
+                  }}
+                >
+                  Get Started
+                </Button>
+              </Box>
+            )}
+          </>
+        )}
+
+        {/* Mobile User Info - Simple */}
+        {isMobile && user && (
+          <Avatar 
+            sx={{ 
+              bgcolor: 'secondary.main', 
+              width: 32, 
+              height: 32,
+              fontSize: '0.85rem',
+              mr: 1
+            }}
+          >
+            {(user.name || user.username || user.email || 'U').charAt(0).toUpperCase()}
+          </Avatar>
+        )}
       </Toolbar>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile.
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: 280,
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
