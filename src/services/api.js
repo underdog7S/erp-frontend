@@ -20,11 +20,11 @@ const getApiUrl = () => {
   
   // Production - ALWAYS use HTTPS (match frontend protocol)
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return "https://api.zenitherp.online/api";
+    return "https://erp-backend-av9v.onrender.com/api";
   }
   
   // Fallback to HTTPS for production
-  return "https://api.zenitherp.online/api";
+  return "https://erp-backend-av9v.onrender.com/api";
 };
 
 const api = axios.create({
