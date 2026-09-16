@@ -7,7 +7,7 @@ import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Navigation from "./components/Navigation";
-import HomePage from './pages/HomePage';
+// HomePage is lazy loaded below
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -35,6 +35,7 @@ import ErrorBoundary from './ErrorBoundary';
 import PublicFeePayment from './pages/PublicFeePayment';
 
 // Lazy load authenticated modules
+const HomePage = lazy(() => import("./pages/HomePage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const AdminEnhanced = lazy(() => import("./pages/AdminEnhanced"));
 const AdminPublicSettings = lazy(() => import("./pages/AdminPublicSettings"));

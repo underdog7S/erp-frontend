@@ -14,8 +14,8 @@ import EnterpriseModules from '../components/landing/EnterpriseModules';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import IntegrationsDemo from '../components/landing/IntegrationsDemo';
 
-// Import 3D Background
-import Hero3DScene from '../components/landing/Hero3DScene';
+// Import 3D Background lazily to avoid blocking initial render
+const Hero3DScene = React.lazy(() => import('../components/landing/Hero3DScene'));
 
 // Framer Motion Variants
 const fadeInUp = {
@@ -142,7 +142,9 @@ const HomePage = () => {
         }}>
           
           {/* Render 3D Scene */}
-          <Hero3DScene />
+          <React.Suspense fallback={<Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, bgcolor: '#000000' }} />}>
+            <Hero3DScene />
+          </React.Suspense>
 
           <Container 
             maxWidth="lg" 
