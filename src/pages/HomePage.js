@@ -12,6 +12,7 @@ import TechStackMarquee from '../components/landing/TechStackMarquee';
 import AgencyProcess from '../components/landing/AgencyProcess';
 import EnterpriseModules from '../components/landing/EnterpriseModules';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
+import IntegrationsDemo from '../components/landing/IntegrationsDemo';
 
 // Import 3D Background
 import Hero3DScene from '../components/landing/Hero3DScene';
@@ -36,6 +37,17 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [auditDialogOpen, setAuditDialogOpen] = useState(false);
 
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
       <SEO
@@ -47,7 +59,7 @@ const HomePage = () => {
       />
       <Box sx={{ bgcolor: '#000000', minHeight: '100vh', color: 'white', overflowX: 'hidden' }}>
         
-        {/* Navigation Bar - Simple & Clean */}
+        {/* Navigation Bar - Clean & Scrolling */}
         <Box sx={{ 
           position: 'fixed', 
           top: 0, 
@@ -60,7 +72,7 @@ const HomePage = () => {
           p: 2
         }}>
           <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => navigate('/')}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => scrollToTop()}>
               <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: -1 }}>
                 Zenith
               </Typography>
@@ -68,6 +80,15 @@ const HomePage = () => {
                 Solutions
               </Typography>
             </Box>
+            
+            {/* Smooth Scroll Links */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>Solutions</Typography>
+              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>ERP Modules</Typography>
+              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('integrations')}>Integrations</Typography>
+              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('process')}>Process</Typography>
+            </Box>
+
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <Button color="inherit" onClick={() => navigate('/login')} sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 600 }}>
                 Client Portal
@@ -92,7 +113,7 @@ const HomePage = () => {
         </Box>
 
         {/* Hero Section with 3D Background */}
-        <Box sx={{ 
+        <Box id="top" sx={{ 
           pt: { xs: 20, md: 25 }, 
           pb: { xs: 10, md: 15 }, 
           position: 'relative',
@@ -214,13 +235,18 @@ const HomePage = () => {
         </Box>
 
         {/* Agency Solutions */}
-        <Box component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+        <Box id="solutions" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
           <AgencySolutions />
         </Box>
 
         {/* Enterprise SaaS Modules (Zenith ERP) */}
-        <Box component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+        <Box id="modules" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
           <EnterpriseModules />
+        </Box>
+
+        {/* Integrations and Demo */}
+        <Box id="integrations" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+          <IntegrationsDemo />
         </Box>
 
         {/* Target Audience / Who we work with */}
@@ -234,7 +260,7 @@ const HomePage = () => {
         </Box>
 
         {/* Agency Process */}
-        <Box component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+        <Box id="process" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
           <AgencyProcess />
         </Box>
 
