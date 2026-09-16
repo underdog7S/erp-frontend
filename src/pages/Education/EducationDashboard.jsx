@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -35,7 +35,12 @@ import {
   AccordionSummary,
   AccordionDetails,
   LinearProgress,
-  Divider
+  Divider,
+  Stack,
+  Alert,
+  List,
+  ListItem,
+  ListItemText
 } from '@mui/material';
 import {
   People as PeopleIcon,
@@ -49,12 +54,47 @@ import {
   ExpandMore as ExpandMoreIcon,
   Person as PersonIcon,
   Class as ClassIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
+  Payment as PaymentIcon,
+  QrCode2 as QrCodeIcon
 } from '@mui/icons-material';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  Legend
+} from 'recharts';
 import axios from 'axios';
+import RazorpayPaymentButton from '../../components/RazorpayPaymentButton';
+import RazorpaySetupWizard from '../../components/RazorpaySetupWizard';
+import FeePaymentQRCode from '../../components/FeePaymentQRCode';
+import { getRazorpaySetupStatus, getStoredUser } from '../../services/api';
 
 // Configure axios base URL using environment variable (same as api.js)
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+// Auto-detect local development vs production
+const getApiBaseUrl = () => {
+  let url;
+  if (process.env.REACT_APP_API_URL) {
+    url = process.env.REACT_APP_API_URL;
+  } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    url = 'http://localhost:8000/api';  // Local development - use HTTP
+  } else {
+    url = 'https://api.zenitherp.online/api';  // Production - use HTTPS
+  }
+  // Force HTTPS if frontend is HTTPS
+  if (window.location.protocol === 'https:' && url.startsWith('http://')) {
+    url = url.replace('http://', 'https://');
+  }
+  return url;
+};
+
+const API_BASE_URL = getApiBaseUrl();
 // Remove /api suffix for axios since we'll add it in each call, or keep it if API_BASE_URL already ends with /api
 const baseURL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.replace('/api', '') : API_BASE_URL;
 axios.defaults.baseURL = baseURL;
@@ -132,6 +172,14 @@ const EducationDashboard = () => {
     due_date: ''
   });
   const [editingFeeStructure, setEditingFeeStructure] = useState(null);
+  // Razorpay states
+  const [razorpaySetupStatus, setRazorpaySetupStatus] = useState(null);
+  const [showRazorpaySetup, setShowRazorpaySetup] = useState(false);
+  const [createdFeePaymentId, setCreatedFeePaymentId] = useState(null);
+  // QR Code states
+  const [showQRCodeDialog, setShowQRCodeDialog] = useState(false);
+  const [selectedStudentForQR, setSelectedStudentForQR] = useState(null);
+  const [tenantId, setTenantId] = useState(null);
 
   useEffect(() => {
     fetchDashboardData();
@@ -142,7 +190,75 @@ const EducationDashboard = () => {
     fetchOverduePayments();
     fetchSchoolName();
     fetchTeachers();
+    checkRazorpaySetup();
+    fetchTenantId();
   }, []);
+
+  const fetchTenantId = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.get('/api/users/me/', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.data && response.data.userprofile && response.data.userprofile.tenant) {
+        setTenantId(response.data.userprofile.tenant.id);
+      }
+    } catch (error) {
+      console.error('Error fetching tenant ID:', error);
+    }
+  };
+
+  const checkRazorpaySetup = async () => {
+    try {
+      console.log('🔍 Education Dashboard: Checking Razorpay setup status...');
+      const status = await getRazorpaySetupStatus();
+      console.log('🔍 Education Dashboard: Razorpay setup status received:', status);
+      setRazorpaySetupStatus(status);
+    } catch (error) {
+      // Razorpay setup check failed, set default status to show setup card for admin users
+      console.error('❌ Education Dashboard: Razorpay setup check failed:', error);
+      console.log('🔍 Education Dashboard: Setting default status to show setup card for admin users');
+      // Always set a default status so card can show for admin users
+      setRazorpaySetupStatus({
+        is_configured: false,
+        has_key_id: false,
+        has_key_secret: false,
+        has_webhook_secret: false,
+        is_enabled: false,
+        setup_completed: false,
+        setup_steps: []
+      });
+    }
+  };
+  
+  // Check if user is admin - more comprehensive check including localStorage
+  const userProfile = getStoredUser();
+  const userRole = typeof userProfile.role === 'string' 
+    ? userProfile.role 
+    : (userProfile.role?.name || userProfile.role || '');
+  const isAdmin = useMemo(() => {
+    const roleStr = typeof userRole === 'string' ? userRole.toLowerCase() : '';
+    const roleName = userProfile?.role?.name?.toLowerCase() || '';
+    const roleObj = typeof userProfile?.role === 'object' ? userProfile?.role?.name?.toLowerCase() : '';
+    const currentUserRole = currentUser?.role?.name?.toLowerCase() || (typeof currentUser?.role === 'string' ? currentUser?.role.toLowerCase() : '');
+    return roleStr === 'admin' || roleName === 'admin' || roleObj === 'admin' || 
+           currentUserRole === 'admin' || userProfile?.role === 'admin' || 
+           String(userProfile?.role).toLowerCase() === 'admin' ||
+           (currentUser?.role === 'admin');
+  }, [userRole, userProfile, currentUser]);
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔍 Education Dashboard Razorpay Debug:', {
+      userRole,
+      userProfileRole: userProfile?.role,
+      currentUserRole: currentUser?.role,
+      isAdmin,
+      razorpaySetupStatus,
+      shouldShowSetupCard: isAdmin && (razorpaySetupStatus === null || (razorpaySetupStatus && !razorpaySetupStatus.is_configured)),
+      shouldShowActiveCard: isAdmin && razorpaySetupStatus && razorpaySetupStatus.is_configured
+    });
+  }, [userRole, userProfile, currentUser, isAdmin, razorpaySetupStatus]);
 
   const fetchSchoolName = async () => {
     try {
@@ -183,6 +299,118 @@ const EducationDashboard = () => {
     // For other roles, show all students (or implement specific logic)
     return allStudents;
   };
+
+  const filteredStudentsForCurrentUser = useMemo(
+    () => getFilteredStudents(students),
+    [students, currentUser]
+  );
+
+  const totalStudentCount = useMemo(() => {
+    if (currentUser?.role === 'teacher') {
+      return filteredStudentsForCurrentUser.length;
+    }
+    return analytics?.overview?.total_students || students.length || 0;
+  }, [currentUser, filteredStudentsForCurrentUser.length, analytics, students.length]);
+
+  const totalStaffCount = useMemo(() => (
+    analytics?.overview?.total_staff || teachers.length || 0
+  ), [analytics, teachers.length]);
+
+  const feesCollected = useMemo(() => (
+    analytics?.overview?.fees_collected ||
+    analytics?.overview?.total_fees_collected ||
+    analytics?.total_fees_collected || 0
+  ), [analytics]);
+
+  const feesUnpaid = useMemo(() => (
+    analytics?.overview?.fees_unpaid || analytics?.overview?.pending_fees || 0
+  ), [analytics]);
+
+  const attendanceRate = useMemo(() => (
+    analytics?.overview?.attendance_rate ||
+    analytics?.overview?.attendance_percentage || 0
+  ), [analytics]);
+
+  const summaryMetrics = useMemo(() => ([
+    {
+      label: 'Total Students',
+      value: totalStudentCount,
+      helper: 'Active students',
+      color: 'primary'
+    },
+    {
+      label: 'Total Staff',
+      value: totalStaffCount,
+      helper: 'Teaching & admin',
+      color: 'secondary'
+    },
+    {
+      label: 'Fees Collected',
+      value: `₹${Number(feesCollected || 0).toLocaleString('en-IN')}`,
+      helper: 'Payments received',
+      color: 'success'
+    },
+    {
+      label: 'Attendance Rate',
+      value: `${Number(attendanceRate || 0).toFixed(1)}%`,
+      helper: 'Today’s average',
+      color: 'info'
+    }
+  ]), [totalStudentCount, totalStaffCount, feesCollected, attendanceRate]);
+
+  const feeTarget = useMemo(() => (
+    analytics?.overview?.fee_target ||
+    analytics?.overview?.annual_fee_target ||
+    analytics?.overview?.fee_quota ||
+    feesCollected || 0
+  ), [analytics, feesCollected]);
+  const feeProgress = useMemo(() => {
+    if (!feeTarget) return 0;
+    return Math.min(100, (Number(feesCollected || 0) / Number(feeTarget || 1)) * 100);
+  }, [feesCollected, feeTarget]);
+
+  const attendanceGoal = useMemo(() => analytics?.overview?.attendance_goal || 95, [analytics]);
+
+  const topClasses = useMemo(() => {
+    if (Array.isArray(analytics?.top_classes) && analytics.top_classes.length) {
+      return analytics.top_classes.slice(0, 5);
+    }
+    if (classes.length) {
+      return classes.slice(0, 5).map((cls) => ({
+        ...cls,
+        attendance_rate: cls.attendance_rate || cls.average_attendance || attendanceRate
+      }));
+    }
+    return [];
+  }, [analytics, classes, attendanceRate]);
+
+  const attendanceTrendData = useMemo(() => {
+    if (Array.isArray(analytics?.attendance_trends) && analytics.attendance_trends.length) {
+      return analytics.attendance_trends;
+    }
+    if (Array.isArray(analytics?.overview?.attendance_trend)) {
+      return analytics.overview.attendance_trend;
+    }
+    return [
+      { label: 'Mon', value: 72 },
+      { label: 'Tue', value: 78 },
+      { label: 'Wed', value: 75 },
+      { label: 'Thu', value: 80 },
+      { label: 'Fri', value: 82 },
+    ];
+  }, [analytics]);
+
+  const staffDistributionData = useMemo(() => {
+    if (Array.isArray(analytics?.staff_distribution) && analytics.staff_distribution.length) {
+      return analytics.staff_distribution;
+    }
+    const teachersCount = analytics?.overview?.total_teachers || totalStaffCount;
+    const adminCount = Math.max(totalStaffCount - teachersCount, 0);
+    return [
+      { label: 'Teachers', value: teachersCount },
+      { label: 'Support & Admin', value: adminCount }
+    ];
+  }, [analytics, totalStaffCount]);
 
   const fetchDashboardData = async () => {
     try {
@@ -591,80 +819,122 @@ const EducationDashboard = () => {
     // TODO: Implement payment details view
   };
 
-  const handlePrintReceipt = (payment) => {
-    // Create a window for printing receipt
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
-    const receiptHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Fee Payment Receipt</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-          .receipt-title { font-size: 24px; font-weight: bold; margin: 10px 0; }
-          .receipt-info { margin: 10px 0; }
-          .receipt-table { width: 100%; margin: 20px 0; }
-          .receipt-table td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
-          .receipt-table td.label { font-weight: bold; width: 40%; }
-          .amount-section { text-align: right; margin-top: 30px; }
-          .total-amount { font-size: 20px; font-weight: bold; color: #333; }
-          .footer { text-align: center; margin-top: 50px; color: #666; }
-          @media print {
-            body { padding: 0; }
-            @page { size: A4; margin: 1cm; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="receipt-title">FEE PAYMENT RECEIPT</div>
-          <div>${schoolName}</div>
-        </div>
-        
-        <table class="receipt-table">
-          <tr><td class="label">Receipt Number:</td><td>${payment.receipt_number || `REC-${payment.id}`}</td></tr>
-          <tr><td class="label">Date:</td><td>${new Date(payment.payment_date).toLocaleDateString()}</td></tr>
-          <tr><td class="label">Student Name:</td><td>${payment.student?.name || 'N/A'}</td></tr>
-          <tr><td class="label">Upper ID:</td><td>${payment.student?.upper_id || 'N/A'}</td></tr>
-          <tr><td class="label">Email:</td><td>${payment.student?.email || 'N/A'}</td></tr>
-          <tr><td class="label">Class:</td><td>${payment.student?.assigned_class?.name || 'N/A'}</td></tr>
-          <tr><td class="label">Fee Type:</td><td>${payment.fee_structure?.fee_type || 'N/A'}</td></tr>
-          <tr><td class="label">Payment Method:</td><td>${payment.payment_method}</td></tr>
-          ${payment.notes ? `<tr><td class="label">Notes:</td><td>${payment.notes}</td></tr>` : ''}
-        </table>
-        
-        <div class="amount-section">
-          <div class="receipt-info">
-            <strong>Amount Paid:</strong> ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}
-          </div>
-          ${payment.fee_structure ? `
-            <div class="receipt-info">
-              <strong>Total Fee:</strong> ₹${parseFloat(payment.fee_structure.amount || 0).toFixed(2)}
+  const handleGenerateQRCode = (payment) => {
+    // Get student info from payment - handle both object and ID cases
+    if (payment && payment.student) {
+      setSelectedStudentForQR({
+        id: payment.student.id || payment.student_id,
+        name: payment.student.name || payment.student_name || 'Unknown',
+        rollNumber: payment.student.upper_id || payment.student_roll_number || ''
+      });
+      setShowQRCodeDialog(true);
+    } else if (payment && payment.student_id) {
+      // If only student_id is available, fetch student details
+      const student = students.find(s => s.id === payment.student_id);
+      if (student) {
+        setSelectedStudentForQR({
+          id: student.id,
+          name: student.name,
+          rollNumber: student.upper_id || ''
+        });
+        setShowQRCodeDialog(true);
+      } else {
+        alert('Student information not available. Please select student manually.');
+        setSelectedStudentForQR(null);
+        setShowQRCodeDialog(true);
+      }
+    } else {
+      // No payment provided - allow manual selection
+      setSelectedStudentForQR(null);
+      setShowQRCodeDialog(true);
+    }
+  };
+
+  const handlePrintReceipt = async (payment) => {
+    try {
+      // Use PDF endpoint for professional receipt
+      const token = localStorage.getItem('access_token');
+      const apiUrl = getApiBaseUrl();
+      const response = await fetch(`${apiUrl}/education/fee-payments/${payment.id}/receipt/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `fee_receipt_${payment.receipt_number || payment.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } else {
+        // Fallback to HTML receipt if PDF fails
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        const schoolName = 'Your School Name';
+        const receiptHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Fee Payment Receipt</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+              .receipt-title { font-size: 24px; font-weight: bold; margin: 10px 0; }
+              .receipt-info { margin: 10px 0; }
+              .receipt-table { width: 100%; margin: 20px 0; }
+              .receipt-table td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
+              .receipt-table td.label { font-weight: bold; width: 40%; }
+              .amount-section { text-align: right; margin-top: 30px; }
+              .total-amount { font-size: 20px; font-weight: bold; color: #333; }
+              .footer { text-align: center; margin-top: 50px; color: #666; }
+              @media print {
+                body { padding: 0; }
+                @page { size: A4; margin: 1cm; }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div class="receipt-title">FEE PAYMENT RECEIPT</div>
+              <div>${schoolName}</div>
             </div>
-            <div class="receipt-info">
-              <strong>Remaining:</strong> ₹${Math.max(0, parseFloat(payment.fee_structure.amount || 0) - parseFloat(payment.amount_paid || 0)).toFixed(2)}
+            <table class="receipt-table">
+              <tr><td class="label">Receipt Number:</td><td>${payment.receipt_number || `REC-${payment.id}`}</td></tr>
+              <tr><td class="label">Date:</td><td>${new Date(payment.payment_date).toLocaleDateString()}</td></tr>
+              <tr><td class="label">Student Name:</td><td>${payment.student?.name || 'N/A'}</td></tr>
+              <tr><td class="label">Payment Method:</td><td>${payment.payment_method || 'N/A'}</td></tr>
+              ${payment.notes ? `<tr><td class="label">Notes:</td><td>${payment.notes}</td></tr>` : ''}
+            </table>
+            <div class="amount-section">
+              <div class="receipt-info"><strong>Amount Paid:</strong> ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
+              ${payment.fee_structure ? `
+                <div class="receipt-info"><strong>Total Fee:</strong> ₹${parseFloat(payment.fee_structure.amount || 0).toFixed(2)}</div>
+                <div class="receipt-info"><strong>Remaining:</strong> ₹${Math.max(0, parseFloat(payment.fee_structure.amount || 0) - parseFloat(payment.amount_paid || 0)).toFixed(2)}</div>
+              ` : ''}
+              <div class="total-amount">Total: ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
             </div>
-          ` : ''}
-        </div>
-        
-        <div class="footer">
-          <p>Thank you for your payment!</p>
-          <p>This is a computer generated receipt.</p>
-        </div>
-      </body>
-      </html>
-    `;
-    
-    printWindow.document.write(receiptHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    
-    // Wait for content to load, then print
-    setTimeout(() => {
-      printWindow.print();
-    }, 250);
+            <div class="footer">
+              <p>Thank you for your payment!</p>
+              <p>This is a computer generated receipt.</p>
+            </div>
+          </body>
+          </html>
+        `;
+        printWindow.document.write(receiptHtml);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+          printWindow.print();
+        }, 250);
+      }
+    } catch (error) {
+      console.error('Error generating receipt:', error);
+      alert('Error generating receipt. Please try again.');
+    }
   };
 
   const handleSaveAttendance = async () => {
@@ -748,6 +1018,40 @@ const EducationDashboard = () => {
       }
       
       // Map payment method to uppercase format expected by backend
+      // If Razorpay is selected, create fee payment first, then process payment
+      if (feeForm.payment_method.toLowerCase() === 'razorpay') {
+        // Check if Razorpay is configured
+        if (!razorpaySetupStatus?.is_configured) {
+          alert('Razorpay is not configured. Please complete the setup wizard first.');
+          setShowRazorpaySetup(true);
+          return;
+        }
+        
+        // Create fee payment record first (with pending status)
+        const amountPaid = parseFloat(feeForm.amount);
+        const feePaymentData = {
+          student_id: parseInt(feeForm.student_id),
+          fee_structure_id: selectedFeeStructure.id,
+          amount_paid: amountPaid,
+          payment_method: 'CASH', // Will be updated to RAZORPAY after payment
+          payment_date: new Date().toISOString().split('T')[0],
+          receipt_number: feeForm.reference || '',
+          notes: feeForm.notes || '',
+          discount_amount: 0,
+          discount_reason: ''
+        };
+        
+        const response = await axios.post('/api/education/fee-payments/', feePaymentData, { headers });
+        
+        if (response.status === 201) {
+          // Store the created payment ID for Razorpay processing
+          setCreatedFeePaymentId(response.data.id);
+          // Don't close dialog yet - wait for payment
+          return;
+        }
+      }
+      
+      // For non-Razorpay payments, proceed as before
       const paymentMethodMap = {
         'cash': 'CASH',
         'cheque': 'CHEQUE',
@@ -812,6 +1116,71 @@ const EducationDashboard = () => {
       <Typography variant="h4" gutterBottom>
         Education Dashboard
       </Typography>
+
+      {/* Razorpay Setup Status Card - Show if admin and not configured */}
+      {isAdmin && (razorpaySetupStatus === null || (razorpaySetupStatus && !razorpaySetupStatus.is_configured)) && (
+        <Card sx={{ mb: 3, borderLeft: '6px solid #1976d2', bgcolor: 'info.light', color: 'info.contrastText' }}>
+          <CardContent>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
+              <Box display="flex" alignItems="center" gap={2}>
+                <PaymentIcon sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h6">Setup Razorpay Payment Gateway</Typography>
+                  <Typography variant="body2">Enable online payments for fee collection. Parents can pay fees securely via Razorpay.</Typography>
+                </Box>
+              </Box>
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                onClick={() => setShowRazorpaySetup(true)}
+                sx={{ whiteSpace: 'nowrap' }}
+              >
+                Setup Now
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Razorpay Active Card - Show if admin and configured */}
+      {isAdmin && razorpaySetupStatus && razorpaySetupStatus.is_configured && (
+        <Card sx={{ mb: 3, borderLeft: '6px solid #4caf50', bgcolor: 'success.light', color: 'success.contrastText' }}>
+          <CardContent>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
+              <Box display="flex" alignItems="center" gap={2}>
+                <PaymentIcon sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h6">Razorpay Payment Gateway Active</Typography>
+                  <Typography variant="body2">Your Razorpay account is configured and ready to accept fee payments from parents.</Typography>
+                </Box>
+              </Box>
+              <Button 
+                variant="outlined" 
+                color="inherit" 
+                onClick={() => setShowRazorpaySetup(true)}
+                sx={{ whiteSpace: 'nowrap', borderColor: 'currentColor' }}
+              >
+                Update Settings
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Manual Razorpay Setup Button - Always show for admin (fallback if cards don't show) */}
+      {isAdmin && (
+        <Box sx={{ mb: 2, textAlign: 'center' }}>
+          <Button
+            variant="text"
+            color="primary"
+            onClick={() => setShowRazorpaySetup(true)}
+            startIcon={<PaymentIcon />}
+            sx={{ textTransform: 'none' }}
+          >
+            {razorpaySetupStatus?.is_configured ? 'Update Razorpay Settings' : 'Setup Razorpay Payment Gateway'}
+          </Button>
+        </Box>
+      )}
 
       {/* Analytics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -970,9 +1339,163 @@ const EducationDashboard = () => {
                 Fee Management
               </Button>
             </Tooltip>
+            <Tooltip title="Generate QR Code for Fee Payment">
+              <Button
+                variant="outlined"
+                startIcon={<QrCodeIcon />}
+                onClick={() => {
+                  // Open QR code dialog - will need to select student first
+                  setShowQRCodeDialog(true);
+                  setSelectedStudentForQR(null);
+                }}
+              >
+                Generate Payment QR
+              </Button>
+            </Tooltip>
           </Box>
         </CardContent>
       </Card>
+
+      {/* KPI Summary */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Education KPIs
+          </Typography>
+          <Grid container spacing={2}>
+            {summaryMetrics.map((metric) => (
+              <Grid item xs={12} sm={6} md={3} key={metric.label}>
+                <Card variant="outlined" sx={{ height: '100%' }}>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {metric.label}
+                    </Typography>
+                    <Typography variant="h5" sx={{ mt: 1 }} color={`${metric.color}.main`}>
+                      {metric.value}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      {metric.helper}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </Card>
+
+  <Grid container spacing={3} sx={{ mb: 4 }}>
+    <Grid item xs={12} md={4}>
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" color="textSecondary">
+            Fee Goal Progress
+          </Typography>
+          <Typography variant="h6" sx={{ mt: 1 }}>
+            {feeTarget ? `₹${Number(feesCollected || 0).toLocaleString('en-IN')} / ₹${Number(feeTarget).toLocaleString('en-IN')}` : 'Target not set'}
+          </Typography>
+          <LinearProgress value={feeProgress} sx={{ mt: 2, height: 9, borderRadius: 2 }} />
+          <Typography variant="caption" color="textSecondary">
+            {feeProgress.toFixed(1)}% of this cycle's target
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" color="textSecondary">
+            Attendance vs Goal
+          </Typography>
+          <Typography variant="h6" sx={{ mt: 1 }}>
+            {attendanceRate.toFixed(1)}% / {attendanceGoal}% goal
+          </Typography>
+          <LinearProgress value={Math.min(100, attendanceRate)} color="info" sx={{ mt: 2, height: 9, borderRadius: 2 }} />
+          <Typography variant="caption" color="textSecondary">
+            {attendanceRate >= attendanceGoal ? 'On track' : `${(attendanceGoal - attendanceRate).toFixed(1)}% below goal`}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Grid>
+    <Grid item xs={12} md={4}>
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+            Top Classes (Attendance)
+          </Typography>
+          <List dense>
+            {topClasses.length === 0 ? (
+              <ListItem>
+                <ListItemText primary="No analytics available yet." />
+              </ListItem>
+            ) : (
+              topClasses.map((cls) => (
+                <ListItem key={cls.id || cls.name}>
+                  <ListItemText
+                    primary={cls.name || `Class ${cls.id}`}
+                    secondary={`Attendance: ${cls.attendance_rate?.toFixed(1) || '?'}%`}
+                  />
+                  <Chip size="small" label={`${cls.student_count || cls.capacity || '–'} students`} />
+                </ListItem>
+              ))
+            )}
+          </List>
+        </CardContent>
+      </Card>
+    </Grid>
+  </Grid>
+
+      {/* Interactive Analytics Charts */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Attendance Trend
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Weekly attendance progress. Hover to view daily values.
+              </Typography>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={attendanceTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" />
+                  <YAxis />
+                  <RechartsTooltip 
+                    formatter={(value) => `${value}%`} 
+                    labelFormatter={(label) => `Day: ${label}`} 
+                  />
+                  <Line type="monotone" dataKey="value" stroke="#1976d2" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Staff Distribution
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Breakdown between teaching and support staff.
+              </Typography>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={staffDistributionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="label" />
+                  <YAxis />
+                  <RechartsTooltip 
+                    formatter={(value) => `${value} staff`} 
+                  />
+                  <Legend />
+                  <Bar dataKey="value" fill="#4caf50" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Analytics Tabs */}
       <Card>
@@ -1537,6 +2060,15 @@ const EducationDashboard = () => {
                           </TableCell>
                           <TableCell>
                             <Box display="flex" gap={1}>
+                              <Tooltip title="Generate QR Code for Payment">
+                                <IconButton 
+                                  size="small" 
+                                  onClick={() => handleGenerateQRCode(payment)}
+                                  color="primary"
+                                >
+                                  <QrCodeIcon />
+                                </IconButton>
+                              </Tooltip>
                               <Tooltip title="Collect Payment">
                                 <IconButton size="small" onClick={() => handleCollectOverduePayment(payment)}>
                                   <MoneyIcon />
@@ -1617,6 +2149,15 @@ const EducationDashboard = () => {
                         <TableCell>{new Date(payment.payment_date).toLocaleDateString()}</TableCell>
                         <TableCell>
                               <Box display="flex" gap={1}>
+                                <Tooltip title="Generate QR Code for Payment">
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleGenerateQRCode(payment)}
+                                    color="primary"
+                                  >
+                                    <QrCodeIcon />
+                                  </IconButton>
+                                </Tooltip>
                                 <Tooltip title="Print Receipt">
                                   <IconButton size="small" onClick={() => handlePrintReceipt(payment)}>
                                     <PrintIcon />
@@ -2024,8 +2565,22 @@ const EducationDashboard = () => {
                 <MenuItem value="online">Online Transfer</MenuItem>
                 <MenuItem value="card">Card Payment</MenuItem>
                 <MenuItem value="upi">UPI</MenuItem>
+                {razorpaySetupStatus?.is_configured && (
+                  <MenuItem value="razorpay">Razorpay (Online Payment)</MenuItem>
+                )}
               </Select>
             </FormControl>
+            {!razorpaySetupStatus?.is_configured && (
+              <Box sx={{ mt: 1, mb: 1 }}>
+                <Button 
+                  size="small" 
+                  variant="outlined" 
+                  onClick={() => setShowRazorpaySetup(true)}
+                >
+                  Setup Razorpay Payment Gateway
+                </Button>
+              </Box>
+            )}
             <TextField
               fullWidth
               label="Payment Reference/Transaction ID"
@@ -2047,12 +2602,83 @@ const EducationDashboard = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCollectFeeDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCollectFee}>
-            Collect Fee
-          </Button>
+          <Button onClick={() => {
+            setCollectFeeDialog(false);
+            setCreatedFeePaymentId(null);
+            setFeeForm({
+              student_id: '',
+              fee_structure_id: '',
+              amount: '',
+              payment_method: '',
+              reference: '',
+              notes: ''
+            });
+          }}>Cancel</Button>
+          {feeForm.payment_method === 'razorpay' && createdFeePaymentId ? (
+            <RazorpayPaymentButton
+              sector="education"
+              referenceId={createdFeePaymentId}
+              amount={parseFloat(feeForm.amount)}
+              description={`Fee Payment - ${availableFeeStructures.find(fs => fs.id === parseInt(feeForm.fee_structure_id))?.fee_type || 'Fee'}`}
+              onSuccess={(data) => {
+                alert('Payment successful! Fee collected via Razorpay.');
+                setCollectFeeDialog(false);
+                setCreatedFeePaymentId(null);
+                setFeeForm({
+                  student_id: '',
+                  fee_structure_id: '',
+                  amount: '',
+                  payment_method: '',
+                  reference: '',
+                  notes: ''
+                });
+                setAvailableFeeStructures([]);
+                fetchDashboardData();
+                fetchRecentPayments();
+              }}
+              onError={(err) => {
+                alert('Payment failed: ' + (err.response?.data?.error || err.message));
+              }}
+            />
+          ) : (
+            <Button variant="contained" onClick={handleCollectFee}>
+              Collect Fee
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
+
+      {/* Razorpay Setup Wizard Dialog */}
+      <Dialog 
+        open={showRazorpaySetup} 
+        onClose={() => setShowRazorpaySetup(false)} 
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogContent>
+          <RazorpaySetupWizard 
+            onComplete={() => {
+              setShowRazorpaySetup(false);
+              checkRazorpaySetup();
+            }} 
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Fee Payment QR Code Dialog */}
+      {showQRCodeDialog && (
+        <FeePaymentQRCode
+          studentId={selectedStudentForQR?.id}
+          studentName={selectedStudentForQR?.name}
+          studentRollNumber={selectedStudentForQR?.rollNumber}
+          tenantId={tenantId}
+          onClose={() => {
+            setShowQRCodeDialog(false);
+            setSelectedStudentForQR(null);
+          }}
+        />
+      )}
+
       {/* Teacher Attendance Dialog */}
       <Dialog open={teacherAttendanceDialog} onClose={() => setTeacherAttendanceDialog(false)} maxWidth="lg" fullWidth>
         <DialogTitle>Teacher Attendance Management</DialogTitle>

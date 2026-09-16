@@ -9,6 +9,7 @@ import StaffDashboard from '../pages/StaffDashboard';
 import { Box, Typography, Alert } from '@mui/material';
 import { hasPermission, PERMISSIONS } from '../permissions';
 import Tooltip from '@mui/material/Tooltip';
+import { getStoredUser } from '../services/api';
 
 // Add placeholder components if missing
 export const PrincipalDashboard = () => (
@@ -32,7 +33,7 @@ export const LibrarianDashboard = () => (
 );
 
 const RoleBasedDashboard = () => {
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+  const userProfile = getStoredUser();
   const userRole = userProfile.role || '';
 
   // Map numeric roles to string roles
@@ -50,7 +51,18 @@ const RoleBasedDashboard = () => {
     return role;
   };
 
-  const role = getRoleString(userRole);
+  const roleRaw = getRoleString(userRole);
+  // getRoleString only maps *numeric* roles; a string role (e.g. "Principal")
+  // passes through as-is, and hasPermission() lowercases before comparing -
+  // do the same here, and guard against non-string values so this can't
+  // throw "role.toLowerCase is not a function".
+  const role = typeof roleRaw === 'string' ? roleRaw.toLowerCase() : roleRaw;
+  // Checking the *role name* first means 'principal'/'librarian' get their
+  // own dashboard even though PERMISSIONS.principal also grants MANAGE_USERS
+  // (which would otherwise match the generic admin check below first and
+  // hide their real dashboard).
+  if (role === 'principal') return <PrincipalDashboard />;
+  if (role === 'librarian') return <LibrarianDashboard />;
 
   // Render appropriate dashboard based on permission
   if (hasPermission(userProfile, PERMISSIONS.MANAGE_USERS)) return <AdminEnhanced />;
@@ -58,9 +70,6 @@ const RoleBasedDashboard = () => {
   if (hasPermission(userProfile, PERMISSIONS.MANAGE_FEES)) return <AccountantDashboard />;
   if (hasPermission(userProfile, PERMISSIONS.MANAGE_ATTENDANCE) && !hasPermission(userProfile, PERMISSIONS.MANAGE_CLASSES)) return <StaffDashboard />;
   if (hasPermission(userProfile, PERMISSIONS.VIEW_REPORTS) && !hasPermission(userProfile, PERMISSIONS.MANAGE_USERS)) return <StudentDashboard />;
-  // Fallback for principal/librarian or unknown roles
-  if (userProfile.role && userProfile.role.toLowerCase() === 'principal') return <PrincipalDashboard />;
-  if (userProfile.role && userProfile.role.toLowerCase() === 'librarian') return <LibrarianDashboard />;
   // Generic fallback
   return (
     <Box sx={{ p: 3 }}>

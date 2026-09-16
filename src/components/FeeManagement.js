@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Card, CardContent, Typography, Button, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Chip,
@@ -281,11 +281,14 @@ const FeeManagement = () => {
         amount_paid: parseFloat(paymentForm.amount_paid),
         payment_date: paymentForm.payment_date ? new Date(paymentForm.payment_date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         payment_method: paymentForm.payment_method,
-        receipt_number: paymentForm.receipt_number || '',
         notes: paymentForm.notes || '',
         discount_amount: parseFloat(paymentForm.discount_amount) || 0,
         discount_reason: paymentForm.discount_reason || ''
       };
+      
+      if (paymentForm.receipt_number) {
+        paymentData.receipt_number = paymentForm.receipt_number;
+      }
 
       await api.post('/education/fee-payments/', paymentData);
       setOpenPaymentDialog(false);
@@ -481,6 +484,22 @@ const FeeManagement = () => {
     }
   };
 
+  const formatCurrency = (value) => {
+    if (value === null || value === undefined || Number.isNaN(Number(value))) return '-';
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 2
+    }).format(Number(value));
+  };
+
+  const structureSummary = useMemo(() => ({
+    total: feeStructures.length,
+    totalAmount: feeStructures.reduce((sum, row) => sum + (Number(row.amount) || 0), 0),
+    optional: feeStructures.filter((row) => row.is_optional).length,
+    mandatory: feeStructures.filter((row) => !row.is_optional).length,
+  }), [feeStructures]);
+
   const structureColumns = [
     { field: 'id', headerName: 'ID', width: 70 },
     {
@@ -492,7 +511,7 @@ const FeeManagement = () => {
     {
       field: 'fee_type',
       headerName: 'Fee Type',
-      width: 120,
+      width: 140,
       renderCell: (params) => (
         <Chip
           label={params.value}
@@ -504,17 +523,17 @@ const FeeManagement = () => {
     {
       field: 'amount',
       headerName: 'Amount',
-      width: 120,
-      renderCell: (params) => `₹${params.value}`
+      width: 140,
+      renderCell: (params) => formatCurrency(params.value)
     },
     {
       field: 'is_optional',
-      headerName: 'Optional',
-      width: 100,
+      headerName: 'Fee Mode',
+      width: 140,
       renderCell: (params) => (
         <Chip
-          label={params.value ? 'Yes' : 'No'}
-          color={params.value ? 'warning' : 'default'}
+          label={params.value ? 'Optional' : 'Mandatory'}
+          color={params.value ? 'warning' : 'success'}
           size="small"
         />
       )
@@ -522,13 +541,13 @@ const FeeManagement = () => {
     {
       field: 'due_date',
       headerName: 'Due Date',
-      width: 120,
+      width: 140,
       renderCell: (params) => params.value ? formatDate(params.value) : 'Not Set'
     },
     {
       field: 'academic_year',
       headerName: 'Academic Year',
-      width: 120,
+      width: 140,
       renderCell: (params) => params.value || 'N/A'
     },
     {
@@ -741,58 +760,95 @@ const FeeManagement = () => {
     }
   };
 
-  const handleViewReceipt = (payment) => {
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    const schoolName = 'Your School Name';
-    const receiptHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Fee Payment Receipt</title>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 20px; }
-          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-          .receipt-title { font-size: 24px; font-weight: bold; margin: 10px 0; }
-          .receipt-info { margin: 10px 0; }
-          .receipt-table { width: 100%; margin: 20px 0; }
-          .receipt-table td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
-          .receipt-table td.label { font-weight: bold; width: 40%; }
-          .amount-section { text-align: right; margin-top: 30px; }
-          .total-amount { font-size: 20px; font-weight: bold; color: #333; }
-          .footer { text-align: center; margin-top: 40px; color: #666; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="receipt-title">FEE PAYMENT RECEIPT</div>
-          <div>${schoolName}</div>
-        </div>
-        <table class="receipt-table">
-          <tr><td class="label">Receipt Number:</td><td>${payment.receipt_number || `REC-${payment.id}`}</td></tr>
-          <tr><td class="label">Date:</td><td>${new Date(payment.payment_date).toLocaleDateString()}</td></tr>
-          <tr><td class="label">Student Name:</td><td>${payment.student?.name || 'N/A'}</td></tr>
-          <tr><td class="label">Payment Method:</td><td>${payment.payment_method || 'N/A'}</td></tr>
-          <tr><td class="label">Notes:</td><td>${payment.notes || '-'}</td></tr>
-        </table>
-        <div class="amount-section">
-          <div class="receipt-info"><strong>Amount Paid:</strong> ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
-          ${payment.fee_structure ? `
-            <div class="receipt-info"><strong>Total Fee:</strong> ₹${parseFloat(payment.fee_structure.amount || 0).toFixed(2)}</div>
-            <div class="receipt-info"><strong>Remaining:</strong> ₹${Math.max(0, parseFloat(payment.fee_structure.amount || 0) - parseFloat(payment.amount_paid || 0)).toFixed(2)}</div>
-          ` : ''}
-          <div class="total-amount">Total: ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
-        </div>
-        <div class="footer">
-          <p>Thank you for your payment!</p>
-          <p>This is a computer generated receipt.</p>
-        </div>
-      </body>
-      </html>
-    `;
-    printWindow.document.write(receiptHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+  const handleViewReceipt = async (payment) => {
+    try {
+      // Use PDF endpoint for professional receipt
+      const token = localStorage.getItem('access_token');
+      // Auto-detect API URL for local vs production (ensure HTTPS in production)
+      let apiUrl = process.env.REACT_APP_API_URL;
+      if (!apiUrl) {
+        if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+          apiUrl = 'http://localhost:8000/api';
+        } else {
+          apiUrl = 'https://api.zenitherp.online/api';
+        }
+      }
+      // Force HTTPS if frontend is HTTPS
+      if (typeof window !== 'undefined' && window.location.protocol === 'https:' && apiUrl.startsWith('http://')) {
+        apiUrl = apiUrl.replace('http://', 'https://');
+      }
+      const response = await fetch(`${apiUrl}/education/fee-payments/${payment.id}/receipt/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `fee_receipt_${payment.receipt_number || payment.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } else {
+        // Fallback to HTML receipt if PDF fails
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        const schoolName = 'Your School Name';
+        const receiptHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Fee Payment Receipt</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+              .receipt-title { font-size: 24px; font-weight: bold; margin: 10px 0; }
+              .receipt-info { margin: 10px 0; }
+              .receipt-table { width: 100%; margin: 20px 0; }
+              .receipt-table td { padding: 5px 10px; border-bottom: 1px solid #ddd; }
+              .receipt-table td.label { font-weight: bold; width: 40%; }
+              .amount-section { text-align: right; margin-top: 30px; }
+              .total-amount { font-size: 20px; font-weight: bold; color: #333; }
+              .footer { text-align: center; margin-top: 40px; color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div class="receipt-title">FEE PAYMENT RECEIPT</div>
+              <div>${schoolName}</div>
+            </div>
+            <table class="receipt-table">
+              <tr><td class="label">Receipt Number:</td><td>${payment.receipt_number || `REC-${payment.id}`}</td></tr>
+              <tr><td class="label">Date:</td><td>${new Date(payment.payment_date).toLocaleDateString()}</td></tr>
+              <tr><td class="label">Student Name:</td><td>${payment.student?.name || 'N/A'}</td></tr>
+              <tr><td class="label">Payment Method:</td><td>${payment.payment_method || 'N/A'}</td></tr>
+              <tr><td class="label">Notes:</td><td>${payment.notes || '-'}</td></tr>
+            </table>
+            <div class="amount-section">
+              <div class="receipt-info"><strong>Amount Paid:</strong> ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
+              ${payment.fee_structure ? `
+                <div class="receipt-info"><strong>Total Fee:</strong> ₹${parseFloat(payment.fee_structure.amount || 0).toFixed(2)}</div>
+                <div class="receipt-info"><strong>Remaining:</strong> ₹${Math.max(0, parseFloat(payment.fee_structure.amount || 0) - parseFloat(payment.amount_paid || 0)).toFixed(2)}</div>
+              ` : ''}
+              <div class="total-amount">Total: ₹${parseFloat(payment.amount_paid || 0).toFixed(2)}</div>
+            </div>
+            <div class="footer">
+              <p>Thank you for your payment!</p>
+              <p>This is a computer generated receipt.</p>
+            </div>
+          </body>
+          </html>
+        `;
+        printWindow.document.write(receiptHtml);
+        printWindow.document.close();
+      }
+    } catch (error) {
+      console.error('Error generating receipt:', error);
+      alert('Error generating receipt. Please try again.');
+    }
   };
 
   const handleExportData = async (type, format = 'csv') => {
@@ -842,21 +898,29 @@ const FeeManagement = () => {
       case 0:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Fee Structures</Typography>
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
                 <ExportImportManager module="education" dataType="fees" />
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => setOpenStructureDialog(true)}
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                 >
                   Add Structure
                 </Button>
               </Box>
             </Box>
-            <TableContainer component={Paper}>
-              <Table>
+            <Box display="flex" justifyContent="flex-start" alignItems="center" gap={2} flexWrap="wrap" mb={2}>
+              <Chip label={`Total Structures: ${structureSummary.total}`} size="small" color="primary" />
+              <Chip label={`Total Amount: ${formatCurrency(structureSummary.totalAmount)}`} size="small" color="secondary" />
+              <Chip label={`Mandatory: ${structureSummary.mandatory}`} size="small" color="success" />
+              <Chip label={`Optional: ${structureSummary.optional}`} size="small" color="warning" />
+            </Box>
+            <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+              <Table stickyHeader size="small">
                 <TableHead>
                   <TableRow>
                     {structureColumns.map((col) => (
@@ -882,21 +946,23 @@ const FeeManagement = () => {
       case 1:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Fee Payments</Typography>
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
                 <ExportImportManager module="education" dataType="fee-payments" />
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => setOpenPaymentDialog(true)}
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                 >
                   Record Payment
                 </Button>
               </Box>
             </Box>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+              <Table stickyHeader size="small">
                 <TableHead>
                   <TableRow>
                     {paymentColumns.map((col) => (
@@ -922,21 +988,23 @@ const FeeManagement = () => {
       case 2:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Fee Discounts</Typography>
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
                 <ExportImportManager module="education" dataType="fee-discounts" />
                 <Button
                   variant="contained"
                   startIcon={<AddIcon />}
                   onClick={() => setOpenDiscountDialog(true)}
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                 >
                   Add Discount
                 </Button>
               </Box>
             </Box>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+              <Table stickyHeader size="small">
                 <TableHead>
                   <TableRow>
                     {discountColumns.map((col) => (
@@ -962,15 +1030,20 @@ const FeeManagement = () => {
       case 3:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Installment Plans</Typography>
-              <Button variant="contained" onClick={handleOpenInstallmentPlanDialog}>
+              <Button 
+                variant="contained" 
+                onClick={handleOpenInstallmentPlanDialog}
+                size="small"
+                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+              >
                 Create Plan
               </Button>
             </Box>
             {installmentPlansLoading ? <Typography>Loading...</Typography> : installmentPlansError ? <Alert severity="error">{installmentPlansError}</Alert> : (
-              <TableContainer component={Paper}>
-                <Table>
+              <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+                <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell>Plan Name</TableCell>
@@ -1017,15 +1090,20 @@ const FeeManagement = () => {
       case 4:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">All Installments</Typography>
-              <Button variant="contained" onClick={handleOpenInstallmentDialog}>
+              <Button 
+                variant="contained" 
+                onClick={handleOpenInstallmentDialog}
+                size="small"
+                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+              >
                 Generate Installments
               </Button>
             </Box>
             {installmentsLoading ? <Typography>Loading...</Typography> : installmentsError ? <Alert severity="error">{installmentsError}</Alert> : (
-              <TableContainer component={Paper}>
-                <Table>
+              <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+                <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell>Student</TableCell>
@@ -1072,13 +1150,15 @@ const FeeManagement = () => {
       case 5:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Old Balances (Previous Academic Years)</Typography>
-              <Box display="flex" gap={1}>
+              <Box display="flex" gap={1} flexWrap="wrap">
                 <Button
                   variant="outlined"
                   onClick={() => setOpenCarryForwardDialog(true)}
                   startIcon={<TrendingUpIcon />}
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                 >
                   Carry Forward
                 </Button>
@@ -1097,6 +1177,8 @@ const FeeManagement = () => {
                     });
                     setOpenOldBalanceDialog(true);
                   }}
+                  size="small"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
                 >
                   Add Old Balance
                 </Button>
@@ -1140,8 +1222,8 @@ const FeeManagement = () => {
             )}
 
             {/* Filters */}
-            <Box display="flex" gap={2} mb={2}>
-              <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Box display="flex" gap={2} mb={2} flexWrap="wrap">
+              <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
                 <InputLabel>Academic Year</InputLabel>
                 <Select
                   value={academicYearFilter}
@@ -1154,7 +1236,7 @@ const FeeManagement = () => {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl size="small" sx={{ minWidth: 150 }}>
+              <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
                 <InputLabel>Class</InputLabel>
                 <Select
                   value={classFilter}
@@ -1167,7 +1249,7 @@ const FeeManagement = () => {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl size="small" sx={{ minWidth: 150 }}>
+              <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 150 } }}>
                 <InputLabel>Status</InputLabel>
                 <Select
                   value={settledFilter}
@@ -1185,8 +1267,8 @@ const FeeManagement = () => {
             {oldBalanceLoading ? (
               <Typography>Loading old balances...</Typography>
             ) : (
-              <TableContainer component={Paper}>
-                <Table>
+              <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+                <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell>Student</TableCell>
@@ -1231,7 +1313,7 @@ const FeeManagement = () => {
                             {balance.settled_date ? new Date(balance.settled_date).toLocaleDateString() : '-'}
                           </TableCell>
                           <TableCell>
-                            <Box display="flex" gap={1}>
+                            <Box display="flex" gap={1} flexWrap="wrap">
                               <Tooltip title="Mark as Settled">
                                 <IconButton
                                   size="small"
@@ -1286,7 +1368,7 @@ const FeeManagement = () => {
       case 6:
         return (
           <Box>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} flexWrap="wrap" gap={1}>
               <Typography variant="h6">Balance Adjustments</Typography>
               <Button
                 variant="contained"
@@ -1302,12 +1384,14 @@ const FeeManagement = () => {
                   });
                   setOpenAdjustmentDialog(true);
                 }}
+                size="small"
+                sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
               >
                 Add Adjustment
               </Button>
             </Box>
-            <TableContainer component={Paper}>
-              <Table>
+            <TableContainer component={Paper} sx={{ maxHeight: 600, overflowX: 'auto', width: '100%' }}>
+              <Table stickyHeader size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell>Student</TableCell>

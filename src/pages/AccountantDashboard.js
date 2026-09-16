@@ -43,6 +43,7 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import api, { unwrapList, getStoredUser } from '../services/api';
 
 const AccountantDashboard = () => {
   const [students, setStudents] = useState([]);
@@ -60,7 +61,7 @@ const AccountantDashboard = () => {
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+  const userProfile = getStoredUser();
 
   useEffect(() => {
     fetchAccountantData();
@@ -69,24 +70,22 @@ const AccountantDashboard = () => {
   const fetchAccountantData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
-      
-      // Fetch students, payments, and fees data
+
+      // Use the shared `api` instance instead of raw fetch('/api/...') - a
+      // relative path only works when frontend and backend share an origin,
+      // which isn't true in production (see getApiUrl() in services/api.js),
+      // so this always 404'd there. It also skips the 401 refresh/logout
+      // interceptor. The payments endpoint path was also wrong - it's
+      // 'education/fee-payments/', not 'education/payments/'.
       const [studentsRes, paymentsRes, feesRes] = await Promise.all([
-        fetch('/api/education/students/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/payments/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/fees/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get('/education/students/'),
+        api.get('/education/fee-payments/'),
+        api.get('/education/fees/')
       ]);
 
-      if (studentsRes.ok) setStudents(await studentsRes.json());
-      if (paymentsRes.ok) setPayments(await paymentsRes.json());
-      if (feesRes.ok) setFees(await feesRes.json());
+      setStudents(unwrapList(studentsRes.data));
+      setPayments(unwrapList(paymentsRes.data));
+      setFees(unwrapList(feesRes.data));
 
     } catch (err) {
       setError('Failed to load accountant data');
@@ -98,32 +97,27 @@ const AccountantDashboard = () => {
 
   const handleAddPayment = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/education/payments/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(paymentForm)
+      // NOTE: the backend's FeePayment model also requires a `fee_structure`
+      // FK that this simplified form doesn't collect - this will still be
+      // rejected by the API until that's added to the form.
+      await api.post('/education/fee-payments/', {
+        student: paymentForm.student_id,
+        amount_paid: paymentForm.amount,
+        payment_method: paymentForm.payment_method,
+        notes: paymentForm.description,
       });
-
-      if (response.ok) {
-        setSnackbar({ open: true, message: 'Payment recorded successfully!', severity: 'success' });
-        setOpenPaymentDialog(false);
-        setPaymentForm({
-          student_id: '',
-          amount: '',
-          payment_method: 'cash',
-          description: '',
-          date: new Date().toISOString().split('T')[0]
-        });
-        fetchAccountantData();
-      } else {
-        setSnackbar({ open: true, message: 'Failed to record payment', severity: 'error' });
-      }
+      setSnackbar({ open: true, message: 'Payment recorded successfully!', severity: 'success' });
+      setOpenPaymentDialog(false);
+      setPaymentForm({
+        student_id: '',
+        amount: '',
+        payment_method: 'cash',
+        description: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+      fetchAccountantData();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Error recording payment', severity: 'error' });
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to record payment', severity: 'error' });
     }
   };
 
@@ -144,8 +138,10 @@ const AccountantDashboard = () => {
     { name: 'Cheque', value: 10, color: '#f44336' }
   ];
 
-  const totalCollected = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
-  const totalPending = fees.reduce((sum, fee) => sum + (fee.amount || 0), 0) - totalCollected;
+  // DRF DecimalFields commonly serialize as strings - Number(...) avoids
+  // silently concatenating instead of summing (e.g. 0 + "150.00" === "0150.00").
+  const totalCollected = payments.reduce((sum, payment) => sum + (Number(payment.amount_paid ?? payment.amount) || 0), 0);
+  const totalPending = fees.reduce((sum, fee) => sum + (Number(fee.amount) || 0), 0) - totalCollected;
   const totalStudents = students.length;
   const paidStudents = students.filter(student => student.fee_status === 'paid').length;
 
@@ -159,20 +155,20 @@ const AccountantDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
           💰 Accountant Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Accountant'}!
         </Typography>
       </Box>
@@ -236,7 +232,7 @@ const AccountantDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 8">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Monthly Fee Collection</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -254,7 +250,7 @@ const AccountantDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Payment Methods</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -282,7 +278,7 @@ const AccountantDashboard = () => {
       {/* Recent Payments and Fee Status */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Recent Payments</Typography>
@@ -303,9 +299,8 @@ const AccountantDashboard = () => {
                           <PaymentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={`₹${payment.amount || 0} - ${payment.student_name || 'Student'}`}
-                        secondary={`${payment.payment_method || 'Cash'} • ${payment.date || 'Today'}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={`₹${payment.amount_paid || 0} - ${payment.student_name || 'Student'}`}
+                        secondary={`${payment.payment_method || 'Cash'} • ${payment.payment_date || 'Today'}`}
                       />
                       <Chip label="Paid" color="success" size="small" />
                     </ListItem>
@@ -314,8 +309,7 @@ const AccountantDashboard = () => {
                 ))}
                 {payments.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No payments recorded"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No payments recorded"
                       secondary="Record your first payment to get started"
                     />
                   </ListItem>
@@ -326,7 +320,7 @@ const AccountantDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Fee Status Overview</Typography>

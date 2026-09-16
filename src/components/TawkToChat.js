@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Fab, Badge, Tooltip } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
+import { getStoredUser } from '../services/api';
 
 const TawkToChat = ({ 
   siteId = process.env.REACT_APP_TAWK_TO_SITE_ID || 'your_site_id', 
@@ -14,7 +15,50 @@ const TawkToChat = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  // Check if TawkTo is properly configured
+  const isConfigured = siteId && widgetId && 
+                       siteId !== 'your_site_id' && 
+                       widgetId !== 'your_widget_id';
+
   useEffect(() => {
+    // Don't load if not configured
+    if (!isConfigured) {
+      return;
+    }
+
+    // Initialize function
+    const initTawk = () => {
+      if (window.Tawk_API) {
+        // Set visitor information
+        const user = getStoredUser();
+        if (user.email) {
+          window.Tawk_API.setAttributes({
+            'name': user.first_name + ' ' + user.last_name,
+            'email': user.email,
+            'role': user.role || 'User',
+            'tenant': user.tenant || 'Unknown',
+            'industry': user.industry || 'Unknown'
+          });
+        }
+
+        // Listen for chat events
+        window.Tawk_API.onLoad = function() {
+          console.log('Tawk.to chat loaded');
+        };
+
+        window.Tawk_API.onStatusChange = function(status) {
+          console.log('Chat status:', status);
+        };
+      }
+    };
+
+    // Check if script already exists
+    if (document.querySelector(`script[src*="${siteId}"]`)) {
+      setIsLoaded(true);
+      initTawk();
+      return;
+    }
+
     // Load Tawk.to script
     const script = document.createElement('script');
     script.async = true;
@@ -24,7 +68,11 @@ const TawkToChat = ({
 
     script.onload = () => {
       setIsLoaded(true);
-      initializeTawkTo();
+      initTawk();
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load TawkTo chat script');
     };
 
     document.head.appendChild(script);
@@ -35,40 +83,7 @@ const TawkToChat = ({
         window.Tawk_API.endChat();
       }
     };
-  }, [siteId, widgetId]);
-
-  const initializeTawkTo = () => {
-    if (window.Tawk_API) {
-      // Set visitor information
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if (user.email) {
-        window.Tawk_API.setAttributes({
-          'name': user.first_name + ' ' + user.last_name,
-          'email': user.email,
-          'role': user.role || 'User',
-          'tenant': user.tenant || 'Unknown',
-          'industry': user.industry || 'Unknown'
-        });
-      }
-
-      // Listen for chat events
-      window.Tawk_API.onLoad = function() {
-        console.log('Tawk.to chat loaded');
-      };
-
-      window.Tawk_API.onStatusChange = function(status) {
-        console.log('Chat status:', status);
-      };
-
-      window.Tawk_API.onBeforeLoad = function() {
-        console.log('Tawk.to chat loading...');
-      };
-
-      window.Tawk_API.onAfterLoad = function() {
-        console.log('Tawk.to chat loaded successfully');
-      };
-    }
-  };
+  }, [siteId, widgetId, isConfigured]);
 
   const handleChatToggle = () => {
     if (window.Tawk_API) {
@@ -111,7 +126,8 @@ const TawkToChat = ({
     }
   };
 
-  if (!isLoaded) {
+  // Don't render if not configured or not loaded
+  if (!isConfigured || !isLoaded) {
     return null;
   }
 

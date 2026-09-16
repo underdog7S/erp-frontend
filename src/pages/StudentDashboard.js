@@ -35,6 +35,7 @@ import {
   Warning as WarningIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import api, { getStoredUser } from '../services/api';
 
 const StudentDashboard = () => {
   const [assignments, setAssignments] = useState([]);
@@ -45,7 +46,7 @@ const StudentDashboard = () => {
   const [error, setError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+  const userProfile = getStoredUser();
 
   useEffect(() => {
     fetchStudentData();
@@ -54,28 +55,18 @@ const StudentDashboard = () => {
   const fetchStudentData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
       
-      // Fetch student's assignments, grades, attendance, and fees
       const [assignmentsRes, gradesRes, attendanceRes, feesRes] = await Promise.all([
-        fetch('/api/education/assignments/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/grades/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/attendance/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/fees/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get('/education/assignments/'),
+        api.get('/education/grades/'),
+        api.get('/education/attendance/'),
+        api.get('/education/fees/')
       ]);
 
-      if (assignmentsRes.ok) setAssignments(await assignmentsRes.json());
-      if (gradesRes.ok) setGrades(await gradesRes.json());
-      if (attendanceRes.ok) setAttendance(await attendanceRes.json());
-      if (feesRes.ok) setFees(await feesRes.json());
+      setAssignments(assignmentsRes.data);
+      setGrades(gradesRes.data);
+      setAttendance(attendanceRes.data);
+      setFees(feesRes.data);
 
     } catch (err) {
       setError('Failed to load student data');
@@ -126,20 +117,20 @@ const StudentDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
           👨‍🎓 Student Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Student'}!
         </Typography>
       </Box>
@@ -203,7 +194,7 @@ const StudentDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Subject Performance</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -219,7 +210,7 @@ const StudentDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Grade Distribution</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -247,7 +238,7 @@ const StudentDashboard = () => {
       {/* Assignment Progress and Recent Grades */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Assignment Progress</Typography>
               <Box sx={{ mb: 2 }}>
@@ -270,8 +261,7 @@ const StudentDashboard = () => {
                           {assignment.status === 'completed' ? <CheckCircleIcon /> : <AssignmentIcon />}
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={assignment.title || `Assignment ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={assignment.title || `Assignment ${index + 1}`}
                         secondary={`Due: ${assignment.due_date || 'Not set'} • Status: ${assignment.status || 'Pending'}`}
                       />
                       <Chip 
@@ -285,8 +275,7 @@ const StudentDashboard = () => {
                 ))}
                 {assignments.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No assignments yet"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No assignments yet"
                       secondary="Your assignments will appear here"
                     />
                   </ListItem>
@@ -297,7 +286,7 @@ const StudentDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Grades</Typography>
               <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
@@ -328,7 +317,7 @@ const StudentDashboard = () => {
                     {grades.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={4} align="center">
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
                             No grades available yet
                           </Typography>
                         </TableCell>
@@ -345,7 +334,7 @@ const StudentDashboard = () => {
       {/* Fee Status */}
       <Grid container columns={12} spacing={3} sx={{ mt: 1 }}>
         <Grid gridColumn="span 12">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Fee Status</Typography>
               <TableContainer component={Paper}>
@@ -384,7 +373,7 @@ const StudentDashboard = () => {
                     {fees.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} align="center">
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
                             No fee records available
                           </Typography>
                         </TableCell>

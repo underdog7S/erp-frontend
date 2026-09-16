@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -22,10 +22,15 @@ import api from '../services/api';
 
 const steps = ['Company Information', 'Industry & Education', 'Plan Selection'];
 
-const RegistrationForm = ({ googleUser }) => {
+const RegistrationForm = ({ googleUser: propGoogleUser }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  // Get Google user data from props or URL parameters
+  const [googleUser, setGoogleUser] = useState(propGoogleUser || {});
   
   // Form data
   const [formData, setFormData] = useState({
@@ -40,7 +45,26 @@ const RegistrationForm = ({ googleUser }) => {
     description: ''
   });
 
-  const navigate = useNavigate();
+  // Extract Google user data from URL parameters if available
+  useEffect(() => {
+    const email = searchParams.get('email');
+    const given_name = searchParams.get('given_name');
+    const family_name = searchParams.get('family_name');
+    const name = searchParams.get('name');
+    const picture = searchParams.get('picture');
+    const google_id = searchParams.get('google_id');
+    
+    if (email && !googleUser.email) {
+      setGoogleUser({
+        email,
+        given_name: given_name || '',
+        family_name: family_name || '',
+        name: name || `${given_name} ${family_name}`.trim(),
+        picture: picture || '',
+        google_id: google_id || ''
+      });
+    }
+  }, [searchParams, googleUser]);
 
   const handleInputChange = (field) => (event) => {
     setFormData({
@@ -64,30 +88,47 @@ const RegistrationForm = ({ googleUser }) => {
     try {
       // Combine Google user data with form data
       const registrationData = {
-        ...googleUser,
-        ...formData,
+        username: googleUser.email?.split('@')[0] || googleUser.given_name || 'user',
         email: googleUser.email,
-        first_name: googleUser.given_name,
-        last_name: googleUser.family_name,
-        profile_picture: googleUser.picture
+        password: '', // No password for OAuth users
+        company: formData.company_name,
+        industry: formData.industry,
+        plan: formData.plan,
+        first_name: googleUser.given_name || '',
+        last_name: googleUser.family_name || '',
+        phone: formData.phone,
+        address: formData.address,
+        website: formData.website,
+        employee_count: formData.employee_count,
+        description: formData.description,
+        education_sector: formData.education_sector
       };
 
       // Register the user with complete information
       const response = await api.post('/register/', registrationData);
       
       if (response.data) {
-        // Show email verification message instead of redirecting
-        setError(''); // Clear any previous errors
-        setLoading(false);
-        
-        // Show success message for email verification
-        alert(`Registration successful! Please check your email (${googleUser.email}) to verify your account before logging in.`);
-        
-        // Redirect to login page
-        navigate('/login');
+        // Check if tokens are returned (immediate login)
+        if (response.data.access && response.data.refresh) {
+          localStorage.setItem('access_token', response.data.access);
+          localStorage.setItem('refresh_token', response.data.refresh);
+          
+          // Fetch user profile
+          const userRes = await api.get('/users/me/');
+          if (userRes && userRes.data) {
+            localStorage.setItem('user', JSON.stringify(userRes.data));
+            window.dispatchEvent(new Event('userChanged'));
+            navigate('/dashboard');
+          }
+        } else {
+          // Email verification required
+          alert(`Registration successful! Please check your email (${googleUser.email}) to verify your account before logging in.`);
+          navigate('/login');
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.error || err.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
@@ -99,8 +140,13 @@ const RegistrationForm = ({ googleUser }) => {
         return (
           <Box>
             <Typography variant="h6" gutterBottom>
-              Welcome, {googleUser?.given_name}! Let's set up your company profile.
+              Welcome{googleUser?.given_name ? `, ${googleUser.given_name}` : ''}! Let's set up your company profile.
             </Typography>
+            {googleUser?.email && (
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                Registering as: {googleUser.email}
+              </Typography>
+            )}
             <TextField
               label="Company Name *"
               value={formData.company_name}
@@ -164,23 +210,28 @@ const RegistrationForm = ({ googleUser }) => {
                 <MenuItem value="education">Education Management</MenuItem>
                 <MenuItem value="pharmacy">Pharmacy Management</MenuItem>
                 <MenuItem value="retail">Retail & Wholesale</MenuItem>
+                <MenuItem value="hotel">Hotel</MenuItem>
+                <MenuItem value="restaurant">Restaurant</MenuItem>
+                <MenuItem value="salon">Salon</MenuItem>
               </Select>
             </FormControl>
             
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Education Sector</InputLabel>
-              <Select
-                value={formData.education_sector}
-                onChange={handleInputChange('education_sector')}
-              >
-                <MenuItem value="">Not Applicable</MenuItem>
-                <MenuItem value="school">School</MenuItem>
-                <MenuItem value="college">College</MenuItem>
-                <MenuItem value="university">University</MenuItem>
-                <MenuItem value="training_center">Training Center</MenuItem>
-                <MenuItem value="online_education">Online Education</MenuItem>
-              </Select>
-            </FormControl>
+            {formData.industry === 'education' && (
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Education Sector</InputLabel>
+                <Select
+                  value={formData.education_sector}
+                  onChange={handleInputChange('education_sector')}
+                >
+                  <MenuItem value="">Not Applicable</MenuItem>
+                  <MenuItem value="school">School</MenuItem>
+                  <MenuItem value="college">College</MenuItem>
+                  <MenuItem value="university">University</MenuItem>
+                  <MenuItem value="training_center">Training Center</MenuItem>
+                  <MenuItem value="online_education">Online Education</MenuItem>
+                </Select>
+              </FormControl>
+            )}
             
             <TextField
               label="Number of Employees"

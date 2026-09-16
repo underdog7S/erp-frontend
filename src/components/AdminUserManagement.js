@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Card, CardContent, Typography, Button, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Chip,
@@ -53,26 +53,51 @@ const AdminUserManagement = () => {
   const [classes, setClasses] = useState([]);
   const [roles, setRoles] = useState([]);
 
+  // Debounce the raw search term so typing doesn't fire a request per
+  // keystroke, and reset to page 0 whenever the search/filters change - the
+  // effect below reacts to *this* debounced value, not searchTerm directly.
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   useEffect(() => {
-    fetchUsers();
+    const timer = setTimeout(() => setDebouncedSearchTerm(searchTerm), 400);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearchTerm, roleFilter, statusFilter]);
+
+  useEffect(() => {
     fetchClasses();
     fetchRoles();
-  }, [page, pageSize, searchTerm, roleFilter, statusFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const fetchUsers = async () => {
+  useEffect(() => {
+    // Cancel a still-in-flight request when a newer one supersedes it, so
+    // fast typing / filter changes can't resolve out of order and show
+    // stale results.
+    const controller = new AbortController();
+    fetchUsers(controller.signal);
+    return () => controller.abort();
+  }, [page, pageSize, debouncedSearchTerm, roleFilter, statusFilter]);
+
+  const fetchUsers = async (signal) => {
     setLoading(true);
     try {
       const params = {
         page: page + 1,
         page_size: pageSize,
-        search: searchTerm,
+        search: debouncedSearchTerm,
         role: roleFilter,
         status: statusFilter
       };
-      const response = await api.get('/users/', { params });
+      const response = await api.get('/users/', { params, signal });
       setUsers(response.data.results || []);
       setTotalUsers(response.data.count || 0);
     } catch (err) {
+      if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
+        return;
+      }
       setError('Failed to fetch users');
     } finally {
       setLoading(false);

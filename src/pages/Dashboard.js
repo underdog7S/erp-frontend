@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import api, { logout } from "../services/api";
 import { Card, CardContent, Typography, Grid, Box, Button, Alert, Avatar, CircularProgress, LinearProgress, Container } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
@@ -16,8 +16,19 @@ import { format } from 'date-fns';
 import Tooltip from '@mui/material/Tooltip';
 import { hasPermission, PERMISSIONS } from '../permissions';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import { fetchPlans, changePlan, fetchUserMe } from '../services/api';
+import { fetchPlans, changePlan, fetchUserMe, getRazorpaySetupStatus, getStoredUser } from '../services/api';
 import PricingModal from '../components/PricingModal';
+import RazorpaySetupWizard from '../components/RazorpaySetupWizard';
+import PaymentIcon from '@mui/icons-material/Payment';
+import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import SchoolIcon from '@mui/icons-material/School';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import HotelIcon from '@mui/icons-material/Hotel';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -44,27 +55,66 @@ const Dashboard = () => {
   const [plans, setPlans] = useState([]);
   const [upgrading, setUpgrading] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
+  const [razorpaySetupStatus, setRazorpaySetupStatus] = useState(null);
+  const [showRazorpaySetup, setShowRazorpaySetup] = useState(false);
 
   // Get user profile from localStorage at component level
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
-  const userRole = userProfile.role || '';
+  const userProfile = getStoredUser();
+  // Handle role - could be string or object with name property
+  const userRole = typeof userProfile.role === 'string' 
+    ? userProfile.role 
+    : (userProfile.role?.name || userProfile.role || '');
   const userIndustry = userProfile.industry || '';
+  
+  // Check if user is admin - more comprehensive check
+  const isAdmin = useMemo(() => {
+    const roleStr = typeof userRole === 'string' ? userRole.toLowerCase() : '';
+    const roleName = userProfile?.role?.name?.toLowerCase() || '';
+    const roleObj = typeof userProfile?.role === 'object' ? userProfile?.role?.name?.toLowerCase() : '';
+    return roleStr === 'admin' || roleName === 'admin' || roleObj === 'admin' || 
+           userProfile?.role === 'admin' || String(userProfile?.role).toLowerCase() === 'admin';
+  }, [userRole, userProfile]);
+  
+  // Debug: Log role for Razorpay card visibility
+  useEffect(() => {
+    console.log('🔍 Razorpay Card Debug:', {
+      userRole,
+      userProfileRole: userProfile?.role,
+      isAdmin,
+      razorpaySetupStatus,
+      shouldShowSetupCard: isAdmin && (razorpaySetupStatus === null || (razorpaySetupStatus && !razorpaySetupStatus.is_configured)),
+      shouldShowActiveCard: isAdmin && razorpaySetupStatus && razorpaySetupStatus.is_configured
+    });
+  }, [userRole, userProfile, razorpaySetupStatus, isAdmin]);
+
+  // Define checkRazorpaySetup before useEffect to avoid hoisting issues
+  const checkRazorpaySetup = async () => {
+    try {
+      console.log('🔍 Checking Razorpay setup status...');
+      const status = await getRazorpaySetupStatus();
+      console.log('🔍 Razorpay setup status received:', status);
+      setRazorpaySetupStatus(status);
+    } catch (error) {
+      // Razorpay setup check failed, set default status to show setup card for admin users
+      console.error('❌ Razorpay setup check failed:', error);
+      console.log('🔍 Setting default status to show setup card for admin users');
+      // Always set a default status so card can show for admin users
+      setRazorpaySetupStatus({
+        is_configured: false,
+        has_key_id: false,
+        has_key_secret: false,
+        has_webhook_secret: false,
+        is_enabled: false,
+        setup_completed: false,
+        setup_steps: []
+      });
+    }
+  };
 
   useEffect(() => {
-    // Redirect to industry-specific dashboard based on user's industry
-    if (userIndustry) {
-      const industryLower = userIndustry.toLowerCase();
-      if (industryLower === 'pharmacy') {
-        navigate('/pharmacy');
-        return;
-      } else if (industryLower === 'retail') {
-        navigate('/retail');
-        return;
-      } else if (industryLower === 'education') {
-        navigate('/education');
-        return;
-      }
-    }
+    // REMOVED AUTO-REDIRECT: Let Dashboard show for all users
+    // Users can click the button to go to their industry-specific dashboard if they want
+    // This allows Dashboard to properly display Razorpay setup card and other features
     
     const fetchData = async () => {
       setLoading(true);
@@ -76,8 +126,6 @@ const Dashboard = () => {
         ]);
         setStats(statsRes.data);
         setAlerts(alertsRes.data);
-        // Log dashboard stats for debugging
-        console.log('Dashboard stats:', statsRes.data);
       } catch (err) {
         setError("Failed to load dashboard. Please login again.");
       } finally {
@@ -88,17 +136,17 @@ const Dashboard = () => {
     fetchData();
     // Load plans for upgrade card
     fetchPlans().then(setPlans).catch(()=>setPlans([]));
+    // Check Razorpay setup status
+    checkRazorpaySetup();
     
     // Only fetch education data if user is in education industry
     if (userIndustry && userIndustry.toLowerCase() === 'education') {
       api.get("/education/admin-summary/").then(res => {
         setEduSummary(res.data);
-        console.log('Admin summary:', res.data);
       }).catch(()=>{});
       api.get("/education/staff-attendance/").then(res => setAttendance(res.data)).catch(()=>{});
       api.get("/education/analytics/class-stats/").then(res => {
         setClassStats(res.data);
-        console.log('Class stats:', res.data);
       }).catch(()=>{});
       fetchMonthlyReport(selectedMonth);
       api.get("/education/analytics/attendance-trends/").then(res => setAttendanceTrendsData(res.data)).catch(()=>setAttendanceTrendsData([]));
@@ -140,7 +188,6 @@ const Dashboard = () => {
     api.get(`/education/analytics/monthly-report/?month=${month}`)
       .then(res => {
         setMonthlyReport(res.data);
-        console.log('Monthly report:', res.data);
       })
       .catch(()=>setMonthlyReport(null))
       .finally(()=>setLoadingAnalytics(false));
@@ -159,7 +206,7 @@ const Dashboard = () => {
     
     setCheckingIn(true);
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const user = getStoredUser();
       const staff_id = user.id || user.user_id;
       const department_id = user.department_id || user.department || user.assigned_department;
       if (!staff_id || !department_id) {
@@ -195,7 +242,7 @@ const Dashboard = () => {
     
     setCheckingIn(true);
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const user = getStoredUser();
       const staff_id = user.id || user.user_id;
       const department_id = user.department_id || user.department || user.assigned_department;
       if (!staff_id || !department_id) {
@@ -262,54 +309,171 @@ const Dashboard = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
-        Welcome to Zenith ERP
+      {/* Executive Hero Banner */}
+      <Box sx={{ 
+        mb: 4, 
+        p: { xs: 3, md: 6 }, 
+        borderRadius: 4, 
+        background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
+        color: 'white',
+        boxShadow: '0 12px 40px rgba(48, 43, 99, 0.5)',
+        position: 'relative',
+        overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,0.05)'
+      }}>
+        <Box sx={{
+          position: 'absolute',
+          top: -100,
+          right: -50,
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(79, 172, 254, 0) 70%)',
+          filter: 'blur(40px)',
+          animation: 'pulse 6s infinite'
+        }} />
+        
+        <Typography variant="h3" fontWeight="800" gutterBottom sx={{ 
+          position: 'relative', zIndex: 1, 
+          background: '-webkit-linear-gradient(45deg, #00f2fe, #4facfe)', 
+          WebkitBackgroundClip: 'text', 
+          WebkitTextFillColor: 'transparent',
+          letterSpacing: '-1px'
+        }}>
+          Welcome back, {userProfile.first_name || userRole || 'Admin'}!
+        </Typography>
+        <Typography variant="h6" sx={{ opacity: 0.85, maxWidth: 600, position: 'relative', zIndex: 1, fontWeight: 300, lineHeight: 1.6 }}>
+          You are currently logged into the {userIndustry || 'System'} control center. 
+          Manage your operations, monitor revenue, and drive growth with Zenith technology.
+        </Typography>
+      </Box>
+
+      {/* Quick Launch Action Center */}
+      <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
+        Quick Launch
       </Typography>
-      
-      {/* Industry-specific welcome message */}
-      <Card sx={{ mb: 3, bgcolor: 'primary.main', color: 'white' }}>
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            Welcome to your {userIndustry} Dashboard
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            You are currently logged in as a {userProfile.role || 'user'} in the {userIndustry} industry.
-            Use the navigation menu to access your industry-specific features.
-          </Typography>
-          <Box sx={{ mt: 2 }}>
-            {userIndustry && userIndustry.toLowerCase() === 'pharmacy' && (
+      <Grid container spacing={3} sx={{ mb: 5 }}>
+        {userIndustry && (
+          <Grid item xs={12} sm={6} md={4}>
+            <Card 
+              elevation={0}
+              sx={{ 
+                height: '100%', 
+                cursor: 'pointer',
+                bgcolor: '#1a1a24',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                borderLeft: '4px solid #00f2fe',
+                '&:hover': { transform: 'translateY(-8px)', boxShadow: '0 20px 40px rgba(0,242,254,0.15)', borderColor: 'rgba(0,242,254,0.3)' }
+              }}
+              onClick={() => navigate(`/${userIndustry.toLowerCase()}`)}
+            >
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', py: 5 }}>
+                <Box sx={{ p: 2, borderRadius: '50%', background: 'rgba(0,242,254,0.1)', mb: 3 }}>
+                  {userIndustry.toLowerCase() === 'pharmacy' ? <LocalPharmacyIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   userIndustry.toLowerCase() === 'retail' ? <StorefrontIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   userIndustry.toLowerCase() === 'education' ? <SchoolIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   userIndustry.toLowerCase() === 'restaurant' ? <RestaurantIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   userIndustry.toLowerCase() === 'hotel' ? <HotelIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   userIndustry.toLowerCase() === 'salon' ? <ContentCutIcon sx={{ fontSize: 50, color: '#00f2fe' }} /> :
+                   <BusinessIcon sx={{ fontSize: 50, color: '#00f2fe' }} />
+                  }
+                </Box>
+                <Typography variant="h5" fontWeight="700" gutterBottom>
+                  {userIndustry.charAt(0).toUpperCase() + userIndustry.slice(1)} Engine
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1 }}>
+                  Launch the primary control board for your {userIndustry} operations.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+        
+        {/* System Settings Quick Link */}
+        {isAdmin && (
+          <Grid item xs={12} sm={6} md={4}>
+            <Card 
+              elevation={0}
+              sx={{ 
+                height: '100%', 
+                cursor: 'pointer',
+                bgcolor: '#1a1a24',
+                color: 'white',
+                border: '1px solid rgba(255,255,255,0.08)',
+                backdropFilter: 'blur(10px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': { transform: 'translateY(-8px)', boxShadow: '0 20px 40px rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.2)' }
+              }}
+              onClick={() => navigate('/settings')}
+            >
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', py: 5 }}>
+                <Box sx={{ p: 2, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', mb: 3 }}>
+                  <StorageIcon sx={{ fontSize: 50, color: 'rgba(255,255,255,0.8)' }} />
+                </Box>
+                <Typography variant="h6" fontWeight="700" gutterBottom>
+                  System Settings
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1 }}>
+                  Manage tenants, user permissions, and billing plans.
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+      </Grid>
+
+      {/* Razorpay Setup Status Card - Show if admin and not configured - MOVED TO TOP */}
+      {isAdmin && (razorpaySetupStatus === null || (razorpaySetupStatus && !razorpaySetupStatus.is_configured)) && (
+        <Card sx={{ mb: 3, borderLeft: '6px solid #1976d2', bgcolor: 'info.light', color: 'info.contrastText' }}>
+          <CardContent>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
+              <Box display="flex" alignItems="center" gap={2}>
+                <PaymentIcon sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h6">Setup Razorpay Payment Gateway</Typography>
+                  <Typography variant="body2">Enable online payments for your customers. Accept payments via Razorpay in all sectors.</Typography>
+                </Box>
+              </Box>
               <Button 
                 variant="contained" 
                 color="secondary" 
-                onClick={() => navigate('/pharmacy')}
-                sx={{ mr: 2 }}
+                onClick={() => setShowRazorpaySetup(true)}
+                sx={{ whiteSpace: 'nowrap' }}
               >
-                Go to Pharmacy Dashboard
+                Setup Now
               </Button>
-            )}
-            {userIndustry && userIndustry.toLowerCase() === 'retail' && (
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Razorpay Active Card - Show if admin and configured - MOVED TO TOP */}
+      {isAdmin && razorpaySetupStatus && razorpaySetupStatus.is_configured && (
+        <Card sx={{ mb: 3, borderLeft: '6px solid #4caf50', bgcolor: 'success.light', color: 'success.contrastText' }}>
+          <CardContent>
+            <Box display="flex" alignItems="center" justifyContent="space-between" gap={2}>
+              <Box display="flex" alignItems="center" gap={2}>
+                <PaymentIcon sx={{ fontSize: 40 }} />
+                <Box>
+                  <Typography variant="h6">Razorpay Payment Gateway Active</Typography>
+                  <Typography variant="body2">Your Razorpay account is configured and ready to accept payments.</Typography>
+                </Box>
+              </Box>
               <Button 
-                variant="contained" 
-                color="secondary" 
-                onClick={() => navigate('/retail')}
-                sx={{ mr: 2 }}
+                variant="outlined" 
+                color="inherit" 
+                onClick={() => setShowRazorpaySetup(true)}
+                sx={{ whiteSpace: 'nowrap', borderColor: 'currentColor' }}
               >
-                Go to Retail Dashboard
+                Update Settings
               </Button>
-            )}
-            {userIndustry && userIndustry.toLowerCase() === 'education' && (
-              <Button 
-                variant="contained" 
-                color="secondary" 
-                onClick={() => navigate('/education')}
-                sx={{ mr: 2 }}
-              >
-                Go to Education Dashboard
-              </Button>
-            )}
-          </Box>
-        </CardContent>
-      </Card>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Stats Section - Only show for Education */}
       {userIndustry && userIndustry.toLowerCase() === 'education' && (
@@ -371,85 +535,36 @@ const Dashboard = () => {
 
       {/* Tenant/Plan/Info Section */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <BusinessIcon color="primary" />
-                    <Box>
-                      <Typography variant="subtitle2">Tenant</Typography>
-                  <Typography variant="h6">{stats.tenant || '-'}</Typography>
-                    </Box>
+        {[
+          { icon: <BusinessIcon sx={{color: '#00f2fe'}} />, label: 'Tenant', value: stats.tenant || '-' },
+          { icon: <WorkspacePremiumIcon sx={{color: '#ff0844'}} />, label: 'Plan', value: stats.plan || '-' },
+          { icon: <EventAvailableIcon sx={{color: '#4facfe'}} />, label: 'Created At', value: stats.created_at && !isNaN(new Date(stats.created_at)) ? format(new Date(stats.created_at), 'yyyy-MM-dd HH:mm') : '-' },
+          { icon: <PeopleIcon sx={{color: '#fa709a'}} />, label: 'Users', value: stats.user_count !== undefined && stats.plan_limits?.max_users !== undefined ? `${stats.user_count} / ${stats.plan_limits.max_users}` : '-' },
+          { icon: <StorageIcon sx={{color: '#f6d365'}} />, label: 'Storage Used', value: stats.storage_used_mb !== undefined && stats.plan_limits?.storage_limit_mb !== undefined ? `${stats.storage_used_mb} MB / ${stats.plan_limits.storage_limit_mb} MB` : '-' },
+          { icon: <BusinessIcon sx={{color: '#a18cd1'}} />, label: 'Industry', value: stats.industry || '-' }
+        ].map((item, idx) => (
+          <Grid item xs={12} sm={6} md={4} key={idx}>
+            <Card elevation={0} sx={{ 
+              bgcolor: '#1a1a24', 
+              color: 'white', 
+              border: '1px solid rgba(255,255,255,0.05)',
+              '&:hover': { bgcolor: '#222230', borderColor: 'rgba(255,255,255,0.1)' } 
+            }}>
+              <CardContent>
+                <Box display="flex" alignItems="center" gap={3}>
+                  <Box sx={{ p: 1.5, borderRadius: 2, background: 'rgba(255,255,255,0.03)' }}>
+                    {item.icon}
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <WorkspacePremiumIcon color="secondary" />
-                    <Box>
-                      <Typography variant="subtitle2">Plan</Typography>
-                  <Typography variant="h6">{stats.plan || '-'}</Typography>
-                    </Box>
+                  <Box>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.75rem' }}>{item.label}</Typography>
+                    <Typography variant="h6" fontWeight="bold">{item.value}</Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <EventAvailableIcon color="success" />
-                    <Box>
-                      <Typography variant="subtitle2">Created At</Typography>
-                  <Typography variant="h6">{stats.created_at && !isNaN(new Date(stats.created_at)) ? format(new Date(stats.created_at), 'yyyy-MM-dd HH:mm') : '-'}</Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <PeopleIcon color="info" />
-                    <Box>
-                      <Typography variant="subtitle2">Users</Typography>
-                  <Typography variant="h6">{stats.user_count !== undefined && stats.plan_limits?.max_users !== undefined ? `${stats.user_count} / ${stats.plan_limits.max_users}` : '-'}</Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <StorageIcon color="warning" />
-                    <Box>
-                      <Typography variant="subtitle2">Storage Used</Typography>
-                  <Typography variant="h6">{stats.storage_used_mb !== undefined && stats.plan_limits?.storage_limit_mb !== undefined ? `${stats.storage_used_mb} MB / ${stats.plan_limits.storage_limit_mb} MB` : '-'}</Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid gridColumn="span 4">
-              <Card>
-                <CardContent>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <BusinessIcon color="action" />
-                    <Box>
-                      <Typography variant="subtitle2">Industry</Typography>
-                  <Typography variant="h6">{stats.industry || '-'}</Typography>
-                    </Box>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+                </Box>
+              </CardContent>
+            </Card>
           </Grid>
+        ))}
+      </Grid>
 
       {/* Upgrade CTA for Free plan */}
       {isFreePlan && (
@@ -471,7 +586,41 @@ const Dashboard = () => {
         </Card>
       )}
 
+      {/* Manual Razorpay Setup Button - Always show for admin (fallback if cards don't show) */}
+      {isAdmin && (
+        <Box sx={{ mb: 2, textAlign: 'center' }}>
+          <Button
+            variant="text"
+            color="primary"
+            onClick={() => setShowRazorpaySetup(true)}
+            startIcon={<PaymentIcon />}
+            sx={{ textTransform: 'none' }}
+          >
+            {razorpaySetupStatus?.is_configured ? 'Update Razorpay Settings' : 'Setup Razorpay Payment Gateway'}
+          </Button>
+        </Box>
+      )}
+
       <PricingModal open={showPricing} onClose={() => setShowPricing(false)} onUpgraded={() => setShowPricing(false)} />
+
+      {/* Razorpay Setup Wizard Dialog */}
+      {showRazorpaySetup && (
+        <Dialog 
+          open={showRazorpaySetup} 
+          onClose={() => setShowRazorpaySetup(false)} 
+          maxWidth="md" 
+          fullWidth
+        >
+          <DialogContent>
+            <RazorpaySetupWizard 
+              onComplete={() => {
+                setShowRazorpaySetup(false);
+                checkRazorpaySetup();
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Charts Section - Only show for Education */}
       {userIndustry && userIndustry.toLowerCase() === 'education' && (

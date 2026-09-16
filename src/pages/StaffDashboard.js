@@ -29,12 +29,13 @@ import {
   Schedule as ScheduleIcon,
   Assignment as AssignmentIcon,
   Notifications as NotificationsIcon,
-  CheckIn as CheckInIcon,
-  CheckOut as CheckOutIcon,
+  Login as CheckInIcon,
+  Logout as CheckOutIcon,
   TrendingUp as TrendingUpIcon,
   Work as WorkIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import api, { unwrapList, getStoredUser } from '../services/api';
 
 const StaffDashboard = () => {
   const [attendance, setAttendance] = useState([]);
@@ -44,7 +45,7 @@ const StaffDashboard = () => {
   const [error, setError] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+  const userProfile = getStoredUser();
 
   useEffect(() => {
     fetchStaffData();
@@ -53,24 +54,22 @@ const StaffDashboard = () => {
   const fetchStaffData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
-      
-      // Fetch staff's attendance, tasks, and notifications
-      const [attendanceRes, tasksRes, notificationsRes] = await Promise.all([
-        fetch('/api/education/staff-attendance/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/tasks/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/notifications/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+
+      // Use the shared `api` instance instead of raw fetch('/api/...') - a
+      // relative path only works when frontend and backend share an origin,
+      // which isn't true in production, so this always 404'd there (and
+      // skipped the 401 refresh/logout interceptor). The notifications path
+      // was also wrong ('education/notifications/' doesn't exist - the real
+      // endpoint is just 'notifications/'). There is no backend "tasks"
+      // feature at all yet, so that fetch is dropped rather than pointed at
+      // a nonexistent endpoint - `tasks` stays an empty array.
+      const [attendanceRes, notificationsRes] = await Promise.all([
+        api.get('/education/staff-attendance/'),
+        api.get('/notifications/')
       ]);
 
-      if (attendanceRes.ok) setAttendance(await attendanceRes.json());
-      if (tasksRes.ok) setTasks(await tasksRes.json());
-      if (notificationsRes.ok) setNotifications(await notificationsRes.json());
+      setAttendance(unwrapList(attendanceRes.data));
+      setNotifications(unwrapList(notificationsRes.data));
 
     } catch (err) {
       setError('Failed to load staff data');
@@ -82,53 +81,27 @@ const StaffDashboard = () => {
 
   const handleCheckIn = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/education/staff-attendance/check-in/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          staff_id: userProfile.id,
-          date: new Date().toISOString().split('T')[0]
-        })
+      await api.post('/education/staff-attendance/check-in/', {
+        staff_id: userProfile.id,
+        date: new Date().toISOString().split('T')[0]
       });
-
-      if (response.ok) {
-        setSnackbar({ open: true, message: 'Check-in successful!', severity: 'success' });
-        fetchStaffData();
-      } else {
-        setSnackbar({ open: true, message: 'Check-in failed', severity: 'error' });
-      }
+      setSnackbar({ open: true, message: 'Check-in successful!', severity: 'success' });
+      fetchStaffData();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Error during check-in', severity: 'error' });
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Check-in failed', severity: 'error' });
     }
   };
 
   const handleCheckOut = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/education/staff-attendance/check-out/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          staff_id: userProfile.id,
-          date: new Date().toISOString().split('T')[0]
-        })
+      await api.post('/education/staff-attendance/check-out/', {
+        staff_id: userProfile.id,
+        date: new Date().toISOString().split('T')[0]
       });
-
-      if (response.ok) {
-        setSnackbar({ open: true, message: 'Check-out successful!', severity: 'success' });
-        fetchStaffData();
-      } else {
-        setSnackbar({ open: true, message: 'Check-out failed', severity: 'error' });
-      }
+      setSnackbar({ open: true, message: 'Check-out successful!', severity: 'success' });
+      fetchStaffData();
     } catch (err) {
-      setSnackbar({ open: true, message: 'Error during check-out', severity: 'error' });
+      setSnackbar({ open: true, message: err.response?.data?.error || 'Check-out failed', severity: 'error' });
     }
   };
 
@@ -173,20 +146,20 @@ const StaffDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
           👨‍💼 Staff Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Staff'}!
         </Typography>
       </Box>
@@ -295,7 +268,7 @@ const StaffDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Attendance Trend</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -313,7 +286,7 @@ const StaffDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Task Status Distribution</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -341,7 +314,7 @@ const StaffDashboard = () => {
       {/* Work Hours Chart */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 12">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Work Hours</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -361,7 +334,7 @@ const StaffDashboard = () => {
       {/* Tasks and Notifications */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Tasks</Typography>
               <List>
@@ -373,8 +346,7 @@ const StaffDashboard = () => {
                           <AssignmentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={task.title || `Task ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={task.title || `Task ${index + 1}`}
                         secondary={`Due: ${task.due_date || 'Not set'} • Priority: ${task.priority || 'Medium'}`}
                       />
                       <Chip 
@@ -388,8 +360,7 @@ const StaffDashboard = () => {
                 ))}
                 {tasks.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No tasks assigned"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No tasks assigned"
                       secondary="Your tasks will appear here"
                     />
                   </ListItem>
@@ -400,7 +371,7 @@ const StaffDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Notifications</Typography>
               <List>
@@ -412,8 +383,7 @@ const StaffDashboard = () => {
                           <NotificationsIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={notification.title || `Notification ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={notification.title || `Notification ${index + 1}`}
                         secondary={`${notification.message || 'No message'} • ${notification.date || 'Today'}`}
                       />
                       {!notification.read && (
@@ -425,8 +395,7 @@ const StaffDashboard = () => {
                 ))}
                 {notifications.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No notifications"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No notifications"
                       secondary="Your notifications will appear here"
                     />
                   </ListItem>
@@ -440,7 +409,7 @@ const StaffDashboard = () => {
       {/* Attendance History */}
       <Grid container columns={12} spacing={3} sx={{ mt: 1 }}>
         <Grid gridColumn="span 12">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Attendance History</Typography>
               <TableContainer component={Paper}>
@@ -473,7 +442,7 @@ const StaffDashboard = () => {
                     {attendance.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} align="center">
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
                             No attendance records available
                           </Typography>
                         </TableCell>

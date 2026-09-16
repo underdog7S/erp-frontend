@@ -90,9 +90,18 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
           borderRadius: 16,
-          border: '1px solid rgba(0,0,0,0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.6)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: '0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 10px 10px -5px rgba(37, 99, 235, 0.1)',
+            background: 'rgba(255, 255, 255, 0.85)',
+          },
         },
       },
     },
@@ -132,11 +141,14 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           border: 'none',
+          background: 'rgba(255, 255, 255, 0.85)',
+          borderRadius: 16,
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
           '& .MuiDataGrid-cell': {
             borderBottom: '1px solid rgba(0,0,0,0.05)',
           },
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#f8f9fa',
+            backgroundColor: 'rgba(248, 250, 252, 0.95)',
             borderBottom: '2px solid rgba(0,0,0,0.1)',
           },
         },

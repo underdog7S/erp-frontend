@@ -1,19 +1,36 @@
-import React from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, CircularProgress } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import SchoolIcon from '@mui/icons-material/School';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AddIcon from '@mui/icons-material/Add';
+import api from '../services/api';
 
 const PrincipalDashboard = () => {
-  // Mock data for demonstration
-  const stats = {
-    totalStaff: 18,
-    totalStudents: 320,
-    attendanceRate: '97%',
-    alerts: 2,
-  };
+  const [stats, setStats] = useState({
+    totalStaff: 0,
+    totalStudents: 0,
+    attendanceRate: '0%',
+    alerts: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/education/principal-stats/');
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching principal stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading) return <Box p={3}><CircularProgress /></Box>;
 
   return (
     <Box sx={{ p: 3 }}>

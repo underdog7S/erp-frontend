@@ -1,9 +1,16 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = {
+      hasError: false,
+      error: null,
+      errorInfo: null,
+      redirect: false,
+    };
+    this._redirectTimeout = null;
   }
 
   static getDerivedStateFromError(error) {
@@ -12,24 +19,49 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     this.setState({ error, errorInfo });
-    // You can also log error to an error reporting service here
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.hasError && !prevState.hasError) {
+      this._redirectTimeout = setTimeout(() => {
+        this.setState({ redirect: true });
+      }, 1200);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._redirectTimeout) {
+      clearTimeout(this._redirectTimeout);
+    }
   }
 
   render() {
+    if (this.state.redirect) {
+      return <Navigate replace to="/error/500" />;
+    }
+
     if (this.state.hasError) {
       return (
-        <div style={{ padding: 32, textAlign: 'center' }}>
-          <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: 'pre-wrap', color: '#b71c1c' }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo && this.state.errorInfo.componentStack}
-          </details>
+        <div
+          style={{
+            padding: 32,
+            textAlign: 'center',
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <h2>Oops! Something went wrong.</h2>
+          <p>Redirecting to error page...</p>
         </div>
       );
     }
+
     return this.props.children;
   }
 }
 
-export default ErrorBoundary; 
+export default ErrorBoundary;

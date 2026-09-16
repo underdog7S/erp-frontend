@@ -36,6 +36,7 @@ import {
   Delete as DeleteIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import api, { getStoredUser } from '../services/api';
 
 const TeacherDashboard = () => {
   const [classes, setClasses] = useState([]);
@@ -54,7 +55,7 @@ const TeacherDashboard = () => {
   });
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  const userProfile = JSON.parse(localStorage.getItem('user') || '{}');
+  const userProfile = getStoredUser();
 
   useEffect(() => {
     fetchTeacherData();
@@ -63,28 +64,18 @@ const TeacherDashboard = () => {
   const fetchTeacherData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
       
-      // Fetch teacher's classes, students, assignments, and attendance
       const [classesRes, studentsRes, assignmentsRes, attendanceRes] = await Promise.all([
-        fetch('/api/education/classes/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/students/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/assignments/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/education/attendance/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        api.get('/education/classes/'),
+        api.get('/education/students/'),
+        api.get('/education/assignments/'),
+        api.get('/education/attendance/')
       ]);
 
-      if (classesRes.ok) setClasses(await classesRes.json());
-      if (studentsRes.ok) setStudents(await studentsRes.json());
-      if (assignmentsRes.ok) setAssignments(await assignmentsRes.json());
-      if (attendanceRes.ok) setAttendance(await attendanceRes.json());
+      setClasses(classesRes.data);
+      setStudents(studentsRes.data);
+      setAssignments(assignmentsRes.data);
+      setAttendance(attendanceRes.data);
 
     } catch (err) {
       setError('Failed to load teacher data');
@@ -96,17 +87,9 @@ const TeacherDashboard = () => {
 
   const handleAddAssignment = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/education/assignments/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(assignmentForm)
-      });
+      const response = await api.post('/education/assignments/', assignmentForm);
 
-      if (response.ok) {
+      if (response.status === 201 || response.status === 200) {
         setSnackbar({ open: true, message: 'Assignment added successfully!', severity: 'success' });
         setOpenAssignmentDialog(false);
         setAssignmentForm({ title: '', description: '', due_date: '', class_id: '', max_score: 100 });
@@ -146,20 +129,20 @@ const TeacherDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
           👨‍🏫 Teacher Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Teacher'}!
         </Typography>
       </Box>
@@ -223,7 +206,7 @@ const TeacherDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 8">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Attendance Trends</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -241,7 +224,7 @@ const TeacherDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Grade Distribution</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -269,7 +252,7 @@ const TeacherDashboard = () => {
       {/* Classes and Assignments */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">My Classes</Typography>
@@ -284,8 +267,7 @@ const TeacherDashboard = () => {
                           <SchoolIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={cls.name || `Class ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={cls.name || `Class ${index + 1}`}
                         secondary={`${cls.student_count || 0} students • ${cls.subject || 'General'}`}
                       />
                       <Chip label="Active" color="success" size="small" />
@@ -295,8 +277,7 @@ const TeacherDashboard = () => {
                 ))}
                 {classes.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No classes assigned"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No classes assigned"
                       secondary="You will see your assigned classes here"
                     />
                   </ListItem>
@@ -307,7 +288,7 @@ const TeacherDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card>
+          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Recent Assignments</Typography>
@@ -328,8 +309,7 @@ const TeacherDashboard = () => {
                           <AssignmentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText
-                        primary={assignment.title || `Assignment ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={assignment.title || `Assignment ${index + 1}`}
                         secondary={`Due: ${assignment.due_date || 'Not set'} • Max Score: ${assignment.max_score || 100}`}
                       />
                       <Chip 
@@ -343,8 +323,7 @@ const TeacherDashboard = () => {
                 ))}
                 {assignments.length === 0 && (
                   <ListItem>
-                    <ListItemText
-                      primary="No assignments yet"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No assignments yet"
                       secondary="Create your first assignment to get started"
                     />
                   </ListItem>

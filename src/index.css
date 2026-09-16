@@ -1,6 +1,7 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f7f9fb;
+  font-family: "Inter", "Roboto", "Helvetica", Arial, sans-serif;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  background-attachment: fixed;
   margin: 0;
   padding: 0;
 }
@@ -98,4 +99,44 @@ table th {
     font-size: 0.95em;
     padding: 6px 4px;
   }
-} 
+}
+
+/* Glassmorphism & Premium UI Classes */
+.glass-container {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.premium-gradient-bg {
+  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+  min-height: 100vh;
+}
+
+.edu-gradient-bg {
+  background: linear-gradient(120deg, #f0f9ff 0%, #e0e7ff 100%);
+  min-height: 100vh;
+}
+
+.metric-card-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metric-card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 10px 10px -5px rgba(37, 99, 235, 0.1);
+}
+
+.premium-data-grid {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.premium-data-grid .MuiDataGrid-columnHeaders {
+  background-color: rgba(248, 250, 252, 0.95);
+  border-bottom: 2px solid #e2e8f0;
+}

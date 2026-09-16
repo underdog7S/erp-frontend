@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, Card, CardContent, Typography, Chip, Avatar, Box } from '@mui/material';
 import { fetchPlans, changePlan, fetchUserMe } from '../services/api';
 import CheckIcon from '@mui/icons-material/Check';
@@ -6,6 +7,7 @@ import CheckIcon from '@mui/icons-material/Check';
 const PricingModal = ({ open, onClose, onUpgraded }) => {
 	const [plans, setPlans] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (open) {
@@ -13,7 +15,16 @@ const PricingModal = ({ open, onClose, onUpgraded }) => {
 		}
 	}, [open]);
 
-	const handleSelect = async (planKey) => {
+	const handleSelect = async (planKey, plan) => {
+		// Paid plans must go through the Razorpay checkout flow - the backend
+		// rejects switching straight to a costlier plan without a verified
+		// payment, so send the user to the payment page instead of trying
+		// (and failing) to flip the plan directly.
+		if (plan && plan.price) {
+			onClose();
+			navigate(`/payment?plan=${encodeURIComponent(plan.name)}&amount=${encodeURIComponent(plan.price)}`);
+			return;
+		}
 		setLoading(true);
 		try {
 			await changePlan(planKey);
@@ -48,7 +59,7 @@ const PricingModal = ({ open, onClose, onUpgraded }) => {
 											<Typography key={idx} variant="caption"><CheckIcon fontSize="inherit" style={{ verticalAlign: 'middle' }} /> {f}</Typography>
 										))}
 									</Box>
-									<Button variant={p.popular ? 'contained' : 'outlined'} disabled={loading || p.key === 'free'} fullWidth onClick={() => handleSelect(p.key)}>
+									<Button variant={p.popular ? 'contained' : 'outlined'} disabled={loading || p.key === 'free'} fullWidth onClick={() => handleSelect(p.key, p)}>
 										{p.key === 'free' ? 'Current Plan' : `Upgrade to ${p.name}`}
 									</Button>
 								</CardContent>

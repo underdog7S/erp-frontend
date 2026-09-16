@@ -34,6 +34,7 @@ const Pricing = () => {
       name: 'Free',
       description: 'Perfect for small teams to get started',
       price: 0,
+      original_price: null,
       billing_cycle: 'month',
       color: '#4caf50',
       popular: false,
@@ -53,6 +54,7 @@ const Pricing = () => {
       name: 'Starter',
       description: 'Ideal for growing businesses',
       price: 4500,
+      original_price: 8000, // Marketing strategy: show original price
       billing_cycle: 'year',
       color: '#2196f3',
       popular: false,
@@ -72,6 +74,7 @@ const Pricing = () => {
       name: 'Pro',
       description: 'Perfect for established organizations',
       price: 8999,
+      original_price: 15000, // Marketing strategy: show original price
       billing_cycle: 'year',
       color: '#9c27b0',
       popular: true,
@@ -92,6 +95,7 @@ const Pricing = () => {
       name: 'Business',
       description: 'Enterprise-grade solution with dedicated support',
       price: 19999,
+      original_price: 30000, // Marketing strategy: show original price
       billing_cycle: 'year',
       color: '#ff9800',
       popular: false,
@@ -118,20 +122,35 @@ const Pricing = () => {
     }
   };
 
-  const formatPrice = (price, billingCycle) => {
+  const formatPrice = (price, originalPrice, billingCycle) => {
     if (price === 0) {
-      return 'Free';
+      return {
+        main: 'Free',
+        subtitle: null,
+        original: null,
+        discount: null
+      };
     }
     if (billingCycle === 'year') {
       const monthlyPrice = Math.round(price / 12);
-      return `₹${price.toLocaleString()}/year (~₹${monthlyPrice}/month)`;
+      return {
+        main: `₹${price.toLocaleString()}/year`,
+        subtitle: `~₹${monthlyPrice}/month`,
+        original: originalPrice ? `₹${originalPrice.toLocaleString()}/year` : null,
+        discount: originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null
+      };
     }
-    return `₹${price.toLocaleString()}/month`;
+    return {
+      main: `₹${price.toLocaleString()}/month`,
+      subtitle: null,
+      original: originalPrice ? `₹${originalPrice.toLocaleString()}/month` : null,
+      discount: originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null
+    };
   };
 
   return (
     <Box sx={{ bgcolor: '#fafafa', minHeight: '100vh', py: 4 }}>
-      <Container maxWidth="lg">
+      <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
         {/* Header */}
         <Box textAlign="center" mb={6}>
           <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
@@ -155,10 +174,30 @@ const Pricing = () => {
                   border: plan.popular ? '2px solid' : '1px solid',
                   borderColor: plan.popular ? 'primary.main' : 'divider',
                   transform: plan.popular ? 'scale(1.05)' : 'none',
-                  transition: 'transform 0.2s ease-in-out',
+                  transition: 'all 0.3s ease-in-out',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: 4,
+                    background: `linear-gradient(90deg, ${plan.color}00, ${plan.color}80, ${plan.color}00)`,
+                    backgroundSize: '200% 100%',
+                    animation: plan.popular ? 'shimmer 3s ease-in-out infinite' : 'none',
+                    '@keyframes shimmer': {
+                      '0%': { backgroundPosition: '200% 0' },
+                      '100%': { backgroundPosition: '-200% 0' }
+                    }
+                  },
                   '&:hover': {
-                    transform: plan.popular ? 'scale(1.07)' : 'scale(1.02)',
-                    boxShadow: 4,
+                    transform: plan.popular ? 'scale(1.08) translateY(-8px)' : 'scale(1.05) translateY(-8px)',
+                    boxShadow: 8,
+                    borderColor: plan.color,
+                    '& .plan-icon': {
+                      transform: 'scale(1.1) rotate(5deg)'
+                    }
                   },
                 }}
               >
@@ -181,12 +220,15 @@ const Pricing = () => {
                   {/* Plan Header */}
                   <Box textAlign="center" mb={3}>
                     <Avatar
+                      className="plan-icon"
                       sx={{
                         bgcolor: plan.color,
                         width: 56,
                         height: 56,
                         mx: 'auto',
                         mb: 2,
+                        transition: 'all 0.3s ease',
+                        boxShadow: `0 4px 12px ${plan.color}40`
                       }}
                     >
                       {plan.icon}
@@ -197,9 +239,64 @@ const Pricing = () => {
                     <Typography variant="body2" color="text.secondary" mb={2}>
                       {plan.description}
                     </Typography>
-                    <Typography variant="h4" component="div" sx={{ fontWeight: 700, color: plan.color }}>
-                      {formatPrice(plan.price, plan.billing_cycle)}
-                    </Typography>
+                    <Box sx={{ textAlign: 'center' }}>
+                      {(() => {
+                        const priceInfo = formatPrice(plan.price, plan.original_price, plan.billing_cycle);
+                        return (
+                          <>
+                            {priceInfo.original && (
+                              <Box sx={{ mb: 1 }}>
+                                <Typography
+                                  variant="body1"
+                                  component="span"
+                                  sx={{
+                                    textDecoration: 'line-through',
+                                    color: 'text.secondary',
+                                    fontSize: '1rem',
+                                    mr: 1
+                                  }}
+                                >
+                                  {priceInfo.original}
+                                </Typography>
+                                {priceInfo.discount && (
+                                  <Chip
+                                    label={`${priceInfo.discount}% OFF`}
+                                    size="small"
+                                    sx={{
+                                      bgcolor: '#f44336',
+                                      color: 'white',
+                                      fontWeight: 600,
+                                      fontSize: '0.75rem',
+                                      height: 22
+                                    }}
+                                  />
+                                )}
+                              </Box>
+                            )}
+                            <Typography 
+                              variant="h4" 
+                              component="div" 
+                              sx={{ 
+                                fontWeight: 700, 
+                                color: plan.color,
+                                mb: priceInfo.subtitle ? 0.5 : 0
+                              }}
+                            >
+                              {priceInfo.main}
+                            </Typography>
+                            {priceInfo.subtitle && (
+                              <Typography 
+                                variant="body2" 
+                                color="text.secondary"
+                                sx={{ fontSize: '0.875rem' }}
+                              >
+                                {priceInfo.subtitle}
+                              </Typography>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </Box>
                   </Box>
 
                   <Divider sx={{ my: 2 }} />
@@ -235,14 +332,36 @@ const Pricing = () => {
                       bgcolor: plan.popular ? plan.color : 'transparent',
                       color: plan.popular ? 'white' : plan.color,
                       borderColor: plan.color,
+                      borderWidth: 2,
+                      py: 1.5,
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: '-100%',
+                        width: '100%',
+                        height: '100%',
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                        transition: 'left 0.5s ease'
+                      },
                       '&:hover': {
-                        bgcolor: plan.popular ? plan.color : plan.color,
+                        bgcolor: plan.color,
                         color: 'white',
+                        transform: 'scale(1.05)',
+                        boxShadow: `0 8px 24px ${plan.color}60`,
+                        '&::before': {
+                          left: '100%'
+                        }
                       },
                     }}
                   >
                     {plan.key === 'free' ? 'Get Started Free' : 'Choose Plan'}
-                    <ArrowIcon sx={{ ml: 1 }} />
+                    <ArrowIcon sx={{ ml: 1, transition: 'transform 0.3s ease' }} />
                   </Button>
                 </CardContent>
               </Card>

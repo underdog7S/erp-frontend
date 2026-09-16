@@ -1,121 +1,139 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Grid, TextField, Button, Divider, List, ListItem, ListItemText, MenuItem } from '@mui/material';
-import { fetchHotelRoomTypes, createHotelRoomType, fetchHotelRooms, createHotelRoom, fetchHotelGuests, createHotelGuest } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Tabs, Tab, Card, CardContent, CircularProgress, Avatar, Button } from '@mui/material';
+import { 
+  Hotel as HotelIcon, 
+  KingBed as KingBedIcon, 
+  CleaningServices as CleaningServicesIcon, 
+  MeetingRoom as MeetingRoomIcon,
+  ArrowBack as ArrowBackIcon
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import api from '../../services/api';
 
-const Section = ({ title, children }) => (
-	<Paper sx={{ p: 2 }}>
-		<Typography variant="h6" gutterBottom>{title}</Typography>
-		<Divider sx={{ mb: 2 }} />
-		{children}
-	</Paper>
-);
+// Modularized Tabs
+import HotelBookingsTab from './components/HotelBookingsTab';
+import HotelHousekeepingTab from './components/HotelHousekeepingTab';
+import HotelRoomsTab from './components/HotelRoomsTab';
 
 const HotelDashboard = () => {
-	const [roomTypes, setRoomTypes] = useState([]);
-	const [rooms, setRooms] = useState([]);
-	const [guests, setGuests] = useState([]);
-	const [rtName, setRtName] = useState('');
-	const [rtRate, setRtRate] = useState('');
-	const [roomNumber, setRoomNumber] = useState('');
-	const [roomTypeId, setRoomTypeId] = useState('');
-	const [guestFirst, setGuestFirst] = useState('');
-	const [guestLast, setGuestLast] = useState('');
-	const [guestPhone, setGuestPhone] = useState('');
+  const [tab, setTab] = useState(0);
+  const [userProfile, setUserProfile] = useState(null);
+  const [loadingInitial, setLoadingInitial] = useState(true);
+  const navigate = useNavigate();
 
-	const loadAll = async () => {
-		try {
-			const [rt, r, g] = await Promise.all([
-				fetchHotelRoomTypes(),
-				fetchHotelRooms(),
-				fetchHotelGuests(),
-			]);
-			setRoomTypes(rt);
-			setRooms(r);
-			setGuests(g);
-		} catch (e) {
-			console.error('Hotel load error', e);
-		}
-	};
+  useEffect(() => {
+    const fetchGlobalData = async () => {
+      try {
+        const profRes = await api.get('/users/profile/').catch(() => ({ data: {} }));
+        setUserProfile(profRes.data);
+      } catch (err) {
+        console.error("Error loading profile", err);
+      } finally {
+        setLoadingInitial(false);
+      }
+    };
+    fetchGlobalData();
+  }, []);
 
-	useEffect(() => { loadAll(); }, []);
+  if (loadingInitial) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#0f0c29' }}>
+        <CircularProgress sx={{ color: '#00f2fe' }} />
+      </Box>
+    );
+  }
 
-	const handleAddRoomType = async () => {
-		if (!rtName) return;
-		await createHotelRoomType({ name: rtName, base_rate: rtRate ? Number(rtRate) : 0 });
-		setRtName(''); setRtRate('');
-		loadAll();
-	};
-	const handleAddRoom = async () => {
-		if (!roomNumber || !roomTypeId) return;
-		await createHotelRoom({ room_number: roomNumber, room_type: Number(roomTypeId) });
-		setRoomNumber(''); setRoomTypeId('');
-		loadAll();
-	};
-	const handleAddGuest = async () => {
-		if (!guestFirst) return;
-		await createHotelGuest({ first_name: guestFirst, last_name: guestLast, phone: guestPhone });
-		setGuestFirst(''); setGuestLast(''); setGuestPhone('');
-		loadAll();
-	};
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0f0c29', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
+      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+        
+        <Button 
+          startIcon={<ArrowBackIcon />} 
+          onClick={() => navigate('/dashboard')}
+          sx={{ color: 'rgba(255,255,255,0.5)', mb: 2, '&:hover': { color: 'white' } }}
+        >
+          Back to Main Dashboard
+        </Button>
 
-	return (
-		<Box sx={{ p: 3 }}>
-			<Typography variant="h4" gutterBottom>Hotel</Typography>
-			<Grid container spacing={2}>
-				<Grid item xs={12} md={4}>
-					<Section title="Room Types">
-						<Box display="flex" gap={1} mb={2}>
-							<TextField size="small" label="Name" value={rtName} onChange={e => setRtName(e.target.value)} fullWidth />
-							<TextField size="small" label="Base Rate" type="number" value={rtRate} onChange={e => setRtRate(e.target.value)} sx={{ width: 140 }} />
-							<Button variant="contained" onClick={handleAddRoomType}>Add</Button>
-						</Box>
-						<List dense>
-							{roomTypes.map(rt => (
-								<ListItem key={rt.id} disableGutters>
-									<ListItemText primary={rt.name} secondary={`Base: ${rt.base_rate || 0}`} />
-								</ListItem>
-							))}
-						</List>
-					</Section>
-				</Grid>
-				<Grid item xs={12} md={4}>
-					<Section title="Rooms">
-						<Box display="flex" gap={1} mb={2}>
-							<TextField size="small" label="Room Number" value={roomNumber} onChange={e => setRoomNumber(e.target.value)} fullWidth />
-							<TextField size="small" select label="Room Type" value={roomTypeId} onChange={e => setRoomTypeId(e.target.value)} sx={{ width: 180 }}>
-								{roomTypes.map(rt => (<MenuItem key={rt.id} value={rt.id}>{rt.name}</MenuItem>))}
-							</TextField>
-							<Button variant="contained" onClick={handleAddRoom}>Add</Button>
-						</Box>
-						<List dense>
-							{rooms.map(r => (
-								<ListItem key={r.id} disableGutters>
-									<ListItemText primary={`Room ${r.room_number}`} secondary={`Type: ${r.room_type_name || r.room_type}`} />
-								</ListItem>
-							))}
-						</List>
-					</Section>
-				</Grid>
-				<Grid item xs={12} md={4}>
-					<Section title="Guests">
-						<Box display="flex" gap={1} mb={2}>
-							<TextField size="small" label="First Name" value={guestFirst} onChange={e => setGuestFirst(e.target.value)} fullWidth />
-							<TextField size="small" label="Last Name" value={guestLast} onChange={e => setGuestLast(e.target.value)} sx={{ width: 140 }} />
-							<TextField size="small" label="Phone" value={guestPhone} onChange={e => setGuestPhone(e.target.value)} sx={{ width: 160 }} />
-							<Button variant="contained" onClick={handleAddGuest}>Add</Button>
-						</Box>
-						<List dense>
-							{guests.map(g => (
-								<ListItem key={g.id} disableGutters>
-									<ListItemText primary={`${g.first_name} ${g.last_name || ''}`} secondary={g.phone || ''} />
-								</ListItem>
-							))}
-						</List>
-					</Section>
-				</Grid>
-			</Grid>
-		</Box>
-	);
+        {/* Zenith Header */}
+        <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography variant="h3" fontWeight="800" sx={{ 
+              background: '-webkit-linear-gradient(45deg, #00f2fe, #4facfe)', 
+              WebkitBackgroundClip: 'text', 
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-1px',
+              mb: 1
+            }}>
+              Hospitality Engine
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 600 }}>
+              Manage bookings, automate housekeeping, and monitor room inventory with Zenith hospitality infrastructure.
+            </Typography>
+          </Box>
+          
+          {userProfile && (
+            <Card elevation={0} sx={{ 
+              bgcolor: 'rgba(255,255,255,0.03)', 
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 3,
+              minWidth: 250
+            }}>
+              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '16px !important' }}>
+                <Avatar sx={{ width: 48, height: 48, background: 'linear-gradient(45deg, #00f2fe, #4facfe)' }}>
+                  {userProfile.username ? userProfile.username.charAt(0).toUpperCase() : <HotelIcon />}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold" color="white">
+                    {userProfile.first_name} {userProfile.last_name}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: '#00f2fe', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    Hotel General Manager
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          )}
+        </Box>
+
+        {/* Custom Zenith Tabs */}
+        <Box sx={{ mb: 4, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <Tabs 
+            value={tab} 
+            onChange={(e, v) => setTab(v)} 
+            variant="scrollable" 
+            scrollButtons="auto"
+            TabIndicatorProps={{ style: { background: 'linear-gradient(45deg, #00f2fe, #4facfe)', height: 3 } }}
+            sx={{ 
+              '& .MuiTab-root': { 
+                color: 'rgba(255,255,255,0.5)', 
+                fontWeight: 'bold',
+                textTransform: 'none',
+                fontSize: '1rem',
+                minHeight: 64
+              },
+              '& .Mui-selected': { 
+                color: '#00f2fe !important'
+              }
+            }}
+          >
+            <Tab icon={<KingBedIcon />} iconPosition="start" label="Reservations" />
+            <Tab icon={<CleaningServicesIcon />} iconPosition="start" label="Housekeeping" />
+            <Tab icon={<MeetingRoomIcon />} iconPosition="start" label="Room Matrix" />
+          </Tabs>
+        </Box>
+
+        {/* Tab Contents */}
+        <Box sx={{ animation: 'fadeIn 0.5s ease-in-out' }}>
+          {tab === 0 && <HotelBookingsTab />}
+          {tab === 1 && <HotelHousekeepingTab />}
+          {tab === 2 && <HotelRoomsTab />}
+        </Box>
+
+      </Box>
+    </Box>
+  );
 };
 
 export default HotelDashboard;
