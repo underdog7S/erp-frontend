@@ -91,6 +91,7 @@ const RegistrationForm = ({ googleUser: propGoogleUser }) => {
         username: googleUser.email?.split('@')[0] || googleUser.given_name || 'user',
         email: googleUser.email,
         password: '', // No password for OAuth users
+        is_oauth: true, // Tell backend this is a verified Google user
         company: formData.company_name,
         industry: formData.industry,
         plan: formData.plan,
@@ -108,7 +109,7 @@ const RegistrationForm = ({ googleUser: propGoogleUser }) => {
       const response = await api.post('/register/', registrationData);
       
       if (response.data) {
-        // Check if tokens are returned (immediate login)
+        // OAuth users get tokens directly (no email verification needed)
         if (response.data.access && response.data.refresh) {
           localStorage.setItem('access_token', response.data.access);
           localStorage.setItem('refresh_token', response.data.refresh);
@@ -121,8 +122,8 @@ const RegistrationForm = ({ googleUser: propGoogleUser }) => {
             navigate('/dashboard');
           }
         } else {
-          // Email verification required
-          alert(`Registration successful! Please check your email (${googleUser.email}) to verify your account before logging in.`);
+          // Fallback just in case
+          alert(`Registration successful!`);
           navigate('/login');
         }
       }
