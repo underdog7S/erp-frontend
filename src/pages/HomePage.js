@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { Box, Container, Typography, Button, Grid, Card, CardContent } from '@mui/material';
 import { ArrowForward as ArrowIcon, PlayCircleOutline as PlayIcon } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 // Import Modular Components
 import AgencySolutions from '../components/landing/AgencySolutions';
@@ -36,6 +36,17 @@ const staggerContainer = {
 const HomePage = () => {
   const navigate = useNavigate();
   const [auditDialogOpen, setAuditDialogOpen] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious();
+    if (latest > previous && latest > 150) {
+      setNavHidden(true);
+    } else {
+      setNavHidden(false);
+    }
+  });
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -60,7 +71,15 @@ const HomePage = () => {
       <Box sx={{ bgcolor: '#000000', minHeight: '100vh', color: 'white', overflowX: 'hidden' }}>
         
         {/* Navigation Bar - Clean & Scrolling */}
-        <Box sx={{ 
+        <Box 
+          component={motion.div}
+          variants={{
+            visible: { y: 0 },
+            hidden: { y: "-100%" }
+          }}
+          animate={navHidden ? "hidden" : "visible"}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          sx={{ 
           position: 'fixed', 
           top: 0, 
           left: 0, 
