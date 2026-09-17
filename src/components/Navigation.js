@@ -737,7 +737,7 @@ const Navigation = () => {
           style={{ height: 40, borderRadius: 8 }} 
         />
         <Typography variant="h6" fontWeight={700} color="primary">
-          Zenith
+          ZS | Zenith Solution
         </Typography>
       </Box>
       
@@ -1206,7 +1206,7 @@ const Navigation = () => {
                 }
               }}
             >
-              Zenith
+              ZS | Zenith Solution
             </Typography>
           )}
         </Box>

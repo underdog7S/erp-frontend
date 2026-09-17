@@ -2,108 +2,90 @@ import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: '#1a237e',
-      light: '#534bae',
-      dark: '#000051',
-      contrastText: '#ffffff',
+      main: '#00f2fe',
+      light: '#4facfe',
+      dark: '#00a8cc',
+      contrastText: '#000000',
     },
     secondary: {
-      main: '#ff6f00',
-      light: '#ffa040',
-      dark: '#c43e00',
+      main: '#7b2ff7',
+      light: '#9d5bfa',
+      dark: '#5816c9',
       contrastText: '#ffffff',
     },
     success: {
-      main: '#4caf50',
-      light: '#80e27e',
-      dark: '#087f23',
+      main: '#00e676',
+      light: '#33eb91',
+      dark: '#00a152',
     },
     warning: {
-      main: '#ff9800',
-      light: '#ffc947',
-      dark: '#c66900',
+      main: '#ff9100',
+      light: '#ffa733',
+      dark: '#b26500',
     },
     error: {
-      main: '#f44336',
-      light: '#ff7961',
-      dark: '#ba000d',
+      main: '#ff1744',
+      light: '#ff4569',
+      dark: '#b2102f',
     },
     background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
+      default: '#000000',
+      paper: 'rgba(15, 15, 22, 0.7)',
     },
     text: {
-      primary: '#212121',
-      secondary: '#757575',
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.7)',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-    h1: {
-      fontSize: '2.5rem',
-      fontWeight: 600,
-      lineHeight: 1.2,
-    },
-    h2: {
-      fontSize: '2rem',
-      fontWeight: 600,
-      lineHeight: 1.3,
-    },
-    h3: {
-      fontSize: '1.75rem',
-      fontWeight: 600,
-      lineHeight: 1.3,
-    },
-    h4: {
-      fontSize: '1.5rem',
-      fontWeight: 600,
-      lineHeight: 1.4,
-    },
-    h5: {
-      fontSize: '1.25rem',
-      fontWeight: 600,
-      lineHeight: 1.4,
-    },
-    h6: {
-      fontSize: '1rem',
-      fontWeight: 600,
-      lineHeight: 1.4,
-    },
-    body1: {
-      fontSize: '1rem',
-      lineHeight: 1.5,
-    },
-    body2: {
-      fontSize: '0.875rem',
-      lineHeight: 1.43,
-    },
-    button: {
-      textTransform: 'none',
-      fontWeight: 600,
-    },
-  },
-  shape: {
-    borderRadius: 12,
+    fontFamily: '"Plus Jakarta Sans", "Roboto", "Helvetica", "Arial", sans-serif',
+    h1: { fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2 },
+    h2: { fontSize: '2rem', fontWeight: 700, lineHeight: 1.3 },
+    h3: { fontSize: '1.75rem', fontWeight: 600, lineHeight: 1.3 },
+    h4: { fontSize: '1.5rem', fontWeight: 600, lineHeight: 1.4 },
+    h5: { fontSize: '1.25rem', fontWeight: 600, lineHeight: 1.4 },
+    h6: { fontSize: '1rem', fontWeight: 600, lineHeight: 1.5 },
+    subtitle1: { fontSize: '1rem', fontWeight: 500 },
+    subtitle2: { fontSize: '0.875rem', fontWeight: 500 },
+    button: { textTransform: 'none', fontWeight: 600 },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          background: 'radial-gradient(circle at 10% 20%, rgb(0, 0, 0) 0%, rgb(15, 15, 22) 100%)',
+          minHeight: '100vh',
+          backgroundAttachment: 'fixed',
+        }
+      }
+    },
     MuiCard: {
       styleOverrides: {
         root: {
-          background: 'rgba(255, 255, 255, 0.75)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.05)',
+          background: 'rgba(20, 20, 30, 0.65) !important',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           borderRadius: 16,
-          border: '1px solid rgba(255, 255, 255, 0.6)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: '0 20px 25px -5px rgba(37, 99, 235, 0.15), 0 10px 10px -5px rgba(37, 99, 235, 0.1)',
-            background: 'rgba(255, 255, 255, 0.85)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 12px 40px 0 rgba(0, 242, 254, 0.1)',
+            border: '1px solid rgba(0, 242, 254, 0.15)',
           },
         },
       },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+          backgroundColor: 'rgba(20, 20, 30, 0.65)',
+        }
+      }
     },
     MuiButton: {
       styleOverrides: {
@@ -113,9 +95,9 @@ export const theme = createTheme({
           fontWeight: 600,
         },
         contained: {
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
           '&:hover': {
-            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+            boxShadow: '0 6px 20px rgba(0, 242, 254, 0.3)',
           },
         },
       },
@@ -125,6 +107,16 @@ export const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            '& fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+            },
+            '&:hover fieldset': {
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#00f2fe',
+            },
           },
         },
       },
@@ -132,8 +124,9 @@ export const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 8,
           fontWeight: 600,
+          backgroundColor: 'rgba(255,255,255,0.05)',
         },
       },
     },
@@ -141,20 +134,24 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           border: 'none',
-          background: 'rgba(255, 255, 255, 0.85)',
+          background: 'rgba(20, 20, 30, 0.4)',
           borderRadius: 16,
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
           '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid rgba(0,0,0,0.05)',
+            borderBottom: '1px solid rgba(255,255,255,0.05)',
+            color: 'rgba(255,255,255,0.8)'
           },
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: 'rgba(248, 250, 252, 0.95)',
-            borderBottom: '2px solid rgba(0,0,0,0.1)',
+            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            borderBottom: '1px solid rgba(0,242,254,0.2)',
+            color: '#00f2fe'
           },
+          '& .MuiDataGrid-footerContainer': {
+            borderTop: '1px solid rgba(255,255,255,0.05)',
+          }
         },
       },
     },
   },
 });
 
-export default theme; 
+export default theme;
