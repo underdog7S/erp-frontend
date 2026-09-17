@@ -77,7 +77,7 @@ const HomePage = () => {
           left: 0, 
           right: 0, 
           zIndex: 1000, 
-          bgcolor: 'rgba(0,0,0,0)', 
+          bgcolor: '#000000', 
           backdropFilter: 'none',
           borderBottom: '1px solid transparent',
           boxShadow: 'none',
