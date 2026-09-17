@@ -97,15 +97,15 @@ const Dashboard = () => {
   );
 
   // Education data queries
-  const { data: eduSummary } = useQuery('eduSummary', () => api.get("/education/admin-summary/").then(res => res.data), { enabled: isEducation });
-  const { data: attendance = [], refetch: refetchAttendance } = useQuery('attendance', () => api.get("/education/staff-attendance/").then(res => res.data), { enabled: isEducation });
-  const { data: classStats = [] } = useQuery('classStats', () => api.get("/education/analytics/class-stats/").then(res => res.data), { enabled: isEducation });
-  const { data: monthlyReport, isLoading: loadingAnalytics } = useQuery(['monthlyReport', selectedMonth], () => api.get(`/education/analytics/monthly-report/?month=${selectedMonth}`).then(res => res.data), { enabled: isEducation });
-  const { data: attendanceTrendsData = [] } = useQuery('attendanceTrends', () => api.get("/education/analytics/attendance-trends/").then(res => res.data), { enabled: isEducation });
-  const { data: staffDistributionData = [] } = useQuery('staffDistribution', () => api.get("/education/analytics/staff-distribution/").then(res => res.data), { enabled: isEducation });
-  const { data: feeCollectionData = [] } = useQuery('feeCollection', () => api.get("/education/analytics/fee-collection/").then(res => res.data), { enabled: isEducation });
-  const { data: classPerformanceData = [] } = useQuery('classPerformance', () => api.get("/education/analytics/class-performance/").then(res => res.data), { enabled: isEducation });
-  const { data: validStaffIds = [] } = useQuery('validStaffIds', () => api.get('/education/staff/').then(res => Array.isArray(res.data) ? res.data.map(staff => staff.id) : []), { enabled: isEducation });
+  const { data: eduSummary } = useQuery('eduSummary', () => api.get("/education/admin-summary/").then(res => res.data).catch(() => ({})), { enabled: isEducation, retry: false });
+  const { data: attendance = [], refetch: refetchAttendance } = useQuery('attendance', () => api.get("/education/staff-attendance/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: classStats = [] } = useQuery('classStats', () => api.get("/education/analytics/class-stats/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: monthlyReport, isLoading: loadingAnalytics } = useQuery(['monthlyReport', selectedMonth], () => api.get(`/education/analytics/monthly-report/?month=${selectedMonth}`).then(res => res.data).catch(() => null), { enabled: isEducation, retry: false });
+  const { data: attendanceTrendsData = [] } = useQuery('attendanceTrends', () => api.get("/education/analytics/attendance-trends/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: staffDistributionData = [] } = useQuery('staffDistribution', () => api.get("/education/analytics/staff-distribution/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: feeCollectionData = [] } = useQuery('feeCollection', () => api.get("/education/analytics/fee-collection/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: classPerformanceData = [] } = useQuery('classPerformance', () => api.get("/education/analytics/class-performance/").then(res => res.data).catch(() => []), { enabled: isEducation, retry: false });
+  const { data: validStaffIds = [] } = useQuery('validStaffIds', () => api.get('/education/staff/').then(res => Array.isArray(res.data) ? res.data.map(staff => staff.id) : []).catch(() => []), { enabled: isEducation, retry: false });
 
   useEffect(() => {
     // Listen for plan upgrade event
