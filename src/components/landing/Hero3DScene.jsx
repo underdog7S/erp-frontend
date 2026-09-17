@@ -1,66 +1,108 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, Stars } from '@react-three/drei';
+import * as THREE from 'three';
 
-// Extremely basic spinning box to prevent any WebGL OOM issues on low-end devices
-const SpinningShape = ({ position, color, speed = 1 }) => {
-  const meshRef = useRef();
+const ScrollReactiveCamera = () => {
+  useFrame((state) => {
+    // Smoothly interpolate camera position based on scroll
+    const scrollY = window.scrollY;
+    const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+    const scrollProgress = scrollY / maxScroll;
+    
+    // Move camera through space
+    state.camera.position.z = THREE.MathUtils.lerp(state.camera.position.z, 10 - scrollProgress * 15, 0.05);
+    state.camera.position.y = THREE.MathUtils.lerp(state.camera.position.y, -scrollProgress * 5, 0.05);
+    state.camera.rotation.x = THREE.MathUtils.lerp(state.camera.rotation.x, scrollProgress * 0.5, 0.05);
+  });
+  return null;
+};
+
+const CyberGrid = () => {
+  const gridRef = useRef();
   
   useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x += delta * speed * 0.2;
-      meshRef.current.rotation.y += delta * speed * 0.3;
+    if (gridRef.current) {
+      gridRef.current.position.z = (gridRef.current.position.z + delta * 2) % 2;
     }
   });
 
   return (
-    <mesh ref={meshRef} position={position}>
-      <icosahedronGeometry args={[1, 0]} />
-      {/* Basic material doesn't use complex lighting shaders, avoiding HLSL compiler crashes */}
-      <meshBasicMaterial color={color} wireframe={true} />
-    </mesh>
+    <group ref={gridRef} position={[0, -5, -10]} rotation={[-Math.PI / 2, 0, 0]}>
+      <gridHelper args={[100, 100, '#00f2fe', '#00f2fe']} position={[0, 0, 0]}>
+        <lineBasicMaterial attach="material" color="#00f2fe" transparent opacity={0.15} />
+      </gridHelper>
+    </group>
   );
 };
 
-// Simple particle system without complex materials
-const Particles = ({ count = 50 }) => {
-  const meshRef = useRef();
-  
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 20;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 10 - 5;
-  }
+const FloatingCubes = () => {
+  const cubes = useMemo(() => {
+    return Array.from({ length: 40 }).map(() => ({
+      position: [
+        (Math.random() - 0.5) * 30,
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 30 - 10
+      ],
+      rotation: [Math.random() * Math.PI, Math.random() * Math.PI, 0],
+      scale: Math.random() * 0.5 + 0.2,
+      color: Math.random() > 0.5 ? '#00f2fe' : '#4facfe'
+    }));
+  }, []);
 
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.05;
+  return (
+    <>
+      {cubes.map((cube, i) => (
+        <Float key={i} speed={2} rotationIntensity={2} floatIntensity={2}>
+          <mesh position={cube.position} rotation={cube.rotation} scale={cube.scale}>
+            <boxGeometry args={[1, 1, 1]} />
+            <meshStandardMaterial color={cube.color} wireframe={Math.random() > 0.5} transparent opacity={0.6} />
+          </mesh>
+        </Float>
+      ))}
+    </>
+  );
+};
+
+const InteractiveTorus = () => {
+  const ref = useRef();
+  
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (ref.current) {
+      ref.current.rotation.x = t * 0.2;
+      ref.current.rotation.y = t * 0.3;
+      
+      // React to scroll
+      const scrollY = window.scrollY;
+      const scale = 1 + scrollY * 0.001;
+      ref.current.scale.set(scale, scale, scale);
     }
   });
 
   return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute 
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial size={0.1} color="#00f2fe" />
-    </points>
+    <mesh ref={ref} position={[0, 0, -5]}>
+      <torusGeometry args={[4, 0.1, 16, 100]} />
+      <meshStandardMaterial color="#00f2fe" wireframe emissive="#00f2fe" emissiveIntensity={0.5} />
+    </mesh>
   );
 };
 
 export default function Hero3DScene() {
   return (
-    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, opacity: 0.6, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={1}>
-        <SpinningShape position={[3, 0, -2]} color="#00f2fe" speed={1} />
-        <SpinningShape position={[-4, 2, -5]} color="#4facfe" speed={1.5} />
-        <SpinningShape position={[4, -3, -4]} color="#b388ff" speed={0.8} />
-        <Particles count={100} />
+    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none', opacity: 0.8 }}>
+      <Canvas camera={{ position: [0, 0, 10], fov: 60 }} dpr={[1, 2]}>
+        <ambientLight intensity={0.2} />
+        <pointLight position={[10, 10, 10]} intensity={1} color="#00f2fe" />
+        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#b388ff" />
+        
+        <ScrollReactiveCamera />
+        <CyberGrid />
+        <FloatingCubes />
+        <InteractiveTorus />
+        <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+        
+        <fog attach="fog" args={['#000000', 5, 30]} />
       </Canvas>
     </div>
   );

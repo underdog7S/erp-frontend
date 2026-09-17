@@ -86,38 +86,80 @@ const HomePage = () => {
           p: 2
         }}>
           <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => scrollToTop()}>
-              <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: -1 }}>
+            <Box 
+              component={motion.div}
+              whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+              whileTap={{ scale: 0.95 }}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', perspective: 1000 }} 
+              onClick={() => scrollToTop()}
+            >
+              <Typography variant="h5" fontWeight={800} sx={{ 
+                letterSpacing: -1, 
+                textShadow: '0 0 10px rgba(0, 242, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4)',
+                transformStyle: 'preserve-3d'
+              }}>
                 Zenith
               </Typography>
-              <Typography variant="h5" fontWeight={300} sx={{ color: 'rgba(255,255,255,0.5)' }}>
+              <Typography variant="h5" fontWeight={300} sx={{ color: 'rgba(255,255,255,0.8)' }}>
                 Solutions
               </Typography>
             </Box>
             
-            {/* Smooth Scroll Links */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>Solutions</Typography>
-              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>ERP Modules</Typography>
-              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('integrations')}>Integrations</Typography>
-              <Typography variant="body2" sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('process')}>Process</Typography>
+            {/* Smooth Scroll Links with 3D Hover */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center', perspective: 1000 }}>
+              {['solutions', 'modules', 'integrations', 'process'].map((section) => (
+                <Box
+                  key={section}
+                  component={motion.div}
+                  whileHover={{ 
+                    scale: 1.1, 
+                    z: 20,
+                    textShadow: '0px 0px 8px rgb(0,242,254)'
+                  }}
+                  whileTap={{ scale: 0.9 }}
+                  sx={{ 
+                    cursor: 'pointer', 
+                    fontWeight: 600, 
+                    color: 'rgba(255,255,255,0.7)', 
+                    textTransform: 'capitalize',
+                    transformStyle: 'preserve-3d',
+                    transition: 'color 0.3s'
+                  }} 
+                  onClick={() => scrollToSection(section)}
+                >
+                  {section === 'modules' ? 'ERP Modules' : section}
+                </Box>
+              ))}
             </Box>
 
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <Button color="inherit" onClick={() => navigate('/login')} sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 600 }}>
+              <Button 
+                component={motion.button}
+                whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(255,255,255,0.3)' }}
+                whileTap={{ scale: 0.95 }}
+                color="inherit" 
+                onClick={() => navigate('/login')} 
+                sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 600, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2 }}
+              >
                 Client Portal
               </Button>
               <Button 
-                variant="contained" 
+                component={motion.button}
+                whileHover={{ 
+                  scale: 1.05, 
+                  boxShadow: '0 10px 25px rgba(0, 242, 254, 0.6), 0 -5px 15px rgba(79, 172, 254, 0.4)',
+                  y: -3
+                }}
+                whileTap={{ scale: 0.95, y: 0, boxShadow: '0 5px 10px rgba(0, 242, 254, 0.4)' }}
                 onClick={() => setAuditDialogOpen(true)}
                 sx={{ 
                   background: 'linear-gradient(45deg, #00f2fe, #4facfe)', 
                   color: 'black', 
                   borderRadius: 2,
                   px: 3,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   boxShadow: '0 4px 15px rgba(0, 242, 254, 0.3)',
-                  '&:hover': { transform: 'scale(1.05)' }
+                  transformStyle: 'preserve-3d'
                 }}
               >
                 Start Project
