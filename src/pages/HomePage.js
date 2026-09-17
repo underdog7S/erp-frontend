@@ -36,15 +36,14 @@ const staggerContainer = {
 const HomePage = () => {
   const navigate = useNavigate();
   const [auditDialogOpen, setAuditDialogOpen] = useState(false);
-  const [navHidden, setNavHidden] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious();
-    if (latest > previous && latest > 150) {
-      setNavHidden(true);
+    if (latest > 50) {
+      setIsScrolled(true);
     } else {
-      setNavHidden(false);
+      setIsScrolled(false);
     }
   });
 
@@ -70,24 +69,20 @@ const HomePage = () => {
       />
       <Box sx={{ bgcolor: '#000000', minHeight: '100vh', color: 'white', overflowX: 'hidden' }}>
         
-        {/* Navigation Bar - Clean & Scrolling */}
+        {/* Navigation Bar - Clean & Sticky */}
         <Box 
-          component={motion.div}
-          variants={{
-            visible: { y: 0 },
-            hidden: { y: "-100%" }
-          }}
-          animate={navHidden ? "hidden" : "visible"}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
           sx={{ 
+
           position: 'fixed', 
           top: 0, 
           left: 0, 
           right: 0, 
           zIndex: 1000, 
-          bgcolor: 'rgba(0,0,0,0.6)', 
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          bgcolor: isScrolled ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0)', 
+          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
+          boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.5)' : 'none',
+          transition: 'all 0.3s ease-in-out',
           p: 2
         }}>
           <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

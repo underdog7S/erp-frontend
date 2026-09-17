@@ -6,6 +6,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 import ErrorBoundary from './ErrorBoundary';
 
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
+
 const theme = createTheme({
   palette: {
     mode: 'light',
@@ -17,11 +29,13 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ErrorBoundary>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <App />
-      </SnackbarProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+          <App />
+        </SnackbarProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
   </ErrorBoundary>
 );
