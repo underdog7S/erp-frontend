@@ -1035,7 +1035,7 @@ const Navigation = () => {
       color="primary" 
       elevation={3}
       sx={{ 
-        bgcolor: '#000000',
+        bgcolor: '#000000 !important',
           zIndex: theme.zIndex.drawer + 1,
           ml: !isMobile && user && desktopOpen ? `${drawerWidth}px` : 0,
           width: !isMobile && user && desktopOpen ? `calc(100% - ${drawerWidth}px)` : '100%',
