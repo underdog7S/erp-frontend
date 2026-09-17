@@ -6,7 +6,6 @@ import { Box, Card, CardContent, Typography, TextField, Button, Alert, Avatar, C
 import PricingModal from '../components/PricingModal';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import GoogleIcon from '@mui/icons-material/Google';
-import Footer from '../components/Footer';
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -170,12 +169,16 @@ const Register = () => {
           maxWidth: 500, 
           width: '100%', 
           p: 3, 
-          bgcolor: 'rgba(26, 26, 36, 0.8)',
+          backgroundColor: 'rgba(26, 26, 36, 0.8) !important',
           backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255,255,255,0.1)',
           color: 'white',
           boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          borderRadius: 4
+          borderRadius: 4,
+          '&:hover': {
+            backgroundColor: 'rgba(26, 26, 36, 0.9) !important',
+            transform: 'none'
+          }
         }}>
           <CardContent>
             <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
@@ -358,9 +361,6 @@ const Register = () => {
           
           </CardContent>
         </Card>
-      </Box>
-      <Box sx={{ position: 'relative', zIndex: 1 }}>
-        <Footer />
       </Box>
     </Box>
   );

@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import api, { logout } from "../services/api";
+import { useQuery } from 'react-query';
 import { Card, CardContent, Typography, Grid, Box, Button, Alert, Avatar, CircularProgress, LinearProgress, Container } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import StorageIcon from '@mui/icons-material/Storage';
@@ -31,31 +32,15 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [eduSummary, setEduSummary] = useState(null);
-  const [attendance, setAttendance] = useState([]);
   const [checkingIn, setCheckingIn] = useState(false);
-  const [classStats, setClassStats] = useState([]);
-  const [monthlyReport, setMonthlyReport] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
   });
-  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'error' });
-  const [validStaffIds, setValidStaffIds] = useState([]);
-  const [attendanceTrendsData, setAttendanceTrendsData] = useState([]);
-  const [staffDistributionData, setStaffDistributionData] = useState([]);
-  const [feeCollectionData, setFeeCollectionData] = useState([]);
-  const [classPerformanceData, setClassPerformanceData] = useState([]);
-  const [plans, setPlans] = useState([]);
   const [upgrading, setUpgrading] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
-  const [razorpaySetupStatus, setRazorpaySetupStatus] = useState(null);
   const [showRazorpaySetup, setShowRazorpaySetup] = useState(false);
 
   // Get user profile from localStorage at component level
@@ -65,6 +50,7 @@ const Dashboard = () => {
     ? userProfile.role 
     : (userProfile.role?.name || userProfile.role || '');
   const userIndustry = userProfile.industry || '';
+  const isEducation = userIndustry.toLowerCase() === 'education';
   
   // Check if user is admin - more comprehensive check
   const isAdmin = useMemo(() => {
@@ -74,136 +60,77 @@ const Dashboard = () => {
     return roleStr === 'admin' || roleName === 'admin' || roleObj === 'admin' || 
            userProfile?.role === 'admin' || String(userProfile?.role).toLowerCase() === 'admin';
   }, [userRole, userProfile]);
-  
-  // Debug: Log role for Razorpay card visibility
-  useEffect(() => {
-    console.log('🔍 Razorpay Card Debug:', {
-      userRole,
-      userProfileRole: userProfile?.role,
-      isAdmin,
-      razorpaySetupStatus,
-      shouldShowSetupCard: isAdmin && (razorpaySetupStatus === null || (razorpaySetupStatus && !razorpaySetupStatus.is_configured)),
-      shouldShowActiveCard: isAdmin && razorpaySetupStatus && razorpaySetupStatus.is_configured
-    });
-  }, [userRole, userProfile, razorpaySetupStatus, isAdmin]);
 
-  // Define checkRazorpaySetup before useEffect to avoid hoisting issues
-  const checkRazorpaySetup = async () => {
-    try {
-      console.log('🔍 Checking Razorpay setup status...');
-      const status = await getRazorpaySetupStatus();
-      console.log('🔍 Razorpay setup status received:', status);
-      setRazorpaySetupStatus(status);
-    } catch (error) {
-      // Razorpay setup check failed, set default status to show setup card for admin users
-      console.error('❌ Razorpay setup check failed:', error);
-      console.log('🔍 Setting default status to show setup card for admin users');
-      // Always set a default status so card can show for admin users
-      setRazorpaySetupStatus({
-        is_configured: false,
-        has_key_id: false,
-        has_key_secret: false,
-        has_webhook_secret: false,
-        is_enabled: false,
-        setup_completed: false,
-        setup_steps: []
-      });
-    }
-  };
+  // React Query Fetching
+  const { data: stats, isLoading: loadingStats, error: statsError } = useQuery(
+    'dashboardStats',
+    () => api.get("/dashboard/").then(res => res.data)
+  );
 
-  useEffect(() => {
-    // REMOVED AUTO-REDIRECT: Let Dashboard show for all users
-    // Users can click the button to go to their industry-specific dashboard if they want
-    // This allows Dashboard to properly display Razorpay setup card and other features
-    
-    const fetchData = async () => {
-      setLoading(true);
-      setError("");
+  const { data: alerts = [] } = useQuery(
+    'alerts',
+    () => api.get("/alerts/").then(res => res.data)
+  );
+
+  const { data: plans = [] } = useQuery(
+    'plans',
+    () => fetchPlans().catch(() => [])
+  );
+
+  const { data: razorpaySetupStatus, refetch: checkRazorpaySetup } = useQuery(
+    'razorpayStatus',
+    async () => {
       try {
-        const [statsRes, alertsRes] = await Promise.all([
-          api.get("/dashboard/"),
-          api.get("/alerts/")
-        ]);
-        setStats(statsRes.data);
-        setAlerts(alertsRes.data);
-      } catch (err) {
-        setError("Failed to load dashboard. Please login again.");
-      } finally {
-        setLoading(false);
+        return await getRazorpaySetupStatus();
+      } catch (e) {
+        return {
+          is_configured: false,
+          has_key_id: false,
+          has_key_secret: false,
+          has_webhook_secret: false,
+          is_enabled: false,
+          setup_completed: false,
+          setup_steps: []
+        };
       }
-    };
-    // Fetch dashboard data for all roles
-    fetchData();
-    // Load plans for upgrade card
-    fetchPlans().then(setPlans).catch(()=>setPlans([]));
-    // Check Razorpay setup status
-    checkRazorpaySetup();
-    
-    // Only fetch education data if user is in education industry
-    if (userIndustry && userIndustry.toLowerCase() === 'education') {
-      api.get("/education/admin-summary/").then(res => {
-        setEduSummary(res.data);
-      }).catch(()=>{});
-      api.get("/education/staff-attendance/").then(res => setAttendance(res.data)).catch(()=>{});
-      api.get("/education/analytics/class-stats/").then(res => {
-        setClassStats(res.data);
-      }).catch(()=>{});
-      fetchMonthlyReport(selectedMonth);
-      api.get("/education/analytics/attendance-trends/").then(res => setAttendanceTrendsData(res.data)).catch(()=>setAttendanceTrendsData([]));
-      api.get("/education/analytics/staff-distribution/").then(res => setStaffDistributionData(res.data)).catch(()=>setStaffDistributionData([]));
-      api.get("/education/analytics/fee-collection/").then(res => setFeeCollectionData(res.data)).catch(()=>setFeeCollectionData([]));
-      api.get("/education/analytics/class-performance/").then(res => setClassPerformanceData(res.data)).catch(()=>setClassPerformanceData([]));
     }
-  }, [navigate, selectedMonth]);
+  );
 
-  useEffect(() => {
-    // Fetch valid staff IDs for the tenant on mount (only for education industry)
-    if (userIndustry && userIndustry.toLowerCase() === 'education') {
-      api.get('/education/staff/').then(res => {
-        if (Array.isArray(res.data)) {
-          setValidStaffIds(res.data.map(staff => staff.id));
-        }
-      }).catch(() => {});
-    }
-  }, [userIndustry]);
+  // Education data queries
+  const { data: eduSummary } = useQuery('eduSummary', () => api.get("/education/admin-summary/").then(res => res.data), { enabled: isEducation });
+  const { data: attendance = [], refetch: refetchAttendance } = useQuery('attendance', () => api.get("/education/staff-attendance/").then(res => res.data), { enabled: isEducation });
+  const { data: classStats = [] } = useQuery('classStats', () => api.get("/education/analytics/class-stats/").then(res => res.data), { enabled: isEducation });
+  const { data: monthlyReport, isLoading: loadingAnalytics } = useQuery(['monthlyReport', selectedMonth], () => api.get(`/education/analytics/monthly-report/?month=${selectedMonth}`).then(res => res.data), { enabled: isEducation });
+  const { data: attendanceTrendsData = [] } = useQuery('attendanceTrends', () => api.get("/education/analytics/attendance-trends/").then(res => res.data), { enabled: isEducation });
+  const { data: staffDistributionData = [] } = useQuery('staffDistribution', () => api.get("/education/analytics/staff-distribution/").then(res => res.data), { enabled: isEducation });
+  const { data: feeCollectionData = [] } = useQuery('feeCollection', () => api.get("/education/analytics/fee-collection/").then(res => res.data), { enabled: isEducation });
+  const { data: classPerformanceData = [] } = useQuery('classPerformance', () => api.get("/education/analytics/class-performance/").then(res => res.data), { enabled: isEducation });
+  const { data: validStaffIds = [] } = useQuery('validStaffIds', () => api.get('/education/staff/').then(res => Array.isArray(res.data) ? res.data.map(staff => staff.id) : []), { enabled: isEducation });
 
   useEffect(() => {
     // Listen for plan upgrade event
     const handlePlanChanged = () => {
       setSnackbar({ open: true, message: 'Plan upgraded successfully!', severity: 'success' });
-      // Optionally, refresh dashboard data here
-      // fetchData();
     };
     window.addEventListener('planChanged', handlePlanChanged);
     return () => window.removeEventListener('planChanged', handlePlanChanged);
   }, []);
 
-  const fetchMonthlyReport = (month) => {
-    // Only fetch education monthly report if user is in education industry
-    if (!userIndustry || userIndustry.toLowerCase() !== 'education') {
-      return;
-    }
-    
-    setLoadingAnalytics(true);
-    api.get(`/education/analytics/monthly-report/?month=${month}`)
-      .then(res => {
-        setMonthlyReport(res.data);
-      })
-      .catch(()=>setMonthlyReport(null))
-      .finally(()=>setLoadingAnalytics(false));
-  };
+  const loading = loadingStats;
+  const error = statsError ? "Failed to load dashboard. Please login again." : "";
 
   if (loading) return <Box sx={{p:4, textAlign:'center'}}><Typography variant="h6">Loading dashboard...</Typography></Box>;
   if (error) return <Alert severity="error" action={<Button color="inherit" size="small" onClick={logout}>Login</Button>}>{error}</Alert>;
   if (!stats) return null;
 
   const handleCheckIn = async () => {
+
     // Only allow check-in for education industry
     if (!userIndustry || userIndustry.toLowerCase() !== 'education') {
       setSnackbar({ open: true, message: 'Check-in is only available for education industry.', severity: 'info' });
       return;
     }
-    
+
     setCheckingIn(true);
     try {
       const user = getStoredUser();
@@ -225,7 +152,7 @@ const Dashboard = () => {
         date: new Date().toISOString().slice(0,10),
         check_in: new Date().toLocaleTimeString('en-GB', { hour12: false }),
       });
-      api.get("/education/staff-attendance/").then(res => setAttendance(res.data));
+      refetchAttendance();
       setSnackbar({ open: true, message: 'Check-in successful!', severity: 'success' });
     } catch (err) {
       setSnackbar({ open: true, message: 'Check-in failed!', severity: 'error' });
@@ -239,7 +166,7 @@ const Dashboard = () => {
       setSnackbar({ open: true, message: 'Check-out is only available for education industry.', severity: 'info' });
       return;
     }
-    
+
     setCheckingIn(true);
     try {
       const user = getStoredUser();
@@ -260,7 +187,7 @@ const Dashboard = () => {
         department_id,
         check_out: new Date().toLocaleTimeString('en-GB', { hour12: false }),
       });
-      api.get("/education/staff-attendance/").then(res => setAttendance(res.data));
+      refetchAttendance();
       setSnackbar({ open: true, message: 'Check-out successful!', severity: 'success' });
     } catch (err) {
       setSnackbar({ open: true, message: 'Check-out failed!', severity: 'error' });
@@ -310,10 +237,10 @@ const Dashboard = () => {
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       {/* Executive Hero Banner */}
-      <Box sx={{ 
-        mb: 4, 
-        p: { xs: 3, md: 6 }, 
-        borderRadius: 4, 
+      <Box sx={{
+        mb: 4,
+        p: { xs: 3, md: 6 },
+        borderRadius: 4,
         background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
         color: 'white',
         boxShadow: '0 12px 40px rgba(48, 43, 99, 0.5)',
@@ -332,18 +259,18 @@ const Dashboard = () => {
           filter: 'blur(40px)',
           animation: 'pulse 6s infinite'
         }} />
-        
-        <Typography variant="h3" fontWeight="800" gutterBottom sx={{ 
-          position: 'relative', zIndex: 1, 
-          background: '-webkit-linear-gradient(45deg, #00f2fe, #4facfe)', 
-          WebkitBackgroundClip: 'text', 
+
+        <Typography variant="h3" fontWeight="800" gutterBottom sx={{
+          position: 'relative', zIndex: 1,
+          background: '-webkit-linear-gradient(45deg, #00f2fe, #4facfe)',
+          WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           letterSpacing: '-1px'
         }}>
           Welcome back, {userProfile.first_name || userRole || 'Admin'}!
         </Typography>
         <Typography variant="h6" sx={{ opacity: 0.85, maxWidth: 600, position: 'relative', zIndex: 1, fontWeight: 300, lineHeight: 1.6 }}>
-          You are currently logged into the {userIndustry || 'System'} control center. 
+          You are currently logged into the {userIndustry || 'System'} control center.
           Manage your operations, monitor revenue, and drive growth with Zenith technology.
         </Typography>
       </Box>
@@ -355,10 +282,10 @@ const Dashboard = () => {
       <Grid container spacing={3} sx={{ mb: 5 }}>
         {userIndustry && (
           <Grid item xs={12} sm={6} md={4}>
-            <Card 
+            <Card
               elevation={0}
-              sx={{ 
-                height: '100%', 
+              sx={{
+                height: '100%',
                 cursor: 'pointer',
                 bgcolor: '#1a1a24',
                 color: 'white',
@@ -391,14 +318,14 @@ const Dashboard = () => {
             </Card>
           </Grid>
         )}
-        
+
         {/* System Settings Quick Link */}
         {isAdmin && (
           <Grid item xs={12} sm={6} md={4}>
-            <Card 
+            <Card
               elevation={0}
-              sx={{ 
-                height: '100%', 
+              sx={{
+                height: '100%',
                 cursor: 'pointer',
                 bgcolor: '#1a1a24',
                 color: 'white',
@@ -437,9 +364,9 @@ const Dashboard = () => {
                   <Typography variant="body2">Enable online payments for your customers. Accept payments via Razorpay in all sectors.</Typography>
                 </Box>
               </Box>
-              <Button 
-                variant="contained" 
-                color="secondary" 
+              <Button
+                variant="contained"
+                color="secondary"
                 onClick={() => setShowRazorpaySetup(true)}
                 sx={{ whiteSpace: 'nowrap' }}
               >
@@ -462,9 +389,9 @@ const Dashboard = () => {
                   <Typography variant="body2">Your Razorpay account is configured and ready to accept payments.</Typography>
                 </Box>
               </Box>
-              <Button 
-                variant="outlined" 
-                color="inherit" 
+              <Button
+                variant="outlined"
+                color="inherit"
                 onClick={() => setShowRazorpaySetup(true)}
                 sx={{ whiteSpace: 'nowrap', borderColor: 'currentColor' }}
               >
@@ -544,11 +471,11 @@ const Dashboard = () => {
           { icon: <BusinessIcon sx={{color: '#a18cd1'}} />, label: 'Industry', value: stats.industry || '-' }
         ].map((item, idx) => (
           <Grid item xs={12} sm={6} md={4} key={idx}>
-            <Card elevation={0} sx={{ 
-              bgcolor: '#1a1a24', 
-              color: 'white', 
+            <Card elevation={0} sx={{
+              bgcolor: '#1a1a24',
+              color: 'white',
               border: '1px solid rgba(255,255,255,0.05)',
-              '&:hover': { bgcolor: '#222230', borderColor: 'rgba(255,255,255,0.1)' } 
+              '&:hover': { bgcolor: '#222230', borderColor: 'rgba(255,255,255,0.1)' }
             }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={3}>
@@ -605,18 +532,18 @@ const Dashboard = () => {
 
       {/* Razorpay Setup Wizard Dialog */}
       {showRazorpaySetup && (
-        <Dialog 
-          open={showRazorpaySetup} 
-          onClose={() => setShowRazorpaySetup(false)} 
-          maxWidth="md" 
+        <Dialog
+          open={showRazorpaySetup}
+          onClose={() => setShowRazorpaySetup(false)}
+          maxWidth="md"
           fullWidth
         >
           <DialogContent>
-            <RazorpaySetupWizard 
+            <RazorpaySetupWizard
               onComplete={() => {
                 setShowRazorpaySetup(false);
                 checkRazorpaySetup();
-              }} 
+              }}
             />
           </DialogContent>
         </Dialog>

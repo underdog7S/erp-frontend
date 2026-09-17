@@ -998,7 +998,7 @@ const Navigation = () => {
 
   const drawerWidth = 280;
 
-  const shouldHideNavigation = hideNavigationPaths.some(path => location.pathname.startsWith(path));
+  const shouldHideNavigation = hideNavigationPaths.some(path => location.pathname.startsWith(path)) || location.pathname === '/';
 
   if (shouldHideNavigation) {
     return null;
@@ -1031,7 +1031,7 @@ const Navigation = () => {
       )}
 
     <AppBar 
-        position="fixed" 
+        position={location.pathname === '/' ? "absolute" : "fixed"} 
       color="primary" 
       elevation={3}
       sx={{ 

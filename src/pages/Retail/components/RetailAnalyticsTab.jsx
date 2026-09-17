@@ -13,8 +13,12 @@ const RetailAnalyticsTab = () => {
     try {
       const res = await api.get('/retail/analytics/');
       setData(res.data);
-    } catch {
-      setError("Failed to load analytics.");
+    } catch (err) {
+      if (err.response && err.response.status === 403) {
+        setError("Analytics features require a paid plan. Please upgrade your tenant plan to access this feature.");
+      } else {
+        setError("Failed to load analytics.");
+      }
     } finally {
       setLoading(false);
     }
@@ -23,7 +27,18 @@ const RetailAnalyticsTab = () => {
   useEffect(() => { fetchAnalytics(); }, []);
 
   if (loading) return <CircularProgress />;
-  if (error) return <Alert severity="error">{error}</Alert>;
+  if (error) {
+    if (error.includes("upgrade")) {
+      return (
+        <Box sx={{ p: 3 }}>
+          <Alert severity="warning" action={<Button color="inherit" size="small" onClick={() => window.location.href='/dashboard'}>Upgrade Plan</Button>}>
+            {error}
+          </Alert>
+        </Box>
+      );
+    }
+    return <Alert severity="error">{error}</Alert>;
+  }
   if (!data) return <Alert severity="info">No analytics data available.</Alert>;
 
   return (

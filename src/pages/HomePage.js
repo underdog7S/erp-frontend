@@ -72,16 +72,15 @@ const HomePage = () => {
         {/* Navigation Bar - Clean & Sticky */}
         <Box 
           sx={{ 
-
-          position: 'fixed', 
+          position: 'absolute', 
           top: 0, 
           left: 0, 
           right: 0, 
           zIndex: 1000, 
-          bgcolor: isScrolled ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0)', 
-          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
-          borderBottom: isScrolled ? '1px solid rgba(255,255,255,0.1)' : '1px solid transparent',
-          boxShadow: isScrolled ? '0 4px 30px rgba(0, 0, 0, 0.5)' : 'none',
+          bgcolor: 'rgba(0,0,0,0)', 
+          backdropFilter: 'none',
+          borderBottom: '1px solid transparent',
+          boxShadow: 'none',
           transition: 'all 0.3s ease-in-out',
           p: 2
         }}>
