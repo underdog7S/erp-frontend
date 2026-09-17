@@ -770,7 +770,7 @@ const FeeManagement = () => {
         if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
           apiUrl = 'http://localhost:8000/api';
         } else {
-          apiUrl = 'https://api.zenitherp.online/api';
+          apiUrl = 'https://erp-backend-av9v.onrender.com/api';
         }
       }
       // Force HTTPS if frontend is HTTPS

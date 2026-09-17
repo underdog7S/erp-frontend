@@ -19,7 +19,7 @@ const FeePaymentQRCode = ({ studentId, studentName, studentRollNumber, tenantId,
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(studentId ? { id: studentId, name: studentName, rollNumber: studentRollNumber } : null);
 
-  const API_BASE = process.env.REACT_APP_API_URL || 'https://api.zenitherp.online/api';
+  const API_BASE = process.env.REACT_APP_API_URL || 'https://erp-backend-av9v.onrender.com/api';
   const FRONTEND_URL = process.env.REACT_APP_FRONTEND_URL || window.location.origin;
 
   useEffect(() => {

@@ -28,7 +28,7 @@ const PublicFeePayment = () => {
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [paymentData, setPaymentData] = useState(null);
 
-  const API_BASE = process.env.REACT_APP_API_URL || 'https://api.zenitherp.online/api';
+  const API_BASE = process.env.REACT_APP_API_URL || 'https://erp-backend-av9v.onrender.com/api';
 
   const checkFeeStatus = async () => {
     if (!formData.student_roll_number || !formData.parent_phone || !formData.tenant_id) {

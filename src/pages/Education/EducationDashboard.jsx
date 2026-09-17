@@ -85,7 +85,7 @@ const getApiBaseUrl = () => {
   } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     url = 'http://localhost:8000/api';  // Local development - use HTTP
   } else {
-    url = 'https://api.zenitherp.online/api';  // Production - use HTTPS
+    url = 'https://erp-backend-av9v.onrender.com/api';  // Production - use HTTPS
   }
   // Force HTTPS if frontend is HTTPS
   if (window.location.protocol === 'https:' && url.startsWith('http://')) {

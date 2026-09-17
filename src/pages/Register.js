@@ -132,7 +132,7 @@ const Register = () => {
       if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         apiBaseUrl = 'http://localhost:8000/api';
       } else {
-        apiBaseUrl = 'https://api.zenitherp.online/api';
+        apiBaseUrl = 'https://erp-backend-av9v.onrender.com/api';
       }
     } else if (!apiBaseUrl.endsWith('/api')) {
       apiBaseUrl = apiBaseUrl.endsWith('/') ? `${apiBaseUrl}api` : `${apiBaseUrl}/api`;

@@ -27,7 +27,7 @@ const NetworkError = () => {
   const checkConnection = async () => {
     setConnectionCheck(true);
     try {
-      const response = await fetch('https://api.zenitherp.online/api/', { 
+      const response = await fetch('https://erp-backend-av9v.onrender.com/api/', { 
         method: 'HEAD',
         mode: 'no-cors'
       });
