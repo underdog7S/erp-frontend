@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { Box, Container, Typography, Button, Grid, Card, CardContent } from '@mui/material';
-import { ArrowForward as ArrowIcon, PlayCircleOutline as PlayIcon } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Grid, Card, CardContent, Drawer, List, ListItem, ListItemText, IconButton, Collapse, Divider } from '@mui/material';
+import { ArrowForward as ArrowIcon, PlayCircleOutline as PlayIcon, Menu as MenuIcon, Close as CloseIcon, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 // Import Modular Components
@@ -37,7 +37,18 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [auditDialogOpen, setAuditDialogOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenus, setOpenMenus] = useState({});
   const { scrollY } = useScroll();
+
+  const toggleMenu = (menu) => {
+    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
+
+  const handleMobileNav = (section) => {
+    setMobileOpen(false);
+    scrollToSection(section);
+  };
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 50) {
@@ -307,6 +318,12 @@ const HomePage = () => {
             </Box>
 
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <IconButton 
+                sx={{ display: { xs: 'flex', md: 'none' }, color: 'white' }}
+                onClick={() => setMobileOpen(true)}
+              >
+                <MenuIcon />
+              </IconButton>
               <Button 
                 component={motion.button}
                 whileHover={{ scale: 1.05, boxShadow: '0 0 15px rgba(255,255,255,0.3)' }}
@@ -546,18 +563,143 @@ const HomePage = () => {
           </Container>
         </Box>
 
-        {/* Footer */}
-        <Box sx={{ py: 5, bgcolor: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: -1, color: '#00f2fe' }}>Zenith</Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)', fontWeight: 600, letterSpacing: 1 }}>ENGINEERING STUDIO</Typography>
+        {/* Upgraded Multi-Column Footer */}
+        <Box sx={{ pt: 10, pb: 4, bgcolor: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <Container maxWidth="lg">
+            <Grid container spacing={4} sx={{ mb: 6 }}>
+              <Grid item xs={12} md={4}>
+                <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -1, color: '#00f2fe', mb: 2 }}>
+                  ZS<br/><span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>Zenith Solution</span>
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
+                  We engineer premium web applications, integrate artificial intelligence, and build custom ERP software that transforms your business operations into an autonomous powerhouse.
+                </Typography>
+              </Grid>
+              <Grid item xs={6} md={2}>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Services</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {['Web, SEO & AEO', 'E-Commerce Platforms', 'API Integrations', 'AI Automation'].map(item => (
+                    <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>{item}</Typography>
+                  ))}
+                </Box>
+              </Grid>
+              <Grid item xs={6} md={2}>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Products (ERP)</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {['Education ERP', 'Retail & POS', 'Pharmacy', 'Hotel & Restaurant'].map(item => (
+                    <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>{item}</Typography>
+                  ))}
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Company</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/login')}>Client Portal</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('process')}>Our Process</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => setAuditDialogOpen(true)}>Request Blueprint</Typography>
+                </Box>
+              </Grid>
+            </Grid>
+            <Box sx={{ pt: 4, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
+                © {new Date().getFullYear()} Zenith Tech Solutions. Architected with precision.
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
+                Privacy Policy • Terms of Service
+              </Typography>
             </Box>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.4)' }}>
-              © {new Date().getFullYear()} Zenith Tech Solutions. Architected with precision.
-            </Typography>
           </Container>
         </Box>
+
+        {/* Mobile Navigation Drawer */}
+        <Drawer
+          anchor="right"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          PaperProps={{
+            sx: {
+              width: '100%',
+              maxWidth: 300,
+              bgcolor: 'rgba(10,10,15,0.95)',
+              backdropFilter: 'blur(20px)',
+              borderLeft: '1px solid rgba(0,242,254,0.2)',
+              color: 'white'
+            }
+          }}
+        >
+          <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <Typography variant="h6" fontWeight={800} sx={{ color: '#00f2fe' }}>Menu</Typography>
+            <IconButton onClick={() => setMobileOpen(false)} sx={{ color: 'white' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <List sx={{ p: 0 }}>
+            {/* Services */}
+            <ListItem button onClick={() => toggleMenu('services')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <ListItemText primary="Services" primaryTypographyProps={{ fontWeight: 600 }} />
+              {openMenus.services ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={openMenus.services} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
+                {['AI Automation', 'Custom ERP', 'Web, SEO & AEO', 'E-Commerce', 'API Integrations'].map(item => (
+                  <ListItem key={item} button sx={{ pl: 4 }} onClick={() => handleMobileNav('solutions')}>
+                    <ListItemText primary={item} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+
+            {/* Products */}
+            <ListItem button onClick={() => toggleMenu('products')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <ListItemText primary="Products (ERP)" primaryTypographyProps={{ fontWeight: 600 }} />
+              {openMenus.products ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={openMenus.products} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
+                {['Education', 'Pharmacy', 'Retail', 'Hotel', 'Restaurant', 'Salon'].map(item => (
+                  <ListItem key={item} button sx={{ pl: 4 }} onClick={() => handleMobileNav('modules')}>
+                    <ListItemText primary={item} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+
+            {/* Company */}
+            <ListItem button onClick={() => toggleMenu('company')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <ListItemText primary="Company" primaryTypographyProps={{ fontWeight: 600 }} />
+              {openMenus.company ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={openMenus.company} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
+                <ListItem button sx={{ pl: 4 }} onClick={() => handleMobileNav('process')}>
+                  <ListItemText primary="Our Process" primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                </ListItem>
+                <ListItem button sx={{ pl: 4 }} onClick={() => handleMobileNav('integrations')}>
+                  <ListItemText primary="Integrations" primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                </ListItem>
+              </List>
+            </Collapse>
+            
+            <Box sx={{ p: 3 }}>
+              <Button 
+                fullWidth 
+                variant="outlined" 
+                sx={{ mb: 2, color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+                onClick={() => { setMobileOpen(false); navigate('/login'); }}
+              >
+                Client Portal
+              </Button>
+              <Button 
+                fullWidth 
+                variant="contained" 
+                sx={{ background: 'linear-gradient(45deg, #00f2fe, #4facfe)', color: 'black', fontWeight: 800 }}
+                onClick={() => { setMobileOpen(false); setAuditDialogOpen(true); }}
+              >
+                Inquiry
+              </Button>
+            </Box>
+          </List>
+        </Drawer>
 
         {/* Dialog for Custom Services */}
         <CustomServiceFormDialog 
