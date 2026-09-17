@@ -89,23 +89,55 @@ const HomePage = () => {
               component={motion.div}
               whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
               whileTap={{ scale: 0.95 }}
-              sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', perspective: 1000 }} 
+              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer', perspective: 1000 }} 
               onClick={() => scrollToTop()}
             >
-              <Typography variant="h5" fontWeight={800} sx={{ 
+              <Typography variant="h4" fontWeight={900} sx={{ 
+                lineHeight: 1,
                 letterSpacing: -1, 
                 textShadow: '0 0 10px rgba(0, 242, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4)',
-                transformStyle: 'preserve-3d'
+                transformStyle: 'preserve-3d',
+                color: '#fff',
+                background: 'linear-gradient(to right, #fff, #00f2fe)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
               }}>
-                Zenith
+                ZS
               </Typography>
-              <Typography variant="h5" fontWeight={300} sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                Solutions
+              <Typography variant="caption" fontWeight={400} sx={{ color: 'rgba(255,255,255,0.8)', letterSpacing: 1, mt: -0.5 }}>
+                Zenith Solution
               </Typography>
             </Box>
             
             {/* Smooth Scroll Links with 3D Hover */}
             <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center', perspective: 1000 }}>
+              
+              {/* Services Dropdown */}
+              <Box sx={{ position: 'relative', '&:hover .services-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
+                <Box
+                  component={motion.div}
+                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
+                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s' }}
+                >
+                  Services ▾
+                </Box>
+                <Box 
+                  className="services-menu"
+                  sx={{ 
+                    position: 'absolute', top: '100%', left: 0, pt: 2,
+                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s', zIndex: 100 
+                  }}
+                >
+                  <Box sx={{ bgcolor: 'rgba(10,10,15,0.95)', border: '1px solid rgba(0,242,254,0.2)', borderRadius: 2, p: 1, minWidth: '160px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                    {['Classic', 'Thunderbolt'].map(item => (
+                      <Box key={item} sx={{ p: 1.5, color: 'white', cursor: 'pointer', borderRadius: 1, fontWeight: 500, '&:hover': { bgcolor: 'rgba(0,242,254,0.1)', color: '#00f2fe' } }}>
+                        {item}
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+
               {['solutions', 'modules', 'integrations', 'process'].map((section) => (
                 <Box
                   key={section}
@@ -161,7 +193,7 @@ const HomePage = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                Start Project
+                Inquiry
               </Button>
             </Box>
           </Container>
