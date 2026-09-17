@@ -240,7 +240,7 @@ const Navigation = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isOpen: desktopOpen, toggleSidebar, openSidebar } = useSidebar();
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
-  const hideNavigationPaths = ['/login', '/register', '/auth/google/callback'];
+  const hideNavigationPaths = ['/auth/google/callback'];
 
   // Fetch today's attendance function
   const fetchTodayAttendance = async () => {

@@ -244,29 +244,66 @@ const HomePage = () => {
                 </Box>
               </Box>
 
-              {['integrations', 'process'].map((section) => (
+              {/* Company Dropdown */}
+              <Box sx={{ position: 'relative', '&:hover .company-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
                 <Box
-                  key={section}
                   component={motion.div}
-                  whileHover={{ 
-                    scale: 1.1, 
-                    z: 20,
-                    textShadow: '0px 0px 8px rgb(0,242,254)'
-                  }}
-                  whileTap={{ scale: 0.9 }}
-                  sx={{ 
-                    cursor: 'pointer', 
-                    fontWeight: 600, 
-                    color: 'rgba(255,255,255,0.7)', 
-                    textTransform: 'capitalize',
-                    transformStyle: 'preserve-3d',
-                    transition: 'color 0.3s'
-                  }} 
-                  onClick={() => scrollToSection(section)}
+                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
+                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
                 >
-                  {section}
+                  Company ▾
                 </Box>
-              ))}
+                <Box 
+                  className="company-menu"
+                  sx={{ 
+                    position: 'absolute', top: '100%', left: '-50px', pt: 1,
+                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
+                  }}
+                >
+                  <Box sx={{ 
+                    bgcolor: 'rgba(15,15,22,0.95)', 
+                    border: '1px solid rgba(0,242,254,0.3)', 
+                    borderRadius: 3, 
+                    p: 2, 
+                    width: '280px', 
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
+                    backdropFilter: 'blur(20px)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1
+                  }}>
+                    {[
+                      { title: 'Our Process', desc: 'How we build and ship', section: 'process' },
+                      { title: 'Integrations', desc: 'Tech ecosystem & APIs', section: 'integrations' }
+                    ].map(item => (
+                      <Box 
+                        key={item.title} 
+                        onClick={() => scrollToSection(item.section)}
+                        sx={{ 
+                          p: 1.5, 
+                          color: 'white', 
+                          cursor: 'pointer', 
+                          borderRadius: 2, 
+                          border: '1px solid transparent',
+                          transition: 'all 0.2s ease',
+                          '&:hover': { 
+                            bgcolor: 'rgba(0,242,254,0.05)', 
+                            borderColor: 'rgba(0,242,254,0.2)',
+                            transform: 'translateX(4px)'
+                          } 
+                        }}
+                      >
+                        <Typography variant="subtitle2" sx={{ color: '#00f2fe', fontWeight: 700, mb: 0.5 }}>
+                          {item.title}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
+                          {item.desc}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
             </Box>
 
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>

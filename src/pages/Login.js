@@ -73,6 +73,8 @@ const Login = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center', 
+      pt: 10,
+      pb: 4,
       background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
       position: 'relative',
       overflow: 'hidden'
