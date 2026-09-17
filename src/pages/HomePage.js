@@ -141,12 +141,14 @@ const HomePage = () => {
                     gap: 1.5
                   }}>
                     {[
-                      { title: 'AI Automation', desc: 'AI Agents & Chatbots' },
-                      { title: 'Enterprise Systems', desc: 'Custom CRM & ERP' },
+                      { title: 'AI Automation & Bots', desc: 'Custom AI Agents via API' },
+                      { title: 'Custom ERP & CRM', desc: 'Dashboards tailored to your ops' },
+                      { title: 'Web, SEO & AEO', desc: 'Next.js & AI Answer Engine Opt.' },
+                      { title: 'E-Commerce & Delivery', desc: 'End-to-end commerce platforms' },
+                      { title: 'API Integrations', desc: 'Seamlessly link your ecosystem' },
                       { title: 'Data & Analytics', desc: 'Automated data pipelines' },
-                      { title: 'Web & SEO', desc: 'High-converting websites' },
-                      { title: 'Comms & Booking', desc: 'WhatsApp & SMS flows' },
-                      { title: 'Cloud & DevOps', desc: 'Cloud migration & infra' }
+                      { title: 'Cloud & DevOps', desc: 'Cloud migration & infra' },
+                      { title: 'Comms & Booking', desc: 'WhatsApp & SMS flows' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
@@ -177,7 +179,72 @@ const HomePage = () => {
                 </Box>
               </Box>
 
-              {['solutions', 'modules', 'integrations', 'process'].map((section) => (
+              {/* Products/Industries Dropdown */}
+              <Box sx={{ position: 'relative', '&:hover .products-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
+                <Box
+                  component={motion.div}
+                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
+                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
+                >
+                  Products ▾
+                </Box>
+                <Box 
+                  className="products-menu"
+                  sx={{ 
+                    position: 'absolute', top: '100%', left: '-150px', pt: 1,
+                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
+                  }}
+                >
+                  <Box sx={{ 
+                    bgcolor: 'rgba(15,15,22,0.95)', 
+                    border: '1px solid rgba(0,242,254,0.3)', 
+                    borderRadius: 3, 
+                    p: 2, 
+                    width: '500px', 
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
+                    backdropFilter: 'blur(20px)',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 1.5
+                  }}>
+                    {[
+                      { title: 'Education', desc: 'Schools, Colleges, Universities' },
+                      { title: 'Pharmacy', desc: 'Retail & Hospital Pharmacies' },
+                      { title: 'Retail & Wholesale', desc: 'Stores, POS & Distribution' },
+                      { title: 'Hotel', desc: 'Hotels, Resorts, Guest Houses' },
+                      { title: 'Restaurant', desc: 'Dining, Cafes, Cloud Kitchens' },
+                      { title: 'Salon & Spa', desc: 'Booking & Staff Management' }
+                    ].map(item => (
+                      <Box 
+                        key={item.title} 
+                        onClick={() => scrollToSection('modules')}
+                        sx={{ 
+                          p: 2, 
+                          color: 'white', 
+                          cursor: 'pointer', 
+                          borderRadius: 2, 
+                          border: '1px solid transparent',
+                          transition: 'all 0.2s ease',
+                          '&:hover': { 
+                            bgcolor: 'rgba(0,242,254,0.05)', 
+                            borderColor: 'rgba(0,242,254,0.2)',
+                            transform: 'translateX(4px)'
+                          } 
+                        }}
+                      >
+                        <Typography variant="subtitle2" sx={{ color: '#b388ff', fontWeight: 700, mb: 0.5 }}>
+                          {item.title}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
+                          {item.desc}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+
+              {['integrations', 'process'].map((section) => (
                 <Box
                   key={section}
                   component={motion.div}
@@ -197,7 +264,7 @@ const HomePage = () => {
                   }} 
                   onClick={() => scrollToSection(section)}
                 >
-                  {section === 'modules' ? 'ERP Modules' : section}
+                  {section}
                 </Box>
               ))}
             </Box>

@@ -6,12 +6,14 @@ import {
   BarChart as AnalyticsIcon, 
   Web as WebIcon, 
   Chat as CommsIcon, 
-  CloudQueue as CloudIcon 
+  CloudQueue as CloudIcon,
+  ShoppingCart as ShopIcon,
+  Link as ApiIcon
 } from '@mui/icons-material';
 
 const solutions = [
   {
-    title: 'AI Automation',
+    title: 'AI Automation & Bots',
     subtitle: 'AI Agents that answer 80% of customer queries',
     description: 'Custom agents on WhatsApp, web chat and voice — built with LangChain, OpenAI, Gemini or Claude, grounded in your own docs via RAG.',
     icon: <BotIcon sx={{ fontSize: 40 }} />,
@@ -19,12 +21,36 @@ const solutions = [
     tags: ['LangChain', 'OpenAI', 'Pinecone', 'WhatsApp API']
   },
   {
-    title: 'Enterprise Systems',
-    subtitle: 'Custom CRM & ERP dashboards, tailored to your ops',
-    description: 'Next.js + PostgreSQL dashboards that unify sales, inventory and finance — replacing the spreadsheet chaos your team is drowning in.',
+    title: 'Custom ERP & CRM',
+    subtitle: 'Enterprise systems tailored to your operations',
+    description: 'Scalable dashboards that unify sales, inventory and finance — replacing the spreadsheet chaos your team is drowning in.',
     icon: <EnterpriseIcon sx={{ fontSize: 40 }} />,
     color: '#b388ff',
     tags: ['Next.js', 'PostgreSQL', 'FastAPI', 'Supabase']
+  },
+  {
+    title: 'Web, SEO & AEO',
+    subtitle: 'Built for Google, optimized for Answer Engines (AI)',
+    description: 'Blazing-fast sites tuned for both traditional SEO and modern AEO (Answer Engine Optimization) so ChatGPT and Gemini recommend your products.',
+    icon: <WebIcon sx={{ fontSize: 40 }} />,
+    color: '#ff4081',
+    tags: ['Next.js', 'AEO', 'SEO', 'Vercel']
+  },
+  {
+    title: 'E-Commerce & Delivery',
+    subtitle: 'End-to-end commerce and delivery platforms',
+    description: 'Custom e-commerce platforms and on-demand delivery apps with real-time tracking, razor-sharp UI, and Stripe/Razorpay integrations.',
+    icon: <ShopIcon sx={{ fontSize: 40 }} />,
+    color: '#ff9100',
+    tags: ['React Native', 'Stripe', 'WebSockets', 'Logistics']
+  },
+  {
+    title: 'API Integrations',
+    subtitle: 'Connect your entire software ecosystem',
+    description: 'Custom middleware and delivery APIs that link your disjointed systems. We integrate SaaS, CRMs, and payment gateways into a single unified flow.',
+    icon: <ApiIcon sx={{ fontSize: 40 }} />,
+    color: '#18ffff',
+    tags: ['REST', 'GraphQL', 'Webhooks', 'Microservices']
   },
   {
     title: 'Data & Analytics',
@@ -33,14 +59,6 @@ const solutions = [
     icon: <AnalyticsIcon sx={{ fontSize: 40 }} />,
     color: '#69f0ae',
     tags: ['Python', 'Pandas', 'AWS', 'Power BI']
-  },
-  {
-    title: 'Web & SEO',
-    subtitle: 'Websites built to be found — and to convert',
-    description: 'Blazing-fast Next.js sites, tuned for Google, with Stripe, Razorpay or PayPal wired in so the buy button actually works.',
-    icon: <WebIcon sx={{ fontSize: 40 }} />,
-    color: '#ff4081',
-    tags: ['Next.js', 'Tailwind', 'Stripe', 'Vercel']
   },
   {
     title: 'Comms & Booking',
