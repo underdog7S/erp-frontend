@@ -323,6 +323,11 @@ const HomePage = () => {
           </Container>
         </Box>
 
+        {/* Agency Process (Moved to top) */}
+        <Box id="process" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+          <AgencyProcess />
+        </Box>
+
         {/* Agency Solutions */}
         <Box id="solutions" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
           <AgencySolutions />
@@ -348,10 +353,6 @@ const HomePage = () => {
           <TechStackMarquee />
         </Box>
 
-        {/* Agency Process */}
-        <Box id="process" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
-          <AgencyProcess />
-        </Box>
 
         {/* Bottom CTA */}
         <Box sx={{ py: 15, bgcolor: '#000000', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
