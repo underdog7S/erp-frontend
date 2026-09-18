@@ -270,12 +270,12 @@ const HomePage = () => {
 
         {/* Hero Section with 3D Background */}
         <Box id="top" sx={{ 
-          pt: { xs: 15, md: 12 }, 
+          pt: { xs: 15, md: 18 }, 
           pb: { xs: 10, md: 15 }, 
           position: 'relative',
           minHeight: { xs: '100vh', md: '90vh' },
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'flex-start' /* Pushes content to the top organically */
         }}>
           
           {/* 3D Holographic Ecosystem Background */}
@@ -291,7 +291,7 @@ const HomePage = () => {
                 initial="hidden"
                 animate="visible"
                 variants={staggerContainer}
-                sx={{ textAlign: { xs: 'center', md: 'left' }, mt: { md: -10 } }}
+                sx={{ textAlign: { xs: 'center', md: 'left' }, mt: { md: 2 } }}
               >
                 <motion.div variants={fadeInUp}>
                   <Typography variant="overline" sx={{ color: '#00f2fe', letterSpacing: 2, fontWeight: 800, display: 'block', mb: 2 }}>
