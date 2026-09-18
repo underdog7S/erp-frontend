@@ -152,11 +152,11 @@ const HomePage = () => {
                     gap: 1
                   }}>
                     {[
-                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#00f2fe' },
-                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#ff9a9e' },
-                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#b388ff' },
-                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#00e676' },
-                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d' }
+                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00f2fe' },
+                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#ff9a9e' },
+                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#b388ff' },
+                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00e676' },
+                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#fbc02d' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
@@ -178,20 +178,9 @@ const HomePage = () => {
                           } 
                         }}
                       >
-                        <Box sx={{ 
-                          width: 40, height: 40, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: `linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.2))`,
-                          border: `1px solid ${item.color}50`,
-                          fontSize: '1.2rem',
-                          color: item.color
-                        }}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
                           {item.icon}
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle2" sx={{ color: item.color, fontWeight: 700 }}>
-                            {item.title}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
+                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mt: 0.5 }}>
                             {item.desc}
                           </Typography>
                         </Box>
