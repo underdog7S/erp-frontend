@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Box, Card, Typography, TextField, IconButton, Avatar, 
   List, ListItem, ListItemAvatar, ListItemText, Divider, 
@@ -14,14 +14,13 @@ import {
   MoreVert as MoreVertIcon
 } from '@mui/icons-material';
 
-// Dummy data for visual design
 const DUMMY_THREADS = [
   { id: 1, name: 'Alice Freeman', lastMessage: 'Can I book an appointment?', time: '10:42 AM', source: 'whatsapp', unread: 2 },
   { id: 2, name: 'John Doe', lastMessage: 'Invoice #4029 received, thanks.', time: 'Yesterday', source: 'email', unread: 0 },
   { id: 3, name: 'Sarah Connor', lastMessage: 'Yes, address is correct.', time: 'Tuesday', source: 'sms', unread: 0 },
 ];
 
-const DUMMY_MESSAGES = [
+const INITIAL_MESSAGES = [
   { id: 1, text: 'Hi! I saw your ad on Instagram.', sender: 'client', time: '10:35 AM' },
   { id: 2, text: 'Hello Alice! How can we help you today?', sender: 'agent', time: '10:38 AM' },
   { id: 3, text: 'Can I book an appointment for tomorrow at 2 PM?', sender: 'client', time: '10:42 AM' },
@@ -38,12 +37,75 @@ const getSourceIcon = (source) => {
 
 const OmnichannelInbox = () => {
   const [activeThread, setActiveThread] = useState(DUMMY_THREADS[0]);
+  const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const ws = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    // 1. Fetch current tenant slug (using 'default' for demo purposes)
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const tenantSlug = user.tenant_slug || 'default';
+    
+    // 2. Open WebSocket connection
+    const wsUrl = `ws://${window.location.hostname}:8000/ws/inbox/${tenantSlug}/`;
+    ws.current = new WebSocket(wsUrl);
+
+    ws.current.onopen = () => {
+      console.log("Connected to Real-time Omnichannel WebSocket");
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'new_message') {
+        const newMsg = {
+          id: data.message_data.id,
+          text: data.message_data.text,
+          sender: data.message_data.sender,
+          time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        };
+        // Append to chat window instantly
+        setMessages(prev => [...prev, newMsg]);
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+    
+    const newMsg = {
+      id: Date.now(),
+      text: inputText,
+      sender: 'agent',
+      time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    };
+    
+    setMessages([...messages, newMsg]);
+    setInputText('');
+    
+    // In a real app, you would POST this to Django to send via Meta API
+  };
 
   const handleAiDraft = () => {
     setIsAiThinking(true);
-    // Simulate AI API call
+    // Simulate AI API call for frontend UX
     setTimeout(() => {
       setInputText("Hi Alice! Yes, we have a 2 PM slot available tomorrow. Would you like me to confirm that booking for you?");
       setIsAiThinking(false);
@@ -63,7 +125,7 @@ const OmnichannelInbox = () => {
 
       <Card sx={{ flex: 1, display: 'flex', bgcolor: '#1a1a24', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
         
-        {/* LEFT SIDEBAR: Threads */}
+        {/* LEFT SIDEBAR */}
         <Box sx={{ width: 320, borderRight: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column' }}>
           <Box p={2} sx={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             <TextField 
@@ -128,7 +190,6 @@ const OmnichannelInbox = () => {
         {/* RIGHT AREA: Chat Window */}
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', bgcolor: '#12121a' }}>
           
-          {/* Chat Header */}
           <Box p={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', bgcolor: '#1a1a24' }}>
             <Box display="flex" alignItems="center" gap={2}>
               <Avatar>{activeThread.name.charAt(0)}</Avatar>
@@ -145,37 +206,37 @@ const OmnichannelInbox = () => {
             <IconButton sx={{ color: 'white' }}><MoreVertIcon /></IconButton>
           </Box>
 
-          {/* Chat History */}
           <Box sx={{ flex: 1, p: 3, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {DUMMY_MESSAGES.map(msg => {
-              const isAgent = msg.sender === 'agent';
+            {messages.map(msg => {
+              const isAgent = msg.sender === 'agent' || msg.sender === 'ai';
               return (
                 <Box key={msg.id} sx={{ display: 'flex', justifyContent: isAgent ? 'flex-end' : 'flex-start' }}>
                   <Paper sx={{ 
                     p: 2, 
                     maxWidth: '70%', 
-                    bgcolor: isAgent ? '#00f2fe' : '#222230',
+                    bgcolor: msg.sender === 'ai' ? '#b388ff' : isAgent ? '#00f2fe' : '#222230',
                     color: isAgent ? 'black' : 'white',
                     borderRadius: 3,
                     borderBottomRightRadius: isAgent ? 4 : 24,
                     borderBottomLeftRadius: isAgent ? 24 : 4,
                   }}>
                     <Typography variant="body1">{msg.text}</Typography>
-                    <Typography variant="caption" sx={{ display: 'block', mt: 1, textAlign: 'right', opacity: 0.7 }}>
-                      {msg.time}
-                    </Typography>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+                      {msg.sender === 'ai' && <AiIcon sx={{ fontSize: 14, opacity: 0.7 }} />}
+                      <Typography variant="caption" sx={{ textAlign: 'right', opacity: 0.7, ml: 'auto' }}>
+                        {msg.time} {msg.sender === 'ai' ? '(Auto-Reply)' : ''}
+                      </Typography>
+                    </Box>
                   </Paper>
                 </Box>
               );
             })}
+            <div ref={messagesEndRef} />
           </Box>
 
-          {/* Input Toolbar */}
           <Box p={2} sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', bgcolor: '#1a1a24' }}>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
-              <IconButton sx={{ color: 'rgba(255,255,255,0.5)' }}>
-                <AttachFileIcon />
-              </IconButton>
+              <IconButton sx={{ color: 'rgba(255,255,255,0.5)' }}><AttachFileIcon /></IconButton>
               
               <TextField 
                 fullWidth 
@@ -184,6 +245,7 @@ const OmnichannelInbox = () => {
                 placeholder="Type a message..." 
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
+                onKeyPress={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                 sx={{ 
                   bgcolor: 'rgba(255,255,255,0.03)', 
                   borderRadius: 2,
@@ -208,6 +270,7 @@ const OmnichannelInbox = () => {
               <IconButton 
                 color="primary" 
                 disabled={!inputText.trim()}
+                onClick={handleSend}
                 sx={{ 
                   bgcolor: inputText.trim() ? '#00f2fe' : 'rgba(255,255,255,0.05)', 
                   color: inputText.trim() ? 'black' : 'rgba(255,255,255,0.3)',
