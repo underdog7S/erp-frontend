@@ -8,6 +8,8 @@ import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Navigation from "./components/Navigation";
+import { PublicERP, PublicCRM, PublicApp, PublicWeb, PublicWhiteLabel } from './pages/PublicPages';
+
 // HomePage is lazy loaded below
 import About from './pages/About';
 import Careers from './pages/Careers';
