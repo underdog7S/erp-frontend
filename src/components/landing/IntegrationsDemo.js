@@ -7,7 +7,7 @@ const IntegrationsDemo = () => {
   const integrations = [
     { name: 'Odoo ERP', icon: <img src="https://cdn.simpleicons.org/odoo/714B67" alt="Odoo" width="50" height="50" />, color: '#714B67' },
     { name: 'Zoho CRM', icon: <img src="https://cdn.simpleicons.org/zoho/F0483E" alt="Zoho" width="50" height="50" />, color: '#F0483E' },
-    { name: 'Salesforce', icon: <img src={process.env.PUBLIC_URL + "/assets/salesforce-logo.png"} alt="Salesforce" width="50" height="50" />, color: '#00A1E0' },
+    { name: 'Salesforce', icon: <img src={process.env.PUBLIC_URL + "/assets/salesforce-logo.svg"} alt="Salesforce" width="50" height="50" />, color: '#00A1E0' },
     { name: 'SAP', icon: <img src="https://cdn.simpleicons.org/sap/0FAAFF" alt="SAP" width="50" height="50" />, color: '#0FAAFF' },
   ];
 
