@@ -56,6 +56,7 @@ const SalonCRM = lazy(() => import('./pages/Salon/SalonCRM'));
 const SalonBilling = lazy(() => import('./pages/Salon/SalonBilling'));
 const ContactManagement = lazy(() => import('./pages/CRM/ContactManagement'));
 const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
+const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
 
 const LoadingFallback = () => (
   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
@@ -116,6 +117,7 @@ function App() {
                     <Route path="/salon/billing" element={<AuthCheck><SalonBilling /></AuthCheck>} />
                     <Route path="/crm/contacts" element={<AuthCheck><ContactManagement /></AuthCheck>} />
                     <Route path="/crm/email-marketing" element={<AuthCheck><EmailMarketing /></AuthCheck>} />
+                    <Route path="/crm/inbox" element={<AuthCheck><OmnichannelInbox /></AuthCheck>} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/google" element={<RegistrationForm googleUser={JSON.parse(localStorage.getItem('googleUser') || '{}')} />} />
                     <Route path="/login" element={<Login />} />
