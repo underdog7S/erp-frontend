@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Tabs, Tab, Card, CardContent, CircularProgress, Avatar } from '@mui/material';
+import { Box, Typography, Tabs, Tab, Card, CardContent, CircularProgress, Avatar, Button } from '@mui/material';
 import { 
   Inventory as InventoryIcon, 
   PointOfSale as SalesIcon, 
   People as PeopleIcon, 
-  Timeline as TimelineIcon
+  Timeline as TimelineIcon,
+  LocalShipping as ShippingIcon,
+  ArrowBack as ArrowBackIcon,
+  Storefront as StorefrontIcon,
 } from '@mui/icons-material';
-
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 // Modularized Tabs
@@ -14,19 +17,21 @@ import RetailInventoryTab from './components/RetailInventoryTab';
 import RetailSalesTab from './components/RetailSalesTab';
 import RetailCustomersTab from './components/RetailCustomersTab';
 import RetailAnalyticsTab from './components/RetailAnalyticsTab';
+import RetailTransitTab from './components/RetailTransitTab';
 
 const RetailDashboard = () => {
   const [tab, setTab] = useState(0);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchGlobalData = async () => {
       try {
-        const profRes = await api.get('/users/profile/').catch(() => ({ data: {} }));
+        const profRes = await api.get('/users/me/').catch(() => ({ data: {} }));
         setUserProfile(profRes.data);
       } catch (err) {
-        console.error("Error loading profile", err);
+        console.error('Error loading profile', err);
       } finally {
         setLoadingInitial(false);
       }
@@ -36,54 +41,102 @@ const RetailDashboard = () => {
 
   if (loadingInitial) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <CircularProgress sx={{ color: 'primary.main' }} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', mt: 4, mb: 4, p: 2 }}>
-      <Typography variant="h4" gutterBottom fontWeight="bold" sx={{ color: 'primary.main' }}>
-        Retail Management
-      </Typography>
-      
-      {userProfile && (
-        <Card sx={{ mb: 3, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-          <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main' }}>
-              {userProfile.username ? userProfile.username.charAt(0).toUpperCase() : 'U'}
-            </Avatar>
-            <Box>
-              <Typography variant="h6">{userProfile.first_name} {userProfile.last_name}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Role: {userProfile.role ? userProfile.role.toUpperCase() : 'RETAIL ADMIN'}
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      )}
+    <Box sx={{ minHeight: '100vh', color: 'text.primary', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
+      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs 
-          value={tab} 
-          onChange={(e, v) => setTab(v)} 
-          variant="scrollable" 
-          scrollButtons="auto"
-          sx={{ '& .MuiTab-root': { fontWeight: 'bold' } }}
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate('/dashboard')}
+          sx={{ color: 'text.secondary', mb: 2, '&:hover': { color: 'text.primary' } }}
         >
-          <Tab icon={<InventoryIcon />} label="Inventory" />
-          <Tab icon={<SalesIcon />} label="Sales & POS" />
-          <Tab icon={<PeopleIcon />} label="Customers" />
-          <Tab icon={<TimelineIcon />} label="Analytics" />
-        </Tabs>
-      </Box>
+          Back to Main Dashboard
+        </Button>
 
-      <Box sx={{ minHeight: 400 }}>
-        {tab === 0 && <RetailInventoryTab />}
-        {tab === 1 && <RetailSalesTab />}
-        {tab === 2 && <RetailCustomersTab />}
-        {tab === 3 && <RetailAnalyticsTab />}
+        {/* Header */}
+        <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+          <Box>
+            <Typography variant="h3" fontWeight="800" sx={{
+              background: 'linear-gradient(45deg, #00f2fe, #4facfe)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-1px',
+              mb: 1,
+            }}>
+              Retail Engine
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'text.secondary', maxWidth: 600 }}>
+              Manage inventory, process sales, track customers, and monitor stock transit across your branches.
+            </Typography>
+          </Box>
+
+          {userProfile && (
+            <Card elevation={0} sx={{
+              bgcolor: 'background.paper',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 3,
+              minWidth: 240,
+            }}>
+              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '16px !important' }}>
+                <Avatar sx={{ width: 48, height: 48, background: 'linear-gradient(45deg, #00f2fe, #4facfe)' }}>
+                  {userProfile.username ? userProfile.username.charAt(0).toUpperCase() : <StorefrontIcon />}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight="bold" color="text.primary">
+                    {userProfile.first_name} {userProfile.last_name}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'primary.main', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    {userProfile.role ? userProfile.role.replace(/_/g, ' ') : 'Retail Admin'}
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          )}
+        </Box>
+
+        {/* Tabs */}
+        <Box sx={{ mb: 4, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Tabs
+            value={tab}
+            onChange={(e, v) => setTab(v)}
+            variant="scrollable"
+            scrollButtons="auto"
+            TabIndicatorProps={{ style: { background: 'linear-gradient(45deg, #00f2fe, #4facfe)', height: 3 } }}
+            sx={{
+              '& .MuiTab-root': {
+                fontWeight: 600,
+                textTransform: 'none',
+                fontSize: '0.875rem',
+                color: 'text.secondary',
+                '&.Mui-selected': { color: 'primary.main' },
+              },
+            }}
+          >
+            <Tab icon={<InventoryIcon />} iconPosition="start" label="Inventory" />
+            <Tab icon={<SalesIcon />} iconPosition="start" label="Sales & POS" />
+            <Tab icon={<PeopleIcon />} iconPosition="start" label="Customers" />
+            <Tab icon={<TimelineIcon />} iconPosition="start" label="Analytics" />
+            <Tab icon={<ShippingIcon />} iconPosition="start" label="Transit" />
+          </Tabs>
+        </Box>
+
+        {/* Tab Content */}
+        <Box>
+          {tab === 0 && <RetailInventoryTab />}
+          {tab === 1 && <RetailSalesTab />}
+          {tab === 2 && <RetailCustomersTab />}
+          {tab === 3 && <RetailAnalyticsTab />}
+          {tab === 4 && <RetailTransitTab />}
+        </Box>
+
       </Box>
     </Box>
   );

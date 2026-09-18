@@ -13,6 +13,7 @@ import api from '../../services/api';
 // Modularized Tabs
 import SalonAppointmentsTab from './components/SalonAppointmentsTab';
 import SalonStaffTab from './components/SalonStaffTab';
+import SalonCommissionTab from './components/SalonCommissionTab';
 import SalonServicesTab from './components/SalonServicesTab';
 
 const SalonDashboard = () => {
@@ -24,7 +25,7 @@ const SalonDashboard = () => {
   useEffect(() => {
     const fetchGlobalData = async () => {
       try {
-        const profRes = await api.get('/users/profile/').catch(() => ({ data: {} }));
+        const profRes = await api.get('/users/me/').catch(() => ({ data: {} }));
         setUserProfile(profRes.data);
       } catch (err) {
         console.error("Error loading profile", err);
@@ -37,14 +38,14 @@ const SalonDashboard = () => {
 
   if (loadingInitial) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#0f0c29' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'transparent' }}>
         <CircularProgress sx={{ color: '#00f2fe' }} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0f0c29', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'transparent', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
       <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
         
         <Button 
@@ -121,6 +122,7 @@ const SalonDashboard = () => {
             <Tab icon={<EventNoteIcon />} iconPosition="start" label="Appointments" />
             <Tab icon={<GroupIcon />} iconPosition="start" label="Stylist Roster" />
             <Tab icon={<SpaIcon />} iconPosition="start" label="Services Menu" />
+            <Tab icon={<GroupIcon />} iconPosition="start" label="Commissions" />
           </Tabs>
         </Box>
 
@@ -129,6 +131,7 @@ const SalonDashboard = () => {
           {tab === 0 && <SalonAppointmentsTab />}
           {tab === 1 && <SalonStaffTab />}
           {tab === 2 && <SalonServicesTab />}
+          {tab === 3 && <SalonCommissionTab />}
         </Box>
 
       </Box>

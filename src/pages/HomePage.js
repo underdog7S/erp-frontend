@@ -96,28 +96,29 @@ const HomePage = () => {
           p: 2
         }}>
           <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box 
+            <Box
               component={motion.div}
-              whileHover={{ scale: 1.05, rotate: [-1, 1, -1, 0] }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', cursor: 'pointer', perspective: 1000 }} 
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
               onClick={() => scrollToTop()}
             >
-              <Typography variant="h4" fontWeight={900} sx={{ 
-                lineHeight: 1,
-                letterSpacing: -1, 
-                textShadow: '0 0 10px rgba(0, 242, 254, 0.8), 0 0 20px rgba(0, 242, 254, 0.4)',
-                transformStyle: 'preserve-3d',
-                color: '#fff',
-                background: 'linear-gradient(to right, #fff, #00f2fe)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                ZS
-              </Typography>
-              <Typography variant="caption" fontWeight={400} sx={{ color: 'rgba(255,255,255,0.8)', letterSpacing: 1, mt: -0.5 }}>
-                Zenith Solution
-              </Typography>
+              <img
+                src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png'}
+                alt="Zenith Logo"
+                style={{ height: 42, borderRadius: 8 }}
+              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Typography variant="h6" fontWeight={900} sx={{
+                  lineHeight: 1,
+                  letterSpacing: -0.5,
+                  background: 'linear-gradient(to right, #fff, #00f2fe)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  ZS | Zenith Solution
+                </Typography>
+              </Box>
             </Box>
             
             {/* Smooth Scroll Links with 3D Hover */}

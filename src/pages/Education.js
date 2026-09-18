@@ -40,7 +40,7 @@ const Education = () => {
     const fetchGlobalData = async () => {
       try {
         const [profRes, classRes, stuRes, subjRes, termRes, ayRes] = await Promise.all([
-          api.get('/users/profile/').catch(() => ({ data: {} })),
+          api.get('/users/me/').catch(() => ({ data: {} })),
           api.get('/education/classes/').catch(() => ({ data: [] })),
           api.get('/education/students/').catch(() => ({ data: [] })),
           api.get('/education/subjects/').catch(() => ({ data: [] })),

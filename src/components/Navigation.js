@@ -78,6 +78,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import { useThemeMode } from '../contexts/ThemeContext';
 
 const MODULE_DEFINITIONS = {
   education: [
@@ -224,6 +227,46 @@ const MODULE_DEFINITIONS = {
       ],
     },
   ],
+};
+
+// ─── Day/Night Mode Toggle ────────────────────────────────────────────────────
+const ThemeToggleButton = () => {
+  const { mode, toggleMode } = useThemeMode();
+  const isDark = mode === 'dark';
+
+  return (
+    <Tooltip title={isDark ? 'Switch to Day Mode ☀️' : 'Switch to Night Mode 🌙'} arrow>
+      <IconButton
+        onClick={toggleMode}
+        sx={{
+          mx: 0.5,
+          width: 40,
+          height: 40,
+          borderRadius: '12px',
+          background: isDark
+            ? 'rgba(255,235,59,0.12)'
+            : 'rgba(26,115,232,0.10)',
+          border: isDark
+            ? '1px solid rgba(255,235,59,0.3)'
+            : '1px solid rgba(26,115,232,0.25)',
+          color: isDark ? '#FFD600' : '#1a73e8',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: isDark
+              ? 'rgba(255,235,59,0.22)'
+              : 'rgba(26,115,232,0.18)',
+            transform: 'rotate(20deg) scale(1.1)',
+          },
+        }}
+      >
+        {isDark ? (
+          <LightModeIcon sx={{ fontSize: 20 }} />
+        ) : (
+          <DarkModeIcon sx={{ fontSize: 20 }} />
+        )}
+      </IconButton>
+    </Tooltip>
+  );
 };
 
 const Navigation = () => {
@@ -1189,7 +1232,9 @@ const Navigation = () => {
               component="div" 
               sx={{ 
                 fontWeight: 700,
-                color: 'white',
+                background: 'linear-gradient(90deg, #00f2fe, #4facfe)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
                 display: { xs: 'none', sm: 'block' },
                 transition: 'all 0.3s ease',
                 position: 'relative',
@@ -1222,10 +1267,10 @@ const Navigation = () => {
                   to="/about"
                   className="nav-link-animated"
                   sx={{
-                    color: 'white',
+                    color: 'text.primary',
                     textTransform: 'none',
                     fontWeight: location.pathname === '/about' ? 600 : 500,
-                    bgcolor: location.pathname === '/about' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    bgcolor: location.pathname === '/about' ? 'rgba(0, 242, 254, 0.12)' : 'transparent',
                     px: 2,
                     py: 1,
                     borderRadius: 2,
@@ -1239,7 +1284,7 @@ const Navigation = () => {
                       left: '50%',
                       width: 0,
                       height: 2,
-                      bgcolor: 'white',
+                      bgcolor: 'primary.main',
                       transition: 'all 0.3s ease',
                       transform: 'translateX(-50%)'
                     },
@@ -1329,7 +1374,7 @@ const Navigation = () => {
                       left: '50%',
                       width: 0,
                       height: 2,
-                      bgcolor: 'white',
+                      bgcolor: 'primary.main',
                       transition: 'all 0.3s ease',
                       transform: 'translateX(-50%)'
                     },
@@ -1373,7 +1418,7 @@ const Navigation = () => {
                       left: '50%',
                       width: 0,
                       height: 2,
-                      bgcolor: 'white',
+                      bgcolor: 'primary.main',
                       transition: 'all 0.3s ease',
                       transform: 'translateX(-50%)'
                     },
@@ -1479,6 +1524,7 @@ const Navigation = () => {
                 onClick={() => setNotificationCenterOpen(true)} 
               />
             )}
+            <ThemeToggleButton />
             {industry ? (
               <Button
                 color="secondary"

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, Box, useTheme, useMediaQuery, CircularProgress, Typography } from '@mui/material';
 import { HelmetProvider } from 'react-helmet-async';
+import { ThemeContextProvider } from './contexts/ThemeContext';
 import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -64,14 +65,8 @@ const LoadingFallback = () => (
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(theme);
 
   useEffect(() => {
-    // The native 'storage' event only fires for *other* tabs - this tab's
-    // own login/logout dispatches a 'userChanged' CustomEvent instead (see
-    // Login.js), which this listener was missing, so isAuthenticated (and
-    // anything derived from it, e.g. shouldShowFooter) stayed stale until a
-    // full page reload.
     const checkAuth = () => {
       setIsAuthenticated(!!localStorage.getItem('user'));
     };
@@ -84,12 +79,9 @@ function App() {
     };
   }, []);
 
-  // Function to switch theme based on route
-  const switchTheme = (newTheme) => {
-    setCurrentTheme(newTheme);
-  };
-
   return (
+    <ThemeContextProvider>
+      {(currentTheme) => (
     <HelmetProvider>
       <ThemeProvider theme={currentTheme}>
         <CssBaseline />
@@ -153,6 +145,8 @@ function App() {
         </SidebarProvider>
       </ThemeProvider>
     </HelmetProvider>
+      )}
+    </ThemeContextProvider>
   );
 }
 

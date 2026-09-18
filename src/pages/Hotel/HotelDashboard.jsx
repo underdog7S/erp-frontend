@@ -24,7 +24,7 @@ const HotelDashboard = () => {
   useEffect(() => {
     const fetchGlobalData = async () => {
       try {
-        const profRes = await api.get('/users/profile/').catch(() => ({ data: {} }));
+        const profRes = await api.get('/users/me/').catch(() => ({ data: {} }));
         setUserProfile(profRes.data);
       } catch (err) {
         console.error("Error loading profile", err);
@@ -37,14 +37,14 @@ const HotelDashboard = () => {
 
   if (loadingInitial) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#0f0c29' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'transparent' }}>
         <CircularProgress sx={{ color: '#00f2fe' }} />
       </Box>
     );
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#0f0c29', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'transparent', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
       <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
         
         <Button 

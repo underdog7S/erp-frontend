@@ -24,7 +24,7 @@ const AdminEnhanced = () => {
   useEffect(() => {
     const fetchGlobalData = async () => {
       try {
-        const profRes = await api.get('/users/profile/').catch(() => ({ data: {} }));
+        const profRes = await api.get('/users/me/').catch(() => ({ data: {} }));
         setUserProfile(profRes.data);
       } catch (err) {
         console.error("Error loading profile", err);

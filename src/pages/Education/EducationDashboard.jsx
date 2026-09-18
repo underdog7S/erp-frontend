@@ -1500,12 +1500,13 @@ const EducationDashboard = () => {
       {/* Analytics Tabs */}
       <Card>
         <CardContent>
-          <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }}>
+          <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 3 }} variant="scrollable" scrollButtons="auto">
             <Tab label="Class Analytics" />
             <Tab label="Student Analytics" />
             <Tab label="Teacher Analytics" />
             <Tab label="Fee Analytics" />
             <Tab label="Report Card Analytics" />
+            <Tab label="Enterprise Modules (New)" />
           </Tabs>
 
             {/* Class Analytics Tab */}
@@ -2189,6 +2190,63 @@ const EducationDashboard = () => {
           </Card>
         </Grid>
       </Grid>
+            )}
+        </CardContent>
+      </Card>
+
+      {/* Enterprise Modules Tab */}
+      {tabValue === 5 && (
+        <Grid container spacing={3}>
+          {/* Transport Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="primary.main" gutterBottom>
+                  🚌 Transport & Fleet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Manage bus routes, assign vehicles, and track student transport fees.
+                </Typography>
+                <Button variant="outlined" fullWidth onClick={() => alert('Transport Module Active - Link to sub-routes coming soon')}>
+                  Open Transport System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Library Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="secondary.main" gutterBottom>
+                  📚 Library Management
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Track book inventory, manage issuing to students, and calculate late fines.
+                </Typography>
+                <Button variant="outlined" color="secondary" fullWidth onClick={() => alert('Library Module Active - Link to sub-routes coming soon')}>
+                  Open Library System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Hostel Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="success.main" gutterBottom>
+                  🏢 Hostel & Dormitory
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Allocate rooms, manage wardens, and collect mess and dormitory fees.
+                </Typography>
+                <Button variant="outlined" color="success" fullWidth onClick={() => alert('Hostel Module Active - Link to sub-routes coming soon')}>
+                  Open Hostel System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
 
       {/* Add Student Dialog */}
       <Dialog open={addStudentDialog} onClose={() => setAddStudentDialog(false)} maxWidth="md" fullWidth>
