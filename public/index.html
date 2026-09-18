@@ -2,9 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/logo.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Animated ZenVerse Favicon -->
+    <link id="favicon" rel="icon" href="%PUBLIC_URL%/assets/erp.png" type="image/png" />
+    <link id="apple-favicon" rel="apple-touch-icon" href="%PUBLIC_URL%/assets/erp.png" />
+    <script>
+      (function() {
+        var icons = [
+          '/assets/erp.png',
+          '/assets/crm.png',
+          '/assets/app.png',
+          '/assets/web.png',
+          '/assets/whitelable.png'
+        ];
+        var currentIndex = 0;
+        
+        setInterval(function() {
+          currentIndex = (currentIndex + 1) % icons.length;
+          var newIconUrl = '%PUBLIC_URL%' + icons[currentIndex];
+          
+          var favicon = document.getElementById('favicon');
+          var appleFavicon = document.getElementById('apple-favicon');
+          
+          if (favicon) {
+            favicon.href = newIconUrl;
+          }
+          if (appleFavicon) {
+            appleFavicon.href = newIconUrl;
+          }
+        }, 2000); // Change icon every 2 seconds
+      })();
+    </script>
+
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1976d2" />
     
     <!-- Primary SEO Meta Tags -->

@@ -18,6 +18,7 @@ import FAQ from '../components/landing/FAQ';
 
 // Import 3D Background lazily to avoid blocking initial render
 const Hero3DScene = React.lazy(() => import('../components/landing/Hero3DScene'));
+import HolographicEcosystem from '../components/landing/HolographicEcosystem';
 
 // Framer Motion Variants
 const fadeInUp = {
