@@ -288,7 +288,7 @@ const Dashboard = () => {
                 height: '100%',
                 cursor: 'pointer',
                 bgcolor: '#1a1a24',
-                color: 'white',
+                color: "text.primary",
                 border: '1px solid rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -311,7 +311,7 @@ const Dashboard = () => {
                 <Typography variant="h5" fontWeight="700" gutterBottom>
                   {userIndustry.charAt(0).toUpperCase() + userIndustry.slice(1)} Engine
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1 }}>
+                <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
                   Launch the primary control board for your {userIndustry} operations.
                 </Typography>
               </CardContent>
@@ -328,7 +328,7 @@ const Dashboard = () => {
                 height: '100%',
                 cursor: 'pointer',
                 bgcolor: '#1a1a24',
-                color: 'white',
+                color: "text.primary",
                 border: '1px solid rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -343,7 +343,7 @@ const Dashboard = () => {
                 <Typography variant="h6" fontWeight="700" gutterBottom>
                   System Settings
                 </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)', mt: 1 }}>
+                <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
                   Manage tenants, user permissions, and billing plans.
                 </Typography>
               </CardContent>
@@ -406,7 +406,7 @@ const Dashboard = () => {
       {userIndustry && userIndustry.toLowerCase() === 'education' && (
         <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
           <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+            <Card sx={{ bgcolor: 'primary.main', color: "text.primary" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
                   <PeopleIcon sx={{ fontSize: 40 }} />
@@ -419,7 +419,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+            <Card sx={{ bgcolor: 'success.main', color: "text.primary" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
                   <PeopleIcon sx={{ fontSize: 40 }} />
@@ -432,7 +432,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+            <Card sx={{ bgcolor: 'warning.main', color: "text.primary" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
                   <StorageIcon sx={{ fontSize: 40 }} />
@@ -445,7 +445,7 @@ const Dashboard = () => {
             </Card>
           </Grid>
           <Grid gridColumn="span 3">
-            <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+            <Card sx={{ bgcolor: 'info.main', color: "text.primary" }}>
               <CardContent>
                 <Box display="flex" alignItems="center" gap={2}>
                   <EventAvailableIcon sx={{ fontSize: 40 }} />
@@ -473,7 +473,7 @@ const Dashboard = () => {
           <Grid item xs={12} sm={6} md={4} key={idx}>
             <Card elevation={0} sx={{
               bgcolor: '#1a1a24',
-              color: 'white',
+              color: "text.primary",
               border: '1px solid rgba(255,255,255,0.05)',
               '&:hover': { bgcolor: '#222230', borderColor: 'rgba(255,255,255,0.1)' }
             }}>

@@ -25,7 +25,7 @@ const LibrarianDashboard = () => {
       </Typography>
       <Grid container spacing={3} mb={3}>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'primary.main', color: "text.primary" }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <LibraryBooksIcon sx={{ fontSize: 40 }} />
@@ -38,7 +38,7 @@ const LibrarianDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'success.main', color: "text.primary" }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <AssignmentTurnedInIcon sx={{ fontSize: 40 }} />
@@ -51,7 +51,7 @@ const LibrarianDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'info.main', color: "text.primary" }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <AssignmentReturnIcon sx={{ fontSize: 40 }} />
@@ -64,7 +64,7 @@ const LibrarianDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'warning.main', color: "text.primary" }}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <NotificationsIcon sx={{ fontSize: 40 }} />

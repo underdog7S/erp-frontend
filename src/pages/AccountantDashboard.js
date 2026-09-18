@@ -155,20 +155,20 @@ const AccountantDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: "text.primary" }}>
           💰 Accountant Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Accountant'}!
         </Typography>
       </Box>
@@ -176,7 +176,7 @@ const AccountantDashboard = () => {
       {/* Quick Stats */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'success.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <AccountBalanceIcon sx={{ fontSize: 40 }} />
@@ -189,7 +189,7 @@ const AccountantDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'warning.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <PaymentIcon sx={{ fontSize: 40 }} />
@@ -202,7 +202,7 @@ const AccountantDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'primary.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <ReceiptIcon sx={{ fontSize: 40 }} />
@@ -215,7 +215,7 @@ const AccountantDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'info.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <TrendingUpIcon sx={{ fontSize: 40 }} />
@@ -232,7 +232,7 @@ const AccountantDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 8">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Monthly Fee Collection</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -250,7 +250,7 @@ const AccountantDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Payment Methods</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -278,7 +278,7 @@ const AccountantDashboard = () => {
       {/* Recent Payments and Fee Status */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Recent Payments</Typography>
@@ -299,7 +299,7 @@ const AccountantDashboard = () => {
                           <PaymentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={`₹${payment.amount_paid || 0} - ${payment.student_name || 'Student'}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary={`₹${payment.amount_paid || 0} - ${payment.student_name || 'Student'}`}
                         secondary={`${payment.payment_method || 'Cash'} • ${payment.payment_date || 'Today'}`}
                       />
                       <Chip label="Paid" color="success" size="small" />
@@ -309,7 +309,7 @@ const AccountantDashboard = () => {
                 ))}
                 {payments.length === 0 && (
                   <ListItem>
-                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No payments recorded"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary="No payments recorded"
                       secondary="Record your first payment to get started"
                     />
                   </ListItem>
@@ -320,7 +320,7 @@ const AccountantDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Fee Status Overview</Typography>

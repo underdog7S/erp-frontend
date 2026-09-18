@@ -146,20 +146,20 @@ const StaffDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: "text.primary" }}>
           👨‍💼 Staff Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Staff'}!
         </Typography>
       </Box>
@@ -167,7 +167,7 @@ const StaffDashboard = () => {
       {/* Quick Stats */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'primary.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <ScheduleIcon sx={{ fontSize: 40 }} />
@@ -180,7 +180,7 @@ const StaffDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'success.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <AssignmentIcon sx={{ fontSize: 40 }} />
@@ -193,7 +193,7 @@ const StaffDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'warning.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <NotificationsIcon sx={{ fontSize: 40 }} />
@@ -206,7 +206,7 @@ const StaffDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'info.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <WorkIcon sx={{ fontSize: 40 }} />
@@ -268,7 +268,7 @@ const StaffDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Attendance Trend</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -286,7 +286,7 @@ const StaffDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Task Status Distribution</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -314,7 +314,7 @@ const StaffDashboard = () => {
       {/* Work Hours Chart */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 12">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Work Hours</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -334,7 +334,7 @@ const StaffDashboard = () => {
       {/* Tasks and Notifications */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Tasks</Typography>
               <List>
@@ -346,7 +346,7 @@ const StaffDashboard = () => {
                           <AssignmentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={task.title || `Task ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary={task.title || `Task ${index + 1}`}
                         secondary={`Due: ${task.due_date || 'Not set'} • Priority: ${task.priority || 'Medium'}`}
                       />
                       <Chip 
@@ -360,7 +360,7 @@ const StaffDashboard = () => {
                 ))}
                 {tasks.length === 0 && (
                   <ListItem>
-                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No tasks assigned"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary="No tasks assigned"
                       secondary="Your tasks will appear here"
                     />
                   </ListItem>
@@ -371,7 +371,7 @@ const StaffDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Recent Notifications</Typography>
               <List>
@@ -383,7 +383,7 @@ const StaffDashboard = () => {
                           <NotificationsIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={notification.title || `Notification ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary={notification.title || `Notification ${index + 1}`}
                         secondary={`${notification.message || 'No message'} • ${notification.date || 'Today'}`}
                       />
                       {!notification.read && (
@@ -395,7 +395,7 @@ const StaffDashboard = () => {
                 ))}
                 {notifications.length === 0 && (
                   <ListItem>
-                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No notifications"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary="No notifications"
                       secondary="Your notifications will appear here"
                     />
                   </ListItem>
@@ -409,7 +409,7 @@ const StaffDashboard = () => {
       {/* Attendance History */}
       <Grid container columns={12} spacing={3} sx={{ mt: 1 }}>
         <Grid gridColumn="span 12">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Attendance History</Typography>
               <TableContainer component={Paper}>
@@ -442,7 +442,7 @@ const StaffDashboard = () => {
                     {attendance.length === 0 && (
                       <TableRow>
                         <TableCell colSpan={5} align="center">
-                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.6)" }}>
+                          <Typography variant="body2" sx={{ color: "text.secondary" }}>
                             No attendance records available
                           </Typography>
                         </TableCell>

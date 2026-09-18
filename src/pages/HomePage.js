@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { Box, Container, Typography, Button, Grid, Card, CardContent, Drawer, List, ListItem, ListItemText, IconButton, Collapse, Divider } from '@mui/material';
+import { Box, Container, Typography, Button, Grid, Card, CardContent, Drawer, List, ListItem, ListItemText, ListItemIcon, IconButton, Collapse, Divider } from '@mui/material';
 import { ArrowForward as ArrowIcon, PlayCircleOutline as PlayIcon, Menu as MenuIcon, Close as CloseIcon, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
@@ -151,11 +151,11 @@ const HomePage = () => {
                     gap: 1
                   }}>
                     {[
-                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: '⚡', color: '#00f2fe' },
-                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: '👥', color: '#ff9a9e' },
-                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: '📱', color: '#b388ff' },
-                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: '🌐', color: '#00e676' },
-                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: '🎨', color: '#fbc02d' }
+                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#00f2fe' },
+                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#ff9a9e' },
+                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#b388ff' },
+                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#00e676' },
+                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
@@ -229,14 +229,7 @@ const HomePage = () => {
               </Box>
               
               {/* Client Portal Link */}
-              <Box
-                component={motion.div}
-                whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
-                onClick={() => navigate('/login')}
-                sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
-              >
-                Client Portal
-              </Box>
+              
             </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <IconButton 
@@ -519,65 +512,6 @@ const HomePage = () => {
           </Container>
         </Box>
 
-        {/* Upgraded Multi-Column Footer */}
-        <Box sx={{ pt: 10, pb: 4, bgcolor: '#050505', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <Container maxWidth="lg">
-            <Grid container spacing={4} sx={{ mb: 6 }}>
-              <Grid item xs={12} md={4}>
-                <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -1, color: '#00f2fe', mb: 2 }}>
-                  <span style={{ background: 'linear-gradient(90deg, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ZV | ZenVerse</span>
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
-                  We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
-                </Typography>
-              </Grid>
-              <Grid item xs={6} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>What We Provide</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {['Custom Apps', 'Web Apps', 'White Labeling', 'API Integrations'].map(item => (
-                    <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>{item}</Typography>
-                  ))}
-                </Box>
-              </Grid>
-              <Grid item xs={6} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Zen Suite</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {['Zen ERP (Tenant Modules)', 'Zen CRM', 'Zen App', 'Zen Web', 'White Labeling'].map(item => (
-                    <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>{item}</Typography>
-                  ))}
-                </Box>
-              </Grid>
-              <Grid item xs={6} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Company</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/about')}>About Us</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/careers')}>Careers</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('process')}>Our Process</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/login')}>Client Portal</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Contact Us</Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => window.location.href='mailto:heritageclouds@gmail.com'}>heritageclouds@gmail.com</Typography>
-                  <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>LinkedIn</Typography>
-                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>Twitter</Typography>
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
-            <Box sx={{ pt: 4, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
-                © {new Date().getFullYear()} ZenVerse Tech Solutions. Architected with precision.
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
-                Privacy Policy • Terms of Service
-              </Typography>
-            </Box>
-          </Container>
-        </Box>
-
         {/* Mobile Navigation Drawer */}
         <Drawer
           anchor="right"
@@ -615,9 +549,7 @@ const HomePage = () => {
               </List>
             </Collapse>
 
-            <ListItem button onClick={() => { setMobileOpen(false); navigate('/login'); }} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <ListItemText primary="Client Portal" primaryTypographyProps={{ fontWeight: 600 }} />
-            </ListItem>
+            
 
             <Box sx={{ p: 3 }}>
               <Button 

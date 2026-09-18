@@ -129,20 +129,20 @@ const TeacherDashboard = () => {
 
   if (error) {
     return (
-      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+      <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
         <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "#0f0c29", color: "white" }}>
+    <Box sx={{ p: 3, minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 600, color: 'white' }}>
+        <Typography variant="h4" sx={{ fontWeight: 600, color: "text.primary" }}>
           👨‍🏫 Teacher Dashboard
         </Typography>
-        <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)' }}>
+        <Typography variant="body1" sx={{ color: "text.secondary" }}>
           Welcome back, {userProfile.first_name || userProfile.username || 'Teacher'}!
         </Typography>
       </Box>
@@ -150,7 +150,7 @@ const TeacherDashboard = () => {
       {/* Quick Stats */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'primary.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'primary.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <SchoolIcon sx={{ fontSize: 40 }} />
@@ -163,7 +163,7 @@ const TeacherDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'success.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'success.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <GroupIcon sx={{ fontSize: 40 }} />
@@ -176,7 +176,7 @@ const TeacherDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'warning.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'warning.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <AssignmentIcon sx={{ fontSize: 40 }} />
@@ -189,7 +189,7 @@ const TeacherDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 3">
-          <Card sx={{ bgcolor: 'info.main', color: 'white' }}>
+          <Card sx={{ bgcolor: 'info.main', color: "text.primary" }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <ScheduleIcon sx={{ fontSize: 40 }} />
@@ -206,7 +206,7 @@ const TeacherDashboard = () => {
       {/* Charts Row */}
       <Grid container columns={12} spacing={3} sx={{ mb: 3 }}>
         <Grid gridColumn="span 8">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Weekly Attendance Trends</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -224,7 +224,7 @@ const TeacherDashboard = () => {
           </Card>
         </Grid>
         <Grid gridColumn="span 4">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 2 }}>Grade Distribution</Typography>
               <ResponsiveContainer width="100%" height={300}>
@@ -252,7 +252,7 @@ const TeacherDashboard = () => {
       {/* Classes and Assignments */}
       <Grid container columns={12} spacing={3}>
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">My Classes</Typography>
@@ -267,7 +267,7 @@ const TeacherDashboard = () => {
                           <SchoolIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={cls.name || `Class ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary={cls.name || `Class ${index + 1}`}
                         secondary={`${cls.student_count || 0} students • ${cls.subject || 'General'}`}
                       />
                       <Chip label="Active" color="success" size="small" />
@@ -277,7 +277,7 @@ const TeacherDashboard = () => {
                 ))}
                 {classes.length === 0 && (
                   <ListItem>
-                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No classes assigned"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary="No classes assigned"
                       secondary="You will see your assigned classes here"
                     />
                   </ListItem>
@@ -288,7 +288,7 @@ const TeacherDashboard = () => {
         </Grid>
 
         <Grid gridColumn="span 6">
-          <Card sx={{ bgcolor: "#1a1a24", color: "white", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
+          <Card sx={{ bgcolor: "#1a1a24", color: "text.primary", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 3 }}>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">Recent Assignments</Typography>
@@ -309,7 +309,7 @@ const TeacherDashboard = () => {
                           <AssignmentIcon />
                         </Avatar>
                       </ListItemAvatar>
-                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary={assignment.title || `Assignment ${index + 1}`}
+                      <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary={assignment.title || `Assignment ${index + 1}`}
                         secondary={`Due: ${assignment.due_date || 'Not set'} • Max Score: ${assignment.max_score || 100}`}
                       />
                       <Chip 
@@ -323,7 +323,7 @@ const TeacherDashboard = () => {
                 ))}
                 {assignments.length === 0 && (
                   <ListItem>
-                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "white" }, "& .MuiListItemText-secondary": { color: "rgba(255,255,255,0.6)" } }} primary="No assignments yet"
+                    <ListItemText sx={{ "& .MuiListItemText-primary": { color: "text.primary" }, "& .MuiListItemText-secondary": { color: "text.secondary" } }} primary="No assignments yet"
                       secondary="Create your first assignment to get started"
                     />
                   </ListItem>
