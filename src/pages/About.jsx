@@ -231,7 +231,7 @@ const About = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <FadeInOnScroll delay={0}>
-              <Card sx={{ height: '100%', p: 4, bgcolor: '#fff', boxShadow: 3 }}>
+              <Card sx={{ height: '100%', p: 4, bgcolor: 'rgba(255,255,255,0.03)', boxShadow: 3 }}>
                 <Typography variant="h4" fontWeight={700} gutterBottom color="primary">
                   Our Mission
                 </Typography>
@@ -246,7 +246,7 @@ const About = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <FadeInOnScroll delay={1}>
-              <Card sx={{ height: '100%', p: 4, bgcolor: '#fff', boxShadow: 3 }}>
+              <Card sx={{ height: '100%', p: 4, bgcolor: 'rgba(255,255,255,0.03)', boxShadow: 3 }}>
                 <Typography variant="h4" fontWeight={700} gutterBottom color="primary">
                   Our Vision
                 </Typography>

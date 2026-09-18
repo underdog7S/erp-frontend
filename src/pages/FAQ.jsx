@@ -324,7 +324,7 @@ const faqs = [
                       {faq.q}
                     </Typography>
         </AccordionSummary>
-                  <AccordionDetails sx={{ bgcolor: '#f9f9f9', borderRadius: '0 0 8px 8px' }}>
+                  <AccordionDetails sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '0 0 8px 8px' }}>
                     <Typography variant="body1" sx={{ lineHeight: 1.8, color: 'text.secondary' }}>
                       {faq.a}
                     </Typography>

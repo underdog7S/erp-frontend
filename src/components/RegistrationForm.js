@@ -316,7 +316,7 @@ const RegistrationForm = ({ googleUser: propGoogleUser }) => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f5f6fa' }}>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0a0a0f' }}>
       <Card sx={{ maxWidth: 600, width: '100%', p: 3 }}>
         <CardContent>
           <Box display="flex" flexDirection="column" alignItems="center" mb={3}>

@@ -62,7 +62,7 @@ const GoogleAuthCallback = () => {
       flexDirection: 'column',
       alignItems: 'center', 
       justifyContent: 'center',
-      bgcolor: '#f5f6fa',
+      bgcolor: '#0a0a0f',
       gap: 2
     }}>
       {loading ? (
