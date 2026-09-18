@@ -80,6 +80,21 @@ export const PublicCRM = () => (
           title="AI Virtual SDR"
           desc="Our integrated AI reads customer sentiment and automatically creates Hot Leads in your pipeline when it detects buying intent."
         />
+        <FeatureCard 
+          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
+          title="Team Collaboration"
+          desc="Leave internal notes on deals, tag team members, and set automated follow-up reminders directly inside the customer profile."
+        />
+        <FeatureCard 
+          icon={<EmailIcon sx={{ fontSize: 50 }} />}
+          title="Mass Broadcasting"
+          desc="Send targeted WhatsApp and SMS marketing campaigns directly from your ERP to all your qualified leads."
+        />
+        <FeatureCard 
+          icon={<SmartToyIcon sx={{ fontSize: 50 }} />}
+          title="Advanced Analytics"
+          desc="Generate complex revenue forecasting, team performance reports, and pipeline velocity charts."
+        />
       </Grid>
     </Container>
   </Box>
@@ -108,6 +123,21 @@ export const PublicApp = () => (
           icon={<ContactsIcon sx={{ fontSize: 50 }} />}
           title="Real-Time ERP Sync"
           desc="Everything your customers do on the mobile app instantly syncs with your ZenVerse ERP Dashboard and live inventory."
+        />
+        <FeatureCard 
+          icon={<PhoneIphoneIcon sx={{ fontSize: 50 }} />}
+          title="Push Notifications"
+          desc="Re-engage your customers with automated push notifications for abandoned carts, upcoming appointments, and new offers."
+        />
+        <FeatureCard 
+          icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
+          title="Offline Mode Support"
+          desc="Crucial features remain accessible even when your staff or customers lose internet connection, syncing automatically when back online."
+        />
+        <FeatureCard 
+          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
+          title="Biometric Security"
+          desc="Secure your app with FaceID and TouchID integration, ensuring enterprise-grade protection for sensitive business data."
         />
       </Grid>
     </Container>
@@ -138,6 +168,21 @@ export const PublicWeb = () => (
           title="Custom Admin Dashboards"
           desc="Need specialized analytics? We can build custom web dashboards tailored to exactly how your management team operates."
         />
+        <FeatureCard 
+          icon={<WebIcon sx={{ fontSize: 50 }} />}
+          title="Secure Role-Based Access"
+          desc="Bank-grade security with granular permissions. Give exact levels of access to staff, managers, and external partners."
+        />
+        <FeatureCard 
+          icon={<PublicIcon sx={{ fontSize: 50 }} />}
+          title="Client Self-Service Portals"
+          desc="Let your clients log in, view their invoices, track project progress, and upload documents securely 24/7."
+        />
+        <FeatureCard 
+          icon={<DomainIcon sx={{ fontSize: 50 }} />}
+          title="Third-Party Integrations"
+          desc="We seamlessly connect your web portal to Zapier, Stripe, Twilio, QuickBooks, and any other API you rely on."
+        />
       </Grid>
     </Container>
   </Box>
@@ -154,18 +199,33 @@ export const PublicWhiteLabel = () => (
       <Grid container spacing={4}>
         <FeatureCard 
           icon={<PaletteIcon sx={{ fontSize: 50 }} />}
-          title="100% Your Branding"
-          desc="We strip out every mention of 'ZenVerse'. Your clients will only see your logo, your business name, and your color scheme."
+          title="Your Logo & Colors"
+          desc="We replace all Zenith ERP branding with your logo, brand colors, and typography to ensure complete brand consistency."
         />
         <FeatureCard 
           icon={<DomainIcon sx={{ fontSize: 50 }} />}
           title="Custom Domains"
-          desc="Host the entire ERP on 'erp.yourcompany.com'. Your clients will log in through your own secure, custom URL."
+          desc="Host the ERP on your own domain (e.g., portal.yourcompany.com). Your clients will never know we exist."
         />
         <FeatureCard 
-          icon={<EmailIcon sx={{ fontSize: 50 }} />}
-          title="Branded Communications"
-          desc="All system emails, invoices, and WhatsApp messages will be sent from your custom email domains and business numbers."
+          icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
+          title="Reseller Opportunities"
+          desc="Want to sell an ERP to your own clients? White-label our solution, set your own pricing, and keep 100% of the profits."
+        />
+        <FeatureCard 
+          icon={<PaletteIcon sx={{ fontSize: 50 }} />}
+          title="Custom App Store Listings"
+          desc="We publish your mobile apps directly to the Apple App Store and Google Play under your own Apple/Google developer accounts."
+        />
+        <FeatureCard 
+          icon={<DomainIcon sx={{ fontSize: 50 }} />}
+          title="Dedicated Cloud Infrastructure"
+          desc="Run your white-labeled instance on isolated, dedicated cloud instances for maximum data privacy and custom SLA guarantees."
+        />
+        <FeatureCard 
+          icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
+          title="Tailored Onboarding"
+          desc="Custom login screens, welcome emails, and automated onboarding sequences that match your specific business voice."
         />
       </Grid>
     </Container>
