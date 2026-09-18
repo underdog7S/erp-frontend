@@ -179,7 +179,12 @@ const HomePage = () => {
                         }}
                       >
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
-                          {item.icon}
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            {item.icon}
+                            <Typography variant="subtitle1" sx={{ color: item.color, fontWeight: 700, mb: 0 }}>
+                              {item.title}
+                            </Typography>
+                          </Box>
                           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mt: 0.5 }}>
                             {item.desc}
                           </Typography>
