@@ -148,7 +148,7 @@ const PublicFeePayment = () => {
   }, []);
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f5f6fa', py: 4, px: 2 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', py: 4, px: 2 }}>
       <Box sx={{ maxWidth: 800, mx: 'auto' }}>
         <Card>
           <CardContent>
@@ -213,7 +213,7 @@ const PublicFeePayment = () => {
             </Box>
 
             {feeStatus && (
-              <Paper sx={{ p: 2, mb: 3, bgcolor: '#f9f9f9' }}>
+              <Paper sx={{ p: 2, mb: 3, bgcolor: 'rgba(255,255,255,0.05)' }}>
                 <Typography variant="h6" gutterBottom>
                   Fee Status for {feeStatus.student_name}
                 </Typography>

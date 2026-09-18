@@ -2317,7 +2317,7 @@ const EducationDashboard = () => {
                       setStudentForm({...studentForm, gender: e.target.value});
                     }}
                     label="Gender"
-                    MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
+                    
                   >
                     <MenuItem value="">Select Gender</MenuItem>
                     <MenuItem value="Male">Male</MenuItem>
@@ -2335,7 +2335,7 @@ const EducationDashboard = () => {
                       setStudentForm({...studentForm, assigned_class_id: e.target.value});
                     }}
                     label="Assigned Class"
-                    MenuProps={{ disablePortal: true, PaperProps: { sx: { zIndex: 2200 } } }}
+                    
                   >
                     {classes.map((cls) => (
                       <MenuItem key={cls.id} value={cls.id}>{cls.name}</MenuItem>
