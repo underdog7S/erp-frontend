@@ -171,7 +171,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
             }
           }} />
           <Typography variant="h5" fontWeight={700}>
-            Request Custom Services
+            Meet an Expert
           </Typography>
         </Box>
         <IconButton 
@@ -266,16 +266,40 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
             <Typography variant="h5" fontWeight={600} gutterBottom>
               Request Submitted Successfully!
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              We'll contact you soon to discuss your requirements.
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              Next step: Pick a time to meet with our expert on Google Calendar. 
+              This will automatically send an invite to both of our calendars!
             </Typography>
-            <Button 
-              variant="contained" 
-              onClick={onClose}
-              sx={{ mt: 2 }}
-            >
-              Close
-            </Button>
+            
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+              <Button 
+                variant="contained" 
+                color="primary"
+                size="large"
+                href="https://calendly.com/"
+                target="_blank"
+                sx={{ 
+                  py: 1.5, px: 4, 
+                  background: 'linear-gradient(45deg, #4285F4, #34A853)',
+                  boxShadow: '0 4px 15px rgba(66, 133, 244, 0.4)',
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 20px rgba(66, 133, 244, 0.6)'
+                  }
+                }}
+              >
+                📅 Schedule Google Meet
+              </Button>
+              
+              <Button 
+                variant="text" 
+                onClick={onClose}
+                sx={{ color: 'text.secondary' }}
+              >
+                I'll do this later
+              </Button>
+            </Box>
           </Box>
         ) : (
           <form onSubmit={handleSubmit}>

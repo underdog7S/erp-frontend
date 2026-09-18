@@ -774,13 +774,14 @@ const Navigation = () => {
   const drawer = (
     <Box sx={{ width: 280, height: '100%', bgcolor: 'background.paper' }}>
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <img 
-          src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png'} 
-          alt="Zenith ERP Logo" 
-          style={{ height: 40, borderRadius: 8 }} 
-        />
-        <Typography variant="h6" fontWeight={700} color="primary">
-          ZS | Zenith Solution
+        
+        <Typography variant="h6" fontWeight={900} sx={{ 
+          letterSpacing: -0.5,
+          background: 'linear-gradient(90deg, #00f2fe, #4facfe)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+          ZV | ZenVerse
         </Typography>
       </Box>
       
@@ -1211,20 +1212,7 @@ const Navigation = () => {
             }}
           />
           
-          <img 
-            className="logo-image"
-            src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png'} 
-            alt="Zenith Logo" 
-            style={{ 
-              height: isMobile ? 35 : 42, 
-              borderRadius: 8,
-              marginRight: 8,
-              transition: 'all 0.3s ease',
-              cursor: 'pointer',
-              position: 'relative',
-              zIndex: 1
-            }} 
-          />
+          
           {!isMobile && (
             <Typography 
               className="logo-text"
@@ -1251,7 +1239,7 @@ const Navigation = () => {
                 }
               }}
             >
-              ZS | Zenith Solution
+              ZV | ZenVerse
             </Typography>
           )}
         </Box>

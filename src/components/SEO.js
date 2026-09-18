@@ -18,7 +18,7 @@ const SEO = ({
   title = "Zenith ERP - Universal Cloud ERP Solution for Education, Pharmacy, Retail, Hotel & More",
   description = "Empower your business with Zenith ERP - the universal cloud-based Enterprise Resource Planning solution. Streamline operations, automate workflows, and boost productivity across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries. Free plan available. Start your digital transformation today!",
   keywords = "ERP Software, Enterprise Resource Planning, Cloud ERP, Education ERP, School Management System, Pharmacy Management Software, Retail ERP, POS System, Hotel Management System, Restaurant Management Software, Salon Management, Multi-tenant SaaS, Business Management Software, Inventory Management, Accounting Software, HR Management, Free ERP, Affordable ERP India, Cloud-based ERP Solution, Digital Transformation, Business Automation",
-  image = "https://zenitherp.online/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png",
+  image = "https://zenverse.online/logo.png",
   url = "https://zenitherp.online",
   type = "website",
   author = "Zenith ERP",
@@ -39,7 +39,7 @@ const SEO = ({
     "@type": "Organization",
     "name": "Zenith ERP",
     "url": "https://zenitherp.online",
-    "logo": "https://zenitherp.online/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png",
+    "logo": "https://zenverse.online/logo.png",
     "description": description || "Universal cloud-based Enterprise Resource Planning solution empowering businesses across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries with comprehensive automation, real-time analytics, and enterprise-grade security.",
     "foundingDate": "2024",
     "numberOfEmployees": {

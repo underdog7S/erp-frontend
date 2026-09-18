@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Navigation from "./components/Navigation";
 // HomePage is lazy loaded below
 import About from './pages/About';
+import Careers from './pages/Careers';
 import FAQ from './pages/FAQ';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
@@ -94,6 +95,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/careers" element={<Careers />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/terms" element={<Terms />} />

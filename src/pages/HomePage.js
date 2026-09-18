@@ -13,6 +13,8 @@ import AgencyProcess from '../components/landing/AgencyProcess';
 import EnterpriseModules from '../components/landing/EnterpriseModules';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import IntegrationsDemo from '../components/landing/IntegrationsDemo';
+import Testimonials from '../components/landing/Testimonials';
+import FAQ from '../components/landing/FAQ';
 
 // Import 3D Background lazily to avoid blocking initial render
 const Hero3DScene = React.lazy(() => import('../components/landing/Hero3DScene'));
@@ -72,7 +74,7 @@ const HomePage = () => {
   return (
     <>
       <SEO
-        title="Zenith Tech Solutions - Full-Stack, AI & Cloud Agency"
+        title="ZenVerse Tech Solutions - Full-Stack, AI & Cloud Agency"
         description="We ship websites, AI agents and custom dashboards for businesses that are tired of losing money to slow tech and manual work."
         keywords="AI Agency, Full-Stack Development, Cloud Migration, Custom ERP, Tech Solutions, Zenith ERP"
         url="https://zenitherp.online"
@@ -103,40 +105,36 @@ const HomePage = () => {
               sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
               onClick={() => scrollToTop()}
             >
-              <img
-                src={process.env.PUBLIC_URL + '/_2173c7d8-8cb1-4996-b9b2-b289c17397fa.png'}
-                alt="Zenith Logo"
-                style={{ height: 42, borderRadius: 8 }}
-              />
+              
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <Typography variant="h6" fontWeight={900} sx={{
                   lineHeight: 1,
                   letterSpacing: -0.5,
-                  background: 'linear-gradient(to right, #fff, #00f2fe)',
+                  background: 'linear-gradient(90deg, #00f2fe, #4facfe)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
-                  ZS | Zenith Solution
+                  ZV | ZenVerse
                 </Typography>
               </Box>
             </Box>
             
             {/* Smooth Scroll Links with 3D Hover */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center', perspective: 1000 }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center', perspective: 1000, mr: 4 }}>
               
-              {/* Services Dropdown */}
-              <Box sx={{ position: 'relative', '&:hover .services-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
+              {/* Zen Suite Dropdown */}
+              <Box sx={{ position: 'relative', '&:hover .suite-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
                 <Box
                   component={motion.div}
                   whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
                   sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
                 >
-                  Services ▾
+                  Zen Suite ▾
                 </Box>
                 <Box 
-                  className="services-menu"
+                  className="suite-menu"
                   sx={{ 
-                    position: 'absolute', top: '100%', left: '-200px', pt: 1,
+                    position: 'absolute', top: '100%', left: '-100px', pt: 1,
                     opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
                   }}
                 >
@@ -145,139 +143,7 @@ const HomePage = () => {
                     border: '1px solid rgba(0,242,254,0.3)', 
                     borderRadius: 3, 
                     p: 2, 
-                    width: '600px', 
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
-                    backdropFilter: 'blur(20px)',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 1.5
-                  }}>
-                    {[
-                      { title: 'AI Automation & Bots', desc: 'Custom AI Agents via API' },
-                      { title: 'Custom ERP & CRM', desc: 'Dashboards tailored to your ops' },
-                      { title: 'Web, SEO & AEO', desc: 'Next.js & AI Answer Engine Opt.' },
-                      { title: 'E-Commerce & Delivery', desc: 'End-to-end commerce platforms' },
-                      { title: 'API Integrations', desc: 'Seamlessly link your ecosystem' },
-                      { title: 'Data & Analytics', desc: 'Automated data pipelines' },
-                      { title: 'Cloud & DevOps', desc: 'Cloud migration & infra' },
-                      { title: 'Comms & Booking', desc: 'WhatsApp & SMS flows' }
-                    ].map(item => (
-                      <Box 
-                        key={item.title} 
-                        onClick={() => scrollToSection('solutions')}
-                        sx={{ 
-                          p: 2, 
-                          color: 'white', 
-                          cursor: 'pointer', 
-                          borderRadius: 2, 
-                          border: '1px solid transparent',
-                          transition: 'all 0.2s ease',
-                          '&:hover': { 
-                            bgcolor: 'rgba(0,242,254,0.05)', 
-                            borderColor: 'rgba(0,242,254,0.2)',
-                            transform: 'translateX(4px)'
-                          } 
-                        }}
-                      >
-                        <Typography variant="subtitle2" sx={{ color: '#00f2fe', fontWeight: 700, mb: 0.5 }}>
-                          {item.title}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
-                          {item.desc}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Products/Industries Dropdown */}
-              <Box sx={{ position: 'relative', '&:hover .products-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
-                <Box
-                  component={motion.div}
-                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
-                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
-                >
-                  Products ▾
-                </Box>
-                <Box 
-                  className="products-menu"
-                  sx={{ 
-                    position: 'absolute', top: '100%', left: '-150px', pt: 1,
-                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
-                  }}
-                >
-                  <Box sx={{ 
-                    bgcolor: 'rgba(15,15,22,0.95)', 
-                    border: '1px solid rgba(0,242,254,0.3)', 
-                    borderRadius: 3, 
-                    p: 2, 
-                    width: '500px', 
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
-                    backdropFilter: 'blur(20px)',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 1.5
-                  }}>
-                    {[
-                      { title: 'Education', desc: 'Schools, Colleges, Universities' },
-                      { title: 'Pharmacy', desc: 'Retail & Hospital Pharmacies' },
-                      { title: 'Retail & Wholesale', desc: 'Stores, POS & Distribution' },
-                      { title: 'Hotel', desc: 'Hotels, Resorts, Guest Houses' },
-                      { title: 'Restaurant', desc: 'Dining, Cafes, Cloud Kitchens' },
-                      { title: 'Salon & Spa', desc: 'Booking & Staff Management' }
-                    ].map(item => (
-                      <Box 
-                        key={item.title} 
-                        onClick={() => scrollToSection('modules')}
-                        sx={{ 
-                          p: 2, 
-                          color: 'white', 
-                          cursor: 'pointer', 
-                          borderRadius: 2, 
-                          border: '1px solid transparent',
-                          transition: 'all 0.2s ease',
-                          '&:hover': { 
-                            bgcolor: 'rgba(0,242,254,0.05)', 
-                            borderColor: 'rgba(0,242,254,0.2)',
-                            transform: 'translateX(4px)'
-                          } 
-                        }}
-                      >
-                        <Typography variant="subtitle2" sx={{ color: '#b388ff', fontWeight: 700, mb: 0.5 }}>
-                          {item.title}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
-                          {item.desc}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
-
-              {/* Company Dropdown */}
-              <Box sx={{ position: 'relative', '&:hover .company-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
-                <Box
-                  component={motion.div}
-                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
-                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
-                >
-                  Company ▾
-                </Box>
-                <Box 
-                  className="company-menu"
-                  sx={{ 
-                    position: 'absolute', top: '100%', left: '-50px', pt: 1,
-                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
-                  }}
-                >
-                  <Box sx={{ 
-                    bgcolor: 'rgba(15,15,22,0.95)', 
-                    border: '1px solid rgba(0,242,254,0.3)', 
-                    borderRadius: 3, 
-                    p: 2, 
-                    width: '280px', 
+                    width: '380px', 
                     boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
                     backdropFilter: 'blur(20px)',
                     display: 'flex',
@@ -285,12 +151,15 @@ const HomePage = () => {
                     gap: 1
                   }}>
                     {[
-                      { title: 'Our Process', desc: 'How we build and ship', section: 'process' },
-                      { title: 'Integrations', desc: 'Tech ecosystem & APIs', section: 'integrations' }
+                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: '⚡', color: '#00f2fe' },
+                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: '👥', color: '#ff9a9e' },
+                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: '📱', color: '#b388ff' },
+                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: '🌐', color: '#00e676' },
+                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: '🎨', color: '#fbc02d' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
-                        onClick={() => scrollToSection(item.section)}
+                        onClick={() => scrollToSection('modules')}
                         sx={{ 
                           p: 1.5, 
                           color: 'white', 
@@ -298,6 +167,9 @@ const HomePage = () => {
                           borderRadius: 2, 
                           border: '1px solid transparent',
                           transition: 'all 0.2s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
                           '&:hover': { 
                             bgcolor: 'rgba(0,242,254,0.05)', 
                             borderColor: 'rgba(0,242,254,0.2)',
@@ -305,19 +177,67 @@ const HomePage = () => {
                           } 
                         }}
                       >
-                        <Typography variant="subtitle2" sx={{ color: '#00f2fe', fontWeight: 700, mb: 0.5 }}>
-                          {item.title}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
-                          {item.desc}
-                        </Typography>
+                        <Box sx={{ 
+                          width: 40, height: 40, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          background: `linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.2))`,
+                          border: `1px solid ${item.color}50`,
+                          fontSize: '1.2rem',
+                          color: item.color
+                        }}>
+                          {item.icon}
+                        </Box>
+                        <Box>
+                          <Typography variant="subtitle2" sx={{ color: item.color, fontWeight: 700 }}>
+                            {item.title}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block' }}>
+                            {item.desc}
+                          </Typography>
+                        </Box>
                       </Box>
                     ))}
+                    
+                    <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                      <Button 
+                        fullWidth 
+                        variant="outlined" 
+                        onClick={() => window.location.href='/login'}
+                        sx={{ 
+                          color: 'white', 
+                          borderColor: 'rgba(255,255,255,0.2)',
+                          '&:hover': { borderColor: '#00f2fe', bgcolor: 'rgba(0,242,254,0.05)' }
+                        }}
+                      >
+                        Login / Sign Up
+                      </Button>
+                      <Button 
+                        fullWidth 
+                        variant="contained"
+                        onClick={() => window.location.href='/pricing'}
+                        sx={{ 
+                          background: 'linear-gradient(45deg, #00f2fe 0%, #4facfe 100%)',
+                          color: '#000',
+                          fontWeight: 700
+                        }}
+                      >
+                        Free Trial
+                      </Button>
+                    </Box>
                   </Box>
                 </Box>
               </Box>
+              
+              {/* Client Portal Link */}
+              <Box
+                component={motion.div}
+                whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
+                onClick={() => navigate('/login')}
+                sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
+              >
+                Client Portal
+              </Box>
             </Box>
-
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <IconButton 
                 sx={{ display: { xs: 'flex', md: 'none' }, color: 'white' }}
@@ -333,7 +253,7 @@ const HomePage = () => {
                 onClick={() => navigate('/login')} 
                 sx={{ display: { xs: 'none', sm: 'block' }, fontWeight: 600, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2 }}
               >
-                Client Portal
+                Start Free Trial
               </Button>
               <Button 
                 component={motion.button}
@@ -354,7 +274,7 @@ const HomePage = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                Inquiry
+                Meet an Expert
               </Button>
             </Box>
           </Container>
@@ -370,10 +290,35 @@ const HomePage = () => {
           alignItems: 'center'
         }}>
           
-          {/* Render 3D Scene */}
-          <React.Suspense fallback={<Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, bgcolor: '#000000' }} />}>
-            <Hero3DScene />
-          </React.Suspense>
+          {/* Render Meaningful Graphic Background */}
+          <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Box sx={{ position: 'absolute', width: '150%', height: '150%', background: 'radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.05) 0%, rgba(0,0,0,1) 50%)' }} />
+            
+            {/* Floating Abstract UI Elements */}
+            <Box component={motion.div} 
+              animate={{ y: [0, -20, 0], rotate: [0, 2, 0] }} 
+              transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
+              sx={{ position: 'absolute', right: '10%', top: '20%', width: 300, height: 200, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,242,254,0.2)', borderRadius: 4, backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', p: 3, display: {xs:'none', md:'block'} }}
+            >
+              <Box sx={{ width: '40%', height: 10, bgcolor: 'rgba(0,242,254,0.5)', borderRadius: 2, mb: 3 }} />
+              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <Box sx={{ flex: 1, height: 60, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
+                <Box sx={{ flex: 1, height: 60, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
+              </Box>
+              <Box sx={{ width: '100%', height: 40, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
+            </Box>
+
+            <Box component={motion.div} 
+              animate={{ y: [0, 25, 0], rotate: [0, -3, 0] }} 
+              transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut', delay: 1 }}
+              sx={{ position: 'absolute', left: '10%', bottom: '20%', width: 250, height: 250, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(179,136,255,0.2)', borderRadius: '50%', backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', p: 4, display: {xs:'none', md:'flex'}, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}
+            >
+              <Box sx={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #b388ff, #7c4dff)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography variant="h4">👥</Typography>
+              </Box>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Zen CRM</Typography>
+            </Box>
+          </Box>
 
           <Container 
             maxWidth="lg" 
@@ -406,7 +351,7 @@ const HomePage = () => {
             
             <motion.div variants={fadeInUp}>
               <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 800, mx: 'auto', mb: 6, lineHeight: 1.6, fontWeight: 400 }}>
-                We engineer premium web applications, integrate artificial intelligence, and build custom ERP software that transforms your business operations into an autonomous powerhouse.
+                We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
               </Typography>
             </motion.div>
             
@@ -429,7 +374,7 @@ const HomePage = () => {
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  Request Consultation
+                  Meet an Expert
                 </Button>
                 <Button 
                   variant="outlined" 
@@ -515,6 +460,16 @@ const HomePage = () => {
         </Box>
 
 
+        {/* Testimonials */}
+        <Box component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+          <Testimonials />
+        </Box>
+
+        {/* FAQ Section */}
+        <Box component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
+          <FAQ />
+        </Box>
+
         {/* Bottom CTA */}
         <Box sx={{ py: 15, bgcolor: '#000000', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', position: 'relative' }}>
           <Box sx={{ 
@@ -570,40 +525,51 @@ const HomePage = () => {
             <Grid container spacing={4} sx={{ mb: 6 }}>
               <Grid item xs={12} md={4}>
                 <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -1, color: '#00f2fe', mb: 2 }}>
-                  ZS<br/><span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>Zenith Solution</span>
+                  <span style={{ background: 'linear-gradient(90deg, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ZV | ZenVerse</span>
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
-                  We engineer premium web applications, integrate artificial intelligence, and build custom ERP software that transforms your business operations into an autonomous powerhouse.
+                  We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
                 </Typography>
               </Grid>
               <Grid item xs={6} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Services</Typography>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>What We Provide</Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {['Web, SEO & AEO', 'E-Commerce Platforms', 'API Integrations', 'AI Automation'].map(item => (
+                  {['Custom Apps', 'Web Apps', 'White Labeling', 'API Integrations'].map(item => (
                     <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>{item}</Typography>
                   ))}
                 </Box>
               </Grid>
               <Grid item xs={6} md={2}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Products (ERP)</Typography>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Zen Suite</Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {['Education ERP', 'Retail & POS', 'Pharmacy', 'Hotel & Restaurant'].map(item => (
+                  {['Zen ERP (Tenant Modules)', 'Zen CRM', 'Zen App', 'Zen Web', 'White Labeling'].map(item => (
                     <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>{item}</Typography>
                   ))}
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={6} md={2}>
                 <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Company</Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/login')}>Client Portal</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/about')}>About Us</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/careers')}>Careers</Typography>
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('process')}>Our Process</Typography>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => setAuditDialogOpen(true)}>Request Blueprint</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/login')}>Client Portal</Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Contact Us</Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => window.location.href='mailto:heritageclouds@gmail.com'}>heritageclouds@gmail.com</Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>LinkedIn</Typography>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>Twitter</Typography>
+                  </Box>
                 </Box>
               </Grid>
             </Grid>
             <Box sx={{ pt: 4, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
-                © {new Date().getFullYear()} Zenith Tech Solutions. Architected with precision.
+                © {new Date().getFullYear()} ZenVerse Tech Solutions. Architected with precision.
               </Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
                 Privacy Policy • Terms of Service
@@ -635,29 +601,13 @@ const HomePage = () => {
             </IconButton>
           </Box>
           <List sx={{ p: 0 }}>
-            {/* Services */}
-            <ListItem button onClick={() => toggleMenu('services')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <ListItemText primary="Services" primaryTypographyProps={{ fontWeight: 600 }} />
-              {openMenus.services ? <ExpandLess /> : <ExpandMore />}
+            <ListItem button onClick={() => toggleMenu('suite')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <ListItemText primary="Zen Suite" primaryTypographyProps={{ fontWeight: 600 }} />
+              {openMenus.suite ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
-            <Collapse in={openMenus.services} timeout="auto" unmountOnExit>
+            <Collapse in={openMenus.suite} timeout="auto" unmountOnExit>
               <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
-                {['AI Automation', 'Custom ERP', 'Web, SEO & AEO', 'E-Commerce', 'API Integrations'].map(item => (
-                  <ListItem key={item} button sx={{ pl: 4 }} onClick={() => handleMobileNav('solutions')}>
-                    <ListItemText primary={item} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
-                  </ListItem>
-                ))}
-              </List>
-            </Collapse>
-
-            {/* Products */}
-            <ListItem button onClick={() => toggleMenu('products')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <ListItemText primary="Products (ERP)" primaryTypographyProps={{ fontWeight: 600 }} />
-              {openMenus.products ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={openMenus.products} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
-                {['Education', 'Pharmacy', 'Retail', 'Hotel', 'Restaurant', 'Salon'].map(item => (
+                {['Zen ERP (Tenant Modules)', 'Zen CRM', 'Zen App', 'Zen Web', 'White Labeling'].map(item => (
                   <ListItem key={item} button sx={{ pl: 4 }} onClick={() => handleMobileNav('modules')}>
                     <ListItemText primary={item} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
                   </ListItem>
@@ -665,22 +615,10 @@ const HomePage = () => {
               </List>
             </Collapse>
 
-            {/* Company */}
-            <ListItem button onClick={() => toggleMenu('company')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <ListItemText primary="Company" primaryTypographyProps={{ fontWeight: 600 }} />
-              {openMenus.company ? <ExpandLess /> : <ExpandMore />}
+            <ListItem button onClick={() => { setMobileOpen(false); navigate('/login'); }} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <ListItemText primary="Client Portal" primaryTypographyProps={{ fontWeight: 600 }} />
             </ListItem>
-            <Collapse in={openMenus.company} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
-                <ListItem button sx={{ pl: 4 }} onClick={() => handleMobileNav('process')}>
-                  <ListItemText primary="Our Process" primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
-                </ListItem>
-                <ListItem button sx={{ pl: 4 }} onClick={() => handleMobileNav('integrations')}>
-                  <ListItemText primary="Integrations" primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
-                </ListItem>
-              </List>
-            </Collapse>
-            
+
             <Box sx={{ p: 3 }}>
               <Button 
                 fullWidth 
@@ -688,7 +626,7 @@ const HomePage = () => {
                 sx={{ mb: 2, color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
                 onClick={() => { setMobileOpen(false); navigate('/login'); }}
               >
-                Client Portal
+                Start Free Trial
               </Button>
               <Button 
                 fullWidth 
@@ -696,7 +634,7 @@ const HomePage = () => {
                 sx={{ background: 'linear-gradient(45deg, #00f2fe, #4facfe)', color: 'black', fontWeight: 800 }}
                 onClick={() => { setMobileOpen(false); setAuditDialogOpen(true); }}
               >
-                Inquiry
+                Meet an Expert
               </Button>
             </Box>
           </List>

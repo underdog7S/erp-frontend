@@ -5,10 +5,10 @@ import { IntegrationInstructions, ViewInAr, Api, Storage } from '@mui/icons-mate
 
 const IntegrationsDemo = () => {
   const integrations = [
-    { name: 'Odoo ERP', icon: <Storage sx={{ fontSize: 40 }} />, color: '#714B67' },
-    { name: 'Zoho CRM', icon: <Api sx={{ fontSize: 40 }} />, color: '#F0483E' },
-    { name: 'Salesforce', icon: <IntegrationInstructions sx={{ fontSize: 40 }} />, color: '#00A1E0' },
-    { name: 'SAP', icon: <ViewInAr sx={{ fontSize: 40 }} />, color: '#0FAAFF' },
+    { name: 'Odoo ERP', icon: <img src="https://cdn.simpleicons.org/odoo/714B67" alt="Odoo" width="50" height="50" />, color: '#714B67' },
+    { name: 'Zoho CRM', icon: <img src="https://cdn.simpleicons.org/zoho/F0483E" alt="Zoho" width="50" height="50" />, color: '#F0483E' },
+    { name: 'Salesforce', icon: <img src="https://cdn.simpleicons.org/salesforce/00A1E0" alt="Salesforce" width="50" height="50" />, color: '#00A1E0' },
+    { name: 'SAP', icon: <img src="https://cdn.simpleicons.org/sap/0FAAFF" alt="SAP" width="50" height="50" />, color: '#0FAAFF' },
   ];
 
   return (

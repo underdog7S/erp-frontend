@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Container, Typography, Grid } from '@mui/material';
+import { motion } from 'framer-motion';
 
 const stackCategories = [
   {
@@ -52,33 +53,48 @@ const TechStackMarquee = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
-          {stackCategories.map((cat, idx) => (
-            <Grid item xs={6} sm={4} md={3} key={idx}>
-              <Box sx={{ 
-                p: 3, 
-                height: '100%', 
-                bgcolor: 'rgba(255,255,255,0.02)',
-                borderRadius: 2,
-                border: '1px solid rgba(255,255,255,0.05)',
-                transition: 'all 0.3s ease',
-                '&:hover': {
-                  bgcolor: 'rgba(255,255,255,0.05)',
-                  borderColor: 'rgba(255,255,255,0.1)'
-                }
-              }}>
-                <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>
-                  {cat.title}
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  {cat.items.map((item, itemIdx) => (
-                    <Typography key={itemIdx} variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-                      {item}
-                    </Typography>
-                  ))}
-                </Box>
-              </Box>
-            </Grid>
+        
+        <Box sx={{ overflow: 'hidden', whiteSpace: 'nowrap', width: '100%', py: 4, position: 'relative' }}>
+          <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100px', height: '100%', background: 'linear-gradient(to right, #000000, transparent)', zIndex: 2 }} />
+          <Box sx={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100%', background: 'linear-gradient(to left, #000000, transparent)', zIndex: 2 }} />
+          
+          <Box 
+            component={motion.div}
+            animate={{ x: [0, -2000] }}
+            transition={{ repeat: Infinity, duration: 40, ease: "linear" }}
+            sx={{ display: 'inline-flex', alignItems: 'center' }}
+          >
+            {/* First Set */}
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/react/61DAFB" alt="React" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>React</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Next.js</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/django/092E20" alt="Django" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Django</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Python</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="Node.js" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Node.js</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt="PostgreSQL" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>PostgreSQL</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/mongodb/47A248" alt="MongoDB" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>MongoDB</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Docker</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/amazonwebservices/232F3E" alt="AWS" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>AWS</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="GCP" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Google Cloud</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/stripe/008CDD" alt="Stripe" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Stripe</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/openai/ffffff" alt="OpenAI" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>OpenAI</Typography></Box>
+            
+            {/* Second Set for seamless looping */}
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/react/61DAFB" alt="React" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>React</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/nextdotjs/ffffff" alt="Next.js" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Next.js</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/django/092E20" alt="Django" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Django</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Python</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="Node.js" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Node.js</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt="PostgreSQL" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>PostgreSQL</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/mongodb/47A248" alt="MongoDB" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>MongoDB</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/docker/2496ED" alt="Docker" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Docker</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/amazonwebservices/232F3E" alt="AWS" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>AWS</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/googlecloud/4285F4" alt="GCP" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Google Cloud</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/stripe/008CDD" alt="Stripe" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>Stripe</Typography></Box>
+            <Box sx={{ mx: 4, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}><img src="https://cdn.simpleicons.org/openai/ffffff" alt="OpenAI" style={{ height: "50px", opacity: 0.7 }} /><Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>OpenAI</Typography></Box>
+          </Box>
+        </Box>
+        
+        <Grid container spacing={4} mt={4}>
           ))}
         </Grid>
       </Container>

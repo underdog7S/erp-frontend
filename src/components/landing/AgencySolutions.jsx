@@ -75,6 +75,14 @@ const solutions = [
     icon: <CloudIcon sx={{ fontSize: 40 }} />,
     color: '#7c4dff',
     tags: ['Docker', 'Kubernetes', 'GitHub Actions', 'Cloudflare']
+  },
+  {
+    title: 'Data Migration & Setup',
+    subtitle: 'White-glove onboarding from legacy systems',
+    description: 'We securely extract, format, and migrate your data from messy Excel sheets, Tally, or legacy software directly into your new ZenVerse platform.',
+    icon: <CloudIcon sx={{ fontSize: 40 }} />,
+    color: '#00e676',
+    tags: ['Data Engineering', 'ETL', 'Onboarding', 'Security']
   }
 ];
 
