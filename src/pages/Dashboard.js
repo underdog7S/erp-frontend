@@ -19,6 +19,7 @@ import { hasPermission, PERMISSIONS } from '../permissions';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import { fetchPlans, changePlan, fetchUserMe, getRazorpaySetupStatus, getStoredUser } from '../services/api';
 import PricingModal from '../components/PricingModal';
+import SaaSUsageWidget from '../components/SaaSUsageWidget';
 import RazorpaySetupWizard from '../components/RazorpaySetupWizard';
 import PaymentIcon from '@mui/icons-material/Payment';
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
@@ -492,6 +493,11 @@ const Dashboard = () => {
           </Grid>
         ))}
       </Grid>
+
+      {/* SaaS APIs & Usage Widget */}
+      <Box sx={{ mb: 4 }}>
+        <SaaSUsageWidget onUpgradeClick={() => setShowPricing(true)} />
+      </Box>
 
       {/* Upgrade CTA for Free plan */}
       {isFreePlan && (
