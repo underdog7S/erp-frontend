@@ -10,7 +10,6 @@ import AgencySolutions from '../components/landing/AgencySolutions';
 import TargetAudience from '../components/landing/TargetAudience';
 import TechStackMarquee from '../components/landing/TechStackMarquee';
 import AgencyProcess from '../components/landing/AgencyProcess';
-import EnterpriseModules from '../components/landing/EnterpriseModules';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import IntegrationsDemo from '../components/landing/IntegrationsDemo';
 import Testimonials from '../components/landing/Testimonials';
@@ -409,10 +408,7 @@ const HomePage = () => {
           <AgencySolutions />
         </Box>
 
-        {/* Enterprise SaaS Modules (Zenith ERP) */}
-        <Box id="modules" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
-          <EnterpriseModules />
-        </Box>
+
 
         {/* Integrations and Demo */}
         <Box id="integrations" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
