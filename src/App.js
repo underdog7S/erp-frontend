@@ -54,6 +54,7 @@ const RestaurantDashboard = lazy(() => import('./pages/Restaurant/RestaurantDash
 const SalonDashboard = lazy(() => import('./pages/Salon/SalonDashboard'));
 const SalonCRM = lazy(() => import('./pages/Salon/SalonCRM'));
 const SalonBilling = lazy(() => import('./pages/Salon/SalonBilling'));
+const AddonStore = lazy(() => import('./pages/Billing/AddonStore'));
 const ContactManagement = lazy(() => import('./pages/CRM/ContactManagement'));
 const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
@@ -126,6 +127,7 @@ function App() {
                     <Route path="/admin/public-settings" element={<ProtectedAdminRoute><AdminPublicSettings /></ProtectedAdminRoute>} />
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
+                    <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/erp" element={<PublicERP />} />
                     <Route path="/crm" element={<PublicCRM />} />
