@@ -53,8 +53,18 @@ const OmnichannelInbox = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const tenantSlug = user.tenant_slug || 'default';
     
-    // 2. Open WebSocket connection
-    const wsUrl = `ws://${window.location.hostname}:8000/ws/inbox/${tenantSlug}/`;
+    // 2. Open WebSocket connection (Dynamic for Production HTTPS/WSS)
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // Use API URL host if available, otherwise fallback to current hostname
+    let wsHost = window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    if (process.env.REACT_APP_API_URL) {
+      try {
+        wsHost = new URL(process.env.REACT_APP_API_URL).host;
+      } catch (e) {
+        console.error("Invalid REACT_APP_API_URL", e);
+      }
+    }
+    const wsUrl = `${protocol}//${wsHost}/ws/inbox/${tenantSlug}/`;
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
