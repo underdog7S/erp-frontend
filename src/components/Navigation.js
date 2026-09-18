@@ -43,6 +43,7 @@ import NotificationCenter from './NotificationCenter';
 import InfoIcon from '@mui/icons-material/Info';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
+import WorkIcon from '@mui/icons-material/Work';
 import PaymentIcon from '@mui/icons-material/Payment';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import EmailIcon from '@mui/icons-material/Email';
@@ -1383,6 +1384,52 @@ const Navigation = () => {
                 >
                   <HelpOutlineIcon className="nav-icon" fontSize="small" sx={{ mr: 0.5, transition: 'transform 0.3s ease' }} />
                   FAQ
+                </Button>
+                <Button
+                  component={NavLink}
+                  to="/about"
+                  className="nav-link-animated"
+                  sx={{
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: location.pathname === '/about' ? 600 : 500,
+                    bgcolor: location.pathname === '/about' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    '&::before': { content: '""', position: 'absolute', bottom: 0, left: '50%', width: 0, height: 2, bgcolor: 'primary.main', transition: 'all 0.3s ease', transform: 'translateX(-50%)' },
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.15)', transform: 'translateY(-2px)', '&::before': { width: '80%' }, '& .nav-icon': { transform: 'translateY(-2px) scale(1.2)' } },
+                    '&.active::before': { width: '80%' }
+                  }}
+                >
+                  <InfoIcon className="nav-icon" fontSize="small" sx={{ mr: 0.5, transition: 'transform 0.3s ease' }} />
+                  About
+                </Button>
+                <Button
+                  component={NavLink}
+                  to="/careers"
+                  className="nav-link-animated"
+                  sx={{
+                    color: 'white',
+                    textTransform: 'none',
+                    fontWeight: location.pathname === '/careers' ? 600 : 500,
+                    bgcolor: location.pathname === '/careers' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    px: 2,
+                    py: 1,
+                    borderRadius: 2,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s ease',
+                    '&::before': { content: '""', position: 'absolute', bottom: 0, left: '50%', width: 0, height: 2, bgcolor: 'primary.main', transition: 'all 0.3s ease', transform: 'translateX(-50%)' },
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.15)', transform: 'translateY(-2px)', '&::before': { width: '80%' }, '& .nav-icon': { transform: 'translateY(-2px) scale(1.2)' } },
+                    '&.active::before': { width: '80%' }
+                  }}
+                >
+                  <WorkIcon className="nav-icon" fontSize="small" sx={{ mr: 0.5, transition: 'transform 0.3s ease' }} />
+                  Careers
                 </Button>
                 <Button
                   component={NavLink}

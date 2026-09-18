@@ -152,15 +152,15 @@ const HomePage = () => {
                     gap: 1
                   }}>
                     {[
-                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00f2fe' },
-                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#ff9a9e' },
-                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#b388ff' },
-                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00e676' },
-                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#fbc02d' }
+                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00f2fe', path: '/erp' },
+                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#ff9a9e', path: '/crm' },
+                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#b388ff', path: '/zen-app' },
+                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00e676', path: '/zen-web' },
+                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/white-label' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
-                        onClick={() => scrollToSection('modules')}
+                        onClick={() => navigate(item.path)}
                         sx={{ 
                           p: 1.5, 
                           color: 'white', 
@@ -518,9 +518,15 @@ const HomePage = () => {
             </ListItem>
             <Collapse in={openMenus.suite} timeout="auto" unmountOnExit>
               <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
-                {['Zen ERP (Tenant Modules)', 'Zen CRM', 'Zen App', 'Zen Web', 'White Labeling'].map(item => (
-                  <ListItem key={item} button sx={{ pl: 4 }} onClick={() => handleMobileNav('modules')}>
-                    <ListItemText primary={item} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                {[
+                  { name: 'Zen ERP (Tenant Modules)', path: '/erp' }, 
+                  { name: 'Zen CRM', path: '/crm' }, 
+                  { name: 'Zen App', path: '/zen-app' }, 
+                  { name: 'Zen Web', path: '/zen-web' }, 
+                  { name: 'White Labeling', path: '/white-label' }
+                ].map(item => (
+                  <ListItem key={item.name} button sx={{ pl: 4 }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
+                    <ListItemText primary={item.name} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
                   </ListItem>
                 ))}
               </List>

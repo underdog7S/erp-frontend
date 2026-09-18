@@ -127,6 +127,11 @@ function App() {
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
                     <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/erp" element={<PublicERP />} />
+                    <Route path="/crm" element={<PublicCRM />} />
+                    <Route path="/zen-app" element={<PublicApp />} />
+                    <Route path="/zen-web" element={<PublicWeb />} />
+                    <Route path="/white-label" element={<PublicWhiteLabel />} />
                     <Route path="/verify-email" element={<EmailVerification />} />
                     <Route path="/pay-fees" element={<PublicFeePayment />} />
                     
