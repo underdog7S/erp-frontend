@@ -56,20 +56,8 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     try {
       await submitCustomServiceRequest(formData);
       setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-        setFormData({
-          service_type: '',
-          name: '',
-          email: '',
-          phone: '',
-          company_name: '',
-          description: '',
-          budget_range: '',
-          timeline: ''
-        });
-        onClose();
-      }, 2000);
+      // Removed auto-close so the user has time to click the Google Calendar link!
+      // The user can close the dialog manually using the close button.
     } catch (error) {
       // Error submitting request - snackbar will show message
       setErrors({ submit: error.response?.data?.errors || 'Failed to submit request. Please try again.' });
