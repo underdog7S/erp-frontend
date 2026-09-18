@@ -75,9 +75,9 @@ const HolographicEcosystem = () => {
     }}>
       {/* 3D Tilted Container with Mobile Scaling */}
       <Box sx={{
-        position: 'absolute', top: '10%', left: { xs: '-20%', sm: '0%', md: '10%' }, 
+        position: 'absolute', top: '10%', left: { xs: '-20%', sm: '0%', md: '35%' }, 
         width: { xs: '140%', sm: '100%', md: '80%' }, height: '80%',
-        transform: { xs: 'scale(0.55)', sm: 'scale(0.7)', md: 'scale(1)' },
+        transform: { xs: 'scale(0.55)', sm: 'scale(0.7)', md: 'scale(1.1)' },
         transformOrigin: 'center center',
         transformStyle: 'preserve-3d'
       }}>

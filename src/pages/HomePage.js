@@ -289,41 +289,45 @@ const HomePage = () => {
 
           <Container 
             maxWidth="lg" 
-            sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}
-            component={motion.div}
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
+            sx={{ position: 'relative', zIndex: 1 }}
           >
-            <motion.div variants={fadeInUp}>
-              <Typography variant="overline" sx={{ color: '#00f2fe', letterSpacing: 2, fontWeight: 800, display: 'block', mb: 2 }}>
-                Full-Stack · AI · Cloud
-              </Typography>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Typography variant="h1" fontWeight={800} sx={{ 
-                fontSize: { xs: '3.5rem', md: '5.5rem', lg: '7rem' },
-                lineHeight: 1.1,
-                letterSpacing: -2,
-                mb: 4,
-                background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.7) 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textShadow: '0 10px 30px rgba(0,242,254,0.2)'
-              }}>
-                Engineering the future.
-              </Typography>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 800, mx: 'auto', mb: 6, lineHeight: 1.6, fontWeight: 400 }}>
-                We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
-              </Typography>
-            </motion.div>
-            
-            <motion.div variants={fadeInUp}>
-              <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Grid container spacing={4} alignItems="center">
+              <Grid item xs={12} md={7}
+                component={motion.div}
+                initial="hidden"
+                animate="visible"
+                variants={staggerContainer}
+                sx={{ textAlign: { xs: 'center', md: 'left' } }}
+              >
+                <motion.div variants={fadeInUp}>
+                  <Typography variant="overline" sx={{ color: '#00f2fe', letterSpacing: 2, fontWeight: 800, display: 'block', mb: 2 }}>
+                    Full-Stack · AI · Cloud
+                  </Typography>
+                </motion.div>
+                
+                <motion.div variants={fadeInUp}>
+                  <Typography variant="h1" fontWeight={800} sx={{ 
+                    fontSize: { xs: '3.5rem', md: '5.5rem', lg: '6.5rem' },
+                    lineHeight: 1.1,
+                    letterSpacing: -2,
+                    mb: 4,
+                    background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.7) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 10px 30px rgba(0,242,254,0.2)'
+                  }}>
+                    Engineering the future.
+                  </Typography>
+                </motion.div>
+                
+                <motion.div variants={fadeInUp}>
+                  <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 600, mx: { xs: 'auto', md: 0 }, mb: 6, lineHeight: 1.6, fontWeight: 400 }}>
+                    We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
+                  </Typography>
+                </motion.div>
+                
+                <motion.div variants={fadeInUp}>
+                  <Box sx={{ display: 'flex', gap: 3, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: 'wrap' }}>
                 <Button 
                   variant="contained" 
                   size="large"
@@ -362,6 +366,11 @@ const HomePage = () => {
                 </Button>
               </Box>
             </motion.div>
+              </Grid>
+              <Grid item xs={12} md={5} sx={{ display: { xs: 'none', md: 'block' } }}>
+                {/* 3D Ecosystem occupies the right side naturally because the left text container is only md={7} */}
+              </Grid>
+            </Grid>
           </Container>
         </Box>
 
