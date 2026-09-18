@@ -107,6 +107,49 @@ const HolographicEcosystem = () => {
             }}
           />
 
+                    {/* 1.5 Radar Scanner Sweep */}
+          <motion.div
+            animate={{ top: ['-20%', '120%'], opacity: [0, 1, 1, 0] }}
+            transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
+            style={{
+              position: 'absolute', left: '-50%', width: '200%', height: '100px',
+              background: 'linear-gradient(180deg, transparent, rgba(0, 242, 254, 0.2) 80%, rgba(0, 242, 254, 0.8) 100%)',
+              borderBottom: '2px solid #00f2fe',
+              transform: 'translateZ(-59px)', // Just above the grid floor
+              pointerEvents: 'none', zIndex: 1
+            }}
+          />
+          
+          {/* Floating Data Sparks */}
+          {Array.from({ length: 15 }).map((_, i) => (
+            <motion.div
+              key={`spark-${i}`}
+              animate={{
+                y: [0, -200],
+                x: [0, (Math.random() - 0.5) * 100],
+                opacity: [0, 0.8, 0],
+                scale: [0, 1.5, 0]
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 2 + Math.random() * 3,
+                delay: Math.random() * 5,
+                ease: "easeOut"
+              }}
+              style={{
+                position: 'absolute',
+                left: `${20 + Math.random() * 60}%`,
+                top: `${20 + Math.random() * 60}%`,
+                width: '4px', height: '4px',
+                borderRadius: '50%',
+                backgroundColor: i % 2 === 0 ? '#00f2fe' : '#b388ff',
+                boxShadow: `0 0 10px ${i % 2 === 0 ? '#00f2fe' : '#b388ff'}`,
+                transform: 'translateZ(0px)',
+                pointerEvents: 'none', zIndex: 3
+              }}
+            />
+          ))}
+
           {/* 2. SVG Connections & Ambient Traffic */}
           <svg style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'visible', transform: 'translateZ(-10px)' }}>
             {Object.keys(nodes).map(key => {
@@ -192,6 +235,20 @@ const HolographicEcosystem = () => {
                   }}
                 >
                   {node.icon}
+                  
+                                    {/* Core Reactor Spinning Aura for ERP */}
+                  {key === 'erp' && (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
+                      style={{
+                        position: 'absolute', width: '250%', height: '250%',
+                        borderRadius: '50%',
+                        background: 'conic-gradient(from 0deg, transparent 0deg, rgba(0,242,254,0.1) 90deg, rgba(179,136,255,0.4) 180deg, transparent 270deg)',
+                        transform: 'translateZ(-15px)', pointerEvents: 'none'
+                      }}
+                    />
+                  )}
                   
                   {/* Radial Glow underneath active node */}
                   {isActive && (
