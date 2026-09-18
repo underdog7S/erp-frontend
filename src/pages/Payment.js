@@ -131,7 +131,7 @@ const Payment = () => {
         handler: async function (response) {
           // 3. Handle payment success (send to backend for verification)
           try {
-            const verifyRes = await api.post('/payments/razorpay/verify/', {
+            const verifyRes = await api.post('/razorpay/verify-payment/', {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_order_id: response.razorpay_order_id,
               razorpay_signature: response.razorpay_signature,

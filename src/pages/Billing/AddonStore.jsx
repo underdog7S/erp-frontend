@@ -12,6 +12,7 @@ import {
   CheckCircle as CheckCircleIcon 
 } from '@mui/icons-material';
 import axios from 'axios';
+import api from '../../services/api';
 
 const AddonStore = () => {
   const [usage, setUsage] = useState(null);
@@ -21,7 +22,7 @@ const AddonStore = () => {
 
   const fetchUsage = async () => {
     try {
-      const response = await axios.get('/api/plans/saas-usage/', {
+      const response = await api.get('/plans/saas-usage/', {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
       });
       setUsage(response.data);
@@ -43,7 +44,7 @@ const AddonStore = () => {
     setTimeout(async () => {
       try {
         // Mocking the backend Razorpay verify endpoint
-        await axios.post('/api/payments/razorpay/verify/', {
+        await api.post('/razorpay/verify-payment/', {
           razorpay_payment_id: 'pay_mock_' + Date.now(),
           razorpay_order_id: 'order_mock_' + Date.now(),
           razorpay_signature: 'mock_sig',
