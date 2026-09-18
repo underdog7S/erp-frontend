@@ -283,35 +283,8 @@ const HomePage = () => {
           alignItems: 'center'
         }}>
           
-          {/* Render Meaningful Graphic Background */}
-          <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box sx={{ position: 'absolute', width: '150%', height: '150%', background: 'radial-gradient(circle at 50% 50%, rgba(0, 242, 254, 0.05) 0%, rgba(0,0,0,1) 50%)' }} />
-            
-            {/* Floating Abstract UI Elements */}
-            <Box component={motion.div} 
-              animate={{ y: [0, -20, 0], rotate: [0, 2, 0] }} 
-              transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-              sx={{ position: 'absolute', right: '10%', top: '20%', width: 300, height: 200, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,242,254,0.2)', borderRadius: 4, backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', p: 3, display: {xs:'none', md:'block'} }}
-            >
-              <Box sx={{ width: '40%', height: 10, bgcolor: 'rgba(0,242,254,0.5)', borderRadius: 2, mb: 3 }} />
-              <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <Box sx={{ flex: 1, height: 60, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
-                <Box sx={{ flex: 1, height: 60, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
-              </Box>
-              <Box sx={{ width: '100%', height: 40, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2 }} />
-            </Box>
-
-            <Box component={motion.div} 
-              animate={{ y: [0, 25, 0], rotate: [0, -3, 0] }} 
-              transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut', delay: 1 }}
-              sx={{ position: 'absolute', left: '10%', bottom: '20%', width: 250, height: 250, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(179,136,255,0.2)', borderRadius: '50%', backdropFilter: 'blur(10px)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', p: 4, display: {xs:'none', md:'flex'}, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}
-            >
-              <Box sx={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg, #b388ff, #7c4dff)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography variant="h4">👥</Typography>
-              </Box>
-              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>Zen CRM</Typography>
-            </Box>
-          </Box>
+          {/* 3D Holographic Ecosystem Background */}
+          <HolographicEcosystem />
 
           <Container 
             maxWidth="lg" 
