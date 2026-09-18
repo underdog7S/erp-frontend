@@ -177,15 +177,9 @@ const buildTheme = (mode) => createTheme({
 const ThemeContext = createContext({ mode: 'dark', toggleMode: () => {} });
 
 export const ThemeContextProvider = ({ children }) => {
-  const stored = localStorage.getItem('zenith_theme_mode') || 'dark';
-  const [mode, setMode] = useState(stored);
-
-  const toggleMode = () => {
-    const next = mode === 'dark' ? 'light' : 'dark';
-    setMode(next);
-    localStorage.setItem('zenith_theme_mode', next);
-  };
-
+  // Always force dark mode as requested by user to prevent UI clashing
+  const mode = 'dark';
+  const toggleMode = () => { console.warn("Theme toggle disabled. Locked to Dark Mode."); };
   const theme = useMemo(() => buildTheme(mode), [mode]);
 
   return (

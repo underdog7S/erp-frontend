@@ -526,12 +526,14 @@ const Navigation = () => {
   ];
 
   const crmItems = user ? [
+    { label: "Omnichannel Inbox", to: "/crm/inbox", icon: <ContactMailIcon fontSize="small" /> },
     { label: "Contact Management", to: "/crm/contacts", icon: <ContactsIcon fontSize="small" /> },
     { label: "Email Marketing", to: "/crm/email-marketing", icon: <EmailIcon fontSize="small" /> },
   ] : [];
 
   const adminItems = (user && hasPermission(user, PERMISSIONS.MANAGE_USERS)) ? [
     { label: "Admin Console", to: "/admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
+    { label: "SaaS Billing & Add-ons", to: "/settings/billing", icon: <MonetizationOnIcon fontSize="small" /> },
     { label: "Public Settings", to: "/admin/public-settings", icon: <AdminPanelSettingsIcon fontSize="small" /> },
     { label: "Razorpay Settings", to: "/admin/razorpay-settings", icon: <PaymentIcon fontSize="small" /> },
   ] : [];
@@ -1559,7 +1561,7 @@ const Navigation = () => {
                 onClick={() => setNotificationCenterOpen(true)} 
               />
             )}
-            <ThemeToggleButton />
+            
             {industry ? (
               <Button
                 color="secondary"
