@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Box, Card, Typography, TextField, IconButton, Avatar, 
+  Box, Card, Typography, TextField, IconButton, Avatar, Select, MenuItem, 
   List, ListItem, ListItemAvatar, ListItemText, Divider, 
   Paper, Tooltip, CircularProgress, Badge 
 } from '@mui/material';
@@ -21,9 +21,9 @@ const DUMMY_THREADS = [
 ];
 
 const INITIAL_MESSAGES = [
-  { id: 1, text: 'Hi! I saw your ad on Instagram.', sender: 'client', time: '10:35 AM' },
-  { id: 2, text: 'Hello Alice! How can we help you today?', sender: 'agent', time: '10:38 AM' },
-  { id: 3, text: 'Can I book an appointment for tomorrow at 2 PM?', sender: 'client', time: '10:42 AM' },
+  { id: 1, text: 'Hi! I saw your ad on Instagram.', sender: 'client', time: '10:35 AM', channel: 'whatsapp' },
+  { id: 2, text: 'Hello Alice! How can we help you today?', sender: 'agent', time: '10:38 AM', channel: 'whatsapp' },
+  { id: 3, text: 'Can I book an appointment for tomorrow at 2 PM?', sender: 'client', time: '10:42 AM', channel: 'whatsapp' },
 ];
 
 const getSourceIcon = (source) => {
@@ -40,6 +40,7 @@ const OmnichannelInbox = () => {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputText, setInputText] = useState('');
   const [isAiThinking, setIsAiThinking] = useState(false);
+  const [replyChannel, setReplyChannel] = useState(DUMMY_THREADS[0].source);
   const ws = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -94,6 +95,7 @@ const OmnichannelInbox = () => {
       id: Date.now(),
       text: inputText,
       sender: 'agent',
+      channel: replyChannel,
       time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
     };
     
@@ -141,7 +143,7 @@ const OmnichannelInbox = () => {
                 <ListItem 
                   button 
                   selected={activeThread.id === thread.id}
-                  onClick={() => setActiveThread(thread)}
+                  onClick={() => { setActiveThread(thread); setReplyChannel(thread.source); }}
                   sx={{ 
                     '&.Mui-selected': { bgcolor: 'rgba(0, 242, 254, 0.1)' },
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' }
@@ -209,22 +211,50 @@ const OmnichannelInbox = () => {
           <Box sx={{ flex: 1, p: 3, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
             {messages.map(msg => {
               const isAgent = msg.sender === 'agent' || msg.sender === 'ai';
+              const ch = msg.channel || activeThread.source;
+              
+              // Colors based on channel UX Guide
+              let bg = '#222230';
+              let textColor = 'white';
+              
+              if (isAgent) {
+                if (ch === 'whatsapp') { bg = '#056162'; textColor = 'white'; } // Dark WhatsApp Green
+                else if (ch === 'sms') { bg = '#007aff'; textColor = 'white'; } // iMessage Blue
+                else if (ch === 'email') { bg = '#2a2a35'; textColor = 'white'; } // Email Gray
+                
+                if (msg.sender === 'ai') bg = '#4a148c'; // Deep purple for AI
+              } else {
+                if (ch === 'whatsapp') { bg = '#262d31'; textColor = 'white'; }
+                else if (ch === 'email') { bg = '#2a2a35'; textColor = 'white'; }
+              }
+
               return (
-                <Box key={msg.id} sx={{ display: 'flex', justifyContent: isAgent ? 'flex-end' : 'flex-start' }}>
+                <Box key={msg.id} sx={{ display: 'flex', justifyContent: isAgent ? 'flex-end' : 'flex-start', mb: 1 }}>
                   <Paper sx={{ 
-                    p: 2, 
-                    maxWidth: '70%', 
-                    bgcolor: msg.sender === 'ai' ? '#b388ff' : isAgent ? '#00f2fe' : '#222230',
-                    color: isAgent ? 'black' : 'white',
+                    p: ch === 'email' ? 3 : 1.5, 
+                    maxWidth: ch === 'email' ? '85%' : '70%', 
+                    bgcolor: bg,
+                    color: textColor,
                     borderRadius: 3,
                     borderBottomRightRadius: isAgent ? 4 : 24,
                     borderBottomLeftRadius: isAgent ? 24 : 4,
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
                   }}>
-                    <Typography variant="body1">{msg.text}</Typography>
+                    {ch === 'email' && !isAgent && (
+                      <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 1 }}>
+                        Subject: Inquiry regarding services
+                      </Typography>
+                    )}
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>{msg.text}</Typography>
                     <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-                      {msg.sender === 'ai' && <AiIcon sx={{ fontSize: 14, opacity: 0.7 }} />}
-                      <Typography variant="caption" sx={{ textAlign: 'right', opacity: 0.7, ml: 'auto' }}>
-                        {msg.time} {msg.sender === 'ai' ? '(Auto-Reply)' : ''}
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        {getSourceIcon(ch)}
+                        {msg.sender === 'ai' && (
+                          <Chip size="small" icon={<AiIcon style={{fontSize:12}}/>} label="Auto-Replied by AI" sx={{ height: 20, fontSize: '0.65rem', bgcolor: 'rgba(255,255,255,0.15)', color: 'white' }} />
+                        )}
+                      </Box>
+                      <Typography variant="caption" sx={{ opacity: 0.7, ml: 2 }}>
+                        {msg.time}
                       </Typography>
                     </Box>
                   </Paper>
@@ -234,7 +264,24 @@ const OmnichannelInbox = () => {
             <div ref={messagesEndRef} />
           </Box>
 
-          <Box p={2} sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', bgcolor: '#1a1a24' }}>
+          <Box p={2} sx={{ borderTop: '1px solid rgba(255,255,255,0.1)', bgcolor: '#1a1a24', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1 }}>
+              <Typography variant="caption" color="text.secondary">Replying via:</Typography>
+              <Select
+                size="small"
+                value={replyChannel}
+                onChange={(e) => setReplyChannel(e.target.value)}
+                sx={{ 
+                  height: 24, fontSize: '0.75rem', color: 'white', 
+                  '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  bgcolor: 'rgba(255,255,255,0.05)'
+                }}
+              >
+                <MenuItem value="whatsapp"><Box display="flex" alignItems="center" gap={1}><WhatsAppIcon sx={{fontSize:14, color:'#25D366'}}/> WhatsApp</Box></MenuItem>
+                <MenuItem value="email"><Box display="flex" alignItems="center" gap={1}><EmailIcon sx={{fontSize:14, color:'#00f2fe'}}/> Email</Box></MenuItem>
+                <MenuItem value="sms"><Box display="flex" alignItems="center" gap={1}><SmsIcon sx={{fontSize:14, color:'#b388ff'}}/> SMS</Box></MenuItem>
+              </Select>
+            </Box>
             <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
               <IconButton sx={{ color: 'rgba(255,255,255,0.5)' }}><AttachFileIcon /></IconButton>
               
