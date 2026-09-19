@@ -57,6 +57,7 @@ const SalonDashboard = lazy(() => import('./pages/Salon/SalonDashboard'));
 const SalonCRM = lazy(() => import('./pages/Salon/SalonCRM'));
 const SalonBilling = lazy(() => import('./pages/Salon/SalonBilling'));
 const AddonStore = lazy(() => import('./pages/Billing/AddonStore'));
+const Integrations = lazy(() => import('./pages/Settings/Integrations'));
 const ContactManagement = lazy(() => import('./pages/CRM/ContactManagement'));
 const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
