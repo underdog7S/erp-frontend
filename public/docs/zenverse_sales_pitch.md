@@ -1,89 +1,99 @@
-# Zenith ERP: The Ultimate Sales Pitch Deck
-*Format: Presentation Slides (Copy each block to a separate PowerPoint slide)*
+# Zenith ERP
+## The Operating System for Your Business
+Unify operations, automate communication, and scale faster.
 
 ---
 
-### Slide 1: Title Slide
-**Title:** Zenith ERP: The Operating System for Your Business
-**Subtitle:** Unify your operations, automate your communication, and scale faster.
-**Speaker Notes:** Start by thanking them for their time. Hook them by mentioning that today's businesses suffer from "software fatigue" (using 10 different apps that don't talk to each other). 
+### The Chaos of Disconnected Systems
+<div style="display: flex; justify-content: space-around; font-size: 2em; margin-top: 40px;">
+  <div style="color: #25D366; text-align: center;">📱<br/><span style="font-size: 0.4em;">WhatsApp</span></div>
+  <div style="color: #F4B400; text-align: center;">📧<br/><span style="font-size: 0.4em;">Email</span></div>
+  <div style="color: #4285F4; text-align: center;">📊<br/><span style="font-size: 0.4em;">Excel</span></div>
+  <div style="color: #DB4437; text-align: center;">💰<br/><span style="font-size: 0.4em;">Tally</span></div>
+</div>
+<p style="margin-top: 60px; color: #ff4444; font-weight: bold;">Result: Lost data, duplicated work, and high costs.</p>
 
 ---
 
-### Slide 2: The Problem
-**Title:** The Chaos of Disconnected Systems
-* You use WhatsApp for chatting with clients.
-* You use Mailchimp for marketing emails.
-* You use Tally/Quickbooks for accounting and invoicing.
-* You use Excel for customer and inventory data.
-**The Result:** Lost data, duplicated work, high software costs, and frustrated employees.
+### The Solution: One Unified Dashboard
+*Log in securely from anywhere in the world.*
+<iframe data-src="https://zenitherp.online/login" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>
 
 ---
 
-### Slide 3: The Solution
-**Title:** Welcome to Zenith ERP
-* **One Screen:** We consolidate all of those tools into a single, beautiful dashboard.
-* **Cloud Native:** Access your business from anywhere in the world on any device.
-* **Zero Maintenance:** No servers to buy, no IT guy to hire. We handle the technical heavy lifting.
+### Six Industries, One Powerful Engine
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; font-size: 0.8em; margin-top: 20px;">
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">🎓 <b>Education:</b> Students & Fees</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #4caf50;">💊 <b>Pharmacy:</b> Medicine Inventory</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #ff9800;">🛍️ <b>Retail:</b> POS & Warehouses</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #9c27b0;">🏨 <b>Hotel:</b> Room Bookings</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #f44336;">🍽️ <b>Restaurant:</b> Table Management</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #e91e63;">✂️ <b>Salon:</b> Appointments & Stylists</div>
+</div>
 
 ---
 
-### Slide 4: Six Industries, One Powerful Engine
-**Title:** Built for YOUR Exact Workflow
-*Unlike generic software, Zenith adapts to your industry:*
-* 🎓 **Education:** Manage students, classes, timetables, and fee structures.
-* 💊 **Pharmacy:** Track medicines, expiration dates, and prescriptions.
-* 🛍️ **Retail:** Point of Sale (POS), inventory alerts, and supplier management.
-* 🏨 **Hotel:** Room bookings, housekeeping status, and guest billing.
-* 🍽️ **Restaurant:** Table management, kitchen orders, and digital menus.
-* ✂️ **Salon:** Appointment scheduling, stylist assignments, and CRM.
+### Core Feature 1 - Omnichannel Communication
+<div style="background: #111; border-radius: 10px; padding: 20px; text-align: left; font-size: 0.7em; font-family: monospace; border: 1px solid #333; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  <div style="color: #888; margin-bottom: 15px;">[10:42 AM] System: Invoice Sent via Email</div>
+  <div style="color: #25D366; margin-bottom: 15px;">[10:45 AM] Client (WhatsApp): Can I pay via UPI?</div>
+  <div style="color: #4caf50; margin-bottom: 15px;">[10:46 AM] You (ERP): Yes, the secure link is in the email!</div>
+  <div style="color: #2196f3;">[10:50 AM] SMS Trigger: Payment Received Successfully.</div>
+</div>
+<p style="font-size: 0.7em; margin-top: 20px;">View Emails, SMS, and WhatsApp in one single thread.</p>
 
 ---
 
-### Slide 5: Core Feature 1 - Omnichannel Communication
-**Title:** Talk to Customers Where They Are
-* **Unified Inbox:** View Emails, SMS, and WhatsApp chats in one single thread. No more switching apps!
-* **Automated Campaigns:** Send a bulk WhatsApp or Email promotion to 1,000 customers with one click.
-* **Smart Notifications:** Automatically text a client when their invoice is due or their appointment is confirmed.
+### Core Feature 2 - AI Assistant
+<div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-top: 40px;">
+  <div style="font-size: 4em; animation: pulse 2s infinite;">🤖</div>
+  <div style="text-align: left; font-size: 0.8em;">
+    <ul style="list-style-type: none; padding: 0;">
+      <li style="margin-bottom: 15px;">✨ <b>Drafting:</b> AI writes your marketing emails.</li>
+      <li style="margin-bottom: 15px;">🌐 <b>Translation:</b> Auto-translate texts to regional languages.</li>
+      <li>📊 <b>Analysis:</b> Summarize long customer complaint tickets.</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
-### Slide 6: Core Feature 2 - AI Assistant
-**Title:** Your New AI Co-Worker
-* **Built-in OpenAI:** Our system comes with ChatGPT technology built directly into your workflow.
-* **Smart Drafting:** Let the AI draft your emails, generate marketing copy, or summarize long customer complaint tickets.
-* **Language Agnostic:** Instantly translate messages to communicate with a diverse customer base (e.g., auto-translate a text to Hindi before sending).
+### Zero-Fee Payments & Subscriptions
+*Start free, scale as you grow. No Middleman Fees.*
+<iframe data-src="https://zenitherp.online/pricing" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>
 
 ---
 
-### Slide 7: Core Feature 3 - Seamless Payments
-**Title:** Get Paid 3x Faster
-* **Automated Invoicing:** Generate professional, itemized invoices in seconds.
-* **Integrated Payment Links:** We connect directly to your Razorpay account. Your clients pay via UPI, Card, or NetBanking directly from the invoice.
-* **Zero Middleman Fees:** We do not take a percentage of your sales. The money goes directly from your customer to your bank account.
+### The Add-On Store Ecosystem
+<div style="display: flex; justify-content: space-around; margin-top: 40px; font-size: 0.8em;">
+  <div style="background: #25D36610; border: 1px solid #25D366; padding: 30px; border-radius: 10px; width: 40%;">
+    <div style="font-size: 2em; margin-bottom: 10px;">💬</div>
+    <h4 style="color: #25D366; margin:0;">WhatsApp API</h4>
+    <p style="font-size: 0.8em; color: #aaa;">Buy message packs as you grow</p>
+  </div>
+  <div style="background: #2196f310; border: 1px solid #2196f3; padding: 30px; border-radius: 10px; width: 40%;">
+    <div style="font-size: 2em; margin-bottom: 10px;">🧠</div>
+    <h4 style="color: #2196f3; margin:0;">AI Tokens</h4>
+    <p style="font-size: 0.8em; color: #aaa;">Expand ChatGPT limits instantly</p>
+  </div>
+</div>
 
 ---
 
-### Slide 8: The Add-On Store Ecosystem
-**Title:** Pay Only For What You Need
-* **Start Lean:** Don't pay for features you aren't using yet.
-* **The Add-On Store:** As your business grows, you can instantly unlock higher API limits for WhatsApp, SMS, and AI directly from your dashboard.
-* **Custom Development:** Need a highly specific feature? Use our "Meet an Expert" portal to request custom coding, PLC automation, or mobile app development right from the ERP.
+### Enterprise Security & White-Labeling
+<div style="text-align: left; font-size: 0.8em; margin-top: 30px; background: rgba(255,255,255,0.05); padding: 30px; border-radius: 10px;">
+  <ul style="list-style-type: none; padding: 0;">
+    <li style="margin-bottom: 20px;">🔒 <b>Role-Based Access:</b> Staff can't see Admin financials.</li>
+    <li style="margin-bottom: 20px;">🔑 <b>Bring Your Own Keys (BYOK):</b> Paste your AWS/Meta keys to use your own telecom lines directly.</li>
+    <li>🌐 <b>Custom Domains:</b> Access the ERP from <i>erp.yourcompany.com</i>.</li>
+  </ul>
+</div>
+<div style="margin-top: 30px; padding: 15px; font-style: italic; color: #ffd700;">
+  "Total brand control for your business."
+</div>
 
 ---
 
-### Slide 9: Enterprise Security & White-Labeling
-**Title:** Total Brand Control
-* **Role-Based Access:** Granular security (e.g., a receptionist can book appointments but cannot see company financials).
-* **Bring Your Own Keys (BYOK):** Want to use your own AWS SMS or Meta WhatsApp accounts? Paste your keys into our Integrations tab, and our software will use your dedicated telecom lines.
-* **Custom Email Domains:** Send official emails from `admin@yourcompany.com`.
-
----
-
-### Slide 10: Next Steps & Pricing
-**Title:** Ready to Transform Your Business?
-* **Affordable:** Starting at just ₹2,499/year (Less than ₹210 a month!).
-* **Phase 1:** Instant Account Setup.
-* **Phase 2:** Employee Training (We provide all the materials).
-* **Phase 3:** Go Live & Automate.
-**Call to Action:** Let's get you set up with our Starter plan today so you can see the magic yourself!
+### Ready to Transform Your Business?
+*Contact our engineering team for custom apps and PLCs.*
+<iframe data-src="https://zenitherp.online/contact" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>

@@ -1,82 +1,86 @@
-# Zenith ERP: Employee & Staff Training Guide
-*Format: Presentation Slides (Copy each block to a separate PowerPoint slide)*
+# Zenith ERP: Employee & Staff Training
+## Getting Started with your new Workspace
+Welcome to Zenith ERP! This system will be your daily dashboard.
 
 ---
 
-### Slide 1: Welcome to Your New Workspace
-**Title:** Getting Started with Zenith ERP
-**Speaker Notes:** Welcome to Zenith ERP! This system will be your daily dashboard for managing your work, communicating with clients, and tracking your tasks. No more switching between five different apps—everything you need is right here.
+### Logging In Securely
+*Access your account using Email or Google Auth.*
+<iframe data-src="https://zenitherp.online/login" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>
 
 ---
 
-### Slide 2: Logging In securely
-**Title:** How to Access Your Account
-* Go to your company's login portal (`zenitherp.online/login`).
-* **Option 1:** Type your email and password provided by your Admin.
-* **Option 2 (Faster):** Click **Sign in with Google**. If your Gmail address matches your employee profile, you will be logged in instantly without a password!
-* **Role Security:** Don't worry if you can't see certain financial tabs; the system automatically hides screens based on your job role (Admin vs Staff).
+### The Dashboard Overview
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; text-align: left; font-size: 0.7em; margin-top: 30px;">
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-right: 2px solid #333;">
+    <h4 style="color: #2196f3;">Left Sidebar</h4>
+    <p>Your main navigation menu. It automatically adapts to your industry module!</p>
+  </div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">
+    <h4 style="color: #4caf50;">Main Screen</h4>
+    <p>Shows your daily analytics, pending tasks, and recent activity.</p>
+    <h4 style="color: #ff9800; margin-top: 20px;">Dark Mode</h4>
+    <p>Prefer a darker screen? Toggle the switch in the top right corner for eye comfort.</p>
+  </div>
+</div>
 
 ---
 
-### Slide 3: The Dashboard Overview
-**Title:** Your Command Center
-* **Left Sidebar:** Your main navigation menu. It automatically adapts to your industry!
-* **Top Bar:** Contains quick actions, your notification bell, and your profile settings.
-* **Dark Mode:** Prefer a darker screen? Toggle the Dark/Light mode switch in the top right corner for eye comfort.
-* **Main Screen:** Shows your daily analytics, pending tasks, and recent activity.
+### Navigating Your Industry Module
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; font-size: 0.7em; margin-top: 20px;">
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #2196f3;">🎓 <b>Education Staff:</b> Students, Timetables, Fees</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #4caf50;">💊 <b>Pharmacy Staff:</b> Inventory, Prescriptions</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #ff9800;">🏨 <b>Hotel Staff:</b> Room Bookings, Housekeeping</div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; border-left: 4px solid #e91e63;">✂️ <b>Salon Staff:</b> Appointments, Stylist Rosters</div>
+</div>
 
 ---
 
-### Slide 4: Navigating Your Industry Module
-**Title:** Tailored to Your Job
-*Our ERP is smart. The sidebar changes based on where you work:*
-* **Education Staff:** You will see tabs for Students, Timetables, and Fee Structures.
-* **Pharmacy Staff:** You will see Inventory, Expiration Alerts, and Prescriptions.
-* **Hotel/Restaurant Staff:** You will see Room Bookings, Housekeeping, or Table Orders.
-* **Salon Staff:** You will see the Appointment Calendar and Stylist assignments.
+### The Omnichannel Inbox
+<div style="background: #111; border-radius: 10px; padding: 20px; text-align: left; font-size: 0.7em; font-family: monospace; border: 1px solid #333; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  <div style="color: #888; margin-bottom: 15px;">[10:42 AM] System: Invoice Sent via Email</div>
+  <div style="color: #25D366; margin-bottom: 15px;">[10:45 AM] Client (WhatsApp): Can I pay via UPI?</div>
+  <div style="color: #4caf50; margin-bottom: 15px;">[10:46 AM] You (ERP): Yes, the secure link is in the email!</div>
+  <div style="color: #2196f3;">[10:50 AM] SMS Trigger: Payment Received Successfully.</div>
+</div>
+<p style="font-size: 0.7em; margin-top: 20px;">Instead of checking Outlook, WhatsApp, and an SMS app separately, just check the Inbox.</p>
 
 ---
 
-### Slide 5: The Omnichannel Inbox
-**Title:** All Client Messages in One Place
-* **What it is:** Instead of checking Outlook, WhatsApp on your phone, and a separate SMS app, just check the **Inbox**.
-* **How to use it:** Click on a contact. You can type a message, and use the dropdown to select whether to send it via Email, SMS, or WhatsApp. 
-* **The Magic:** When the client replies to your text message, their reply pops up right here on your computer screen!
+### The CRM (Customer Relationship Management)
+<div style="display: flex; flex-direction: column; gap: 20px; text-align: left; font-size: 0.8em; margin-top: 20px;">
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">
+    <h4 style="color: #2196f3; margin: 0 0 10px 0;">Contacts Page</h4>
+    <p style="margin: 0;">Store details about clients. Use Tags to organize them (e.g., <code>VIP</code>, <code>Overdue</code>).</p>
+  </div>
+  <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;">
+    <h4 style="color: #4caf50; margin: 0 0 10px 0;">Deals Pipeline (Kanban)</h4>
+    <p style="margin: 0;">If you are in sales, use the Kanban board! Drag-and-drop client cards from "New Lead" to "Closed/Won".</p>
+  </div>
+</div>
 
 ---
 
-### Slide 6: The CRM (Customer Relationship Management)
-**Title:** Managing Contacts & Deals
-* **Contacts Page:** Store details about your clients, students, or patients. Use "Tags" to organize them (e.g., `VIP`, `Overdue`, `Follow-Up`).
-* **Deals Pipeline:** If you are in sales, use the Kanban board! Simply drag-and-drop client cards from "New Lead" to "Negotiation" to "Closed/Won" as you close deals.
+### AI Assistant (Your Co-Worker)
+<div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-top: 40px;">
+  <div style="font-size: 4em; animation: pulse 2s infinite;">🤖</div>
+  <div style="text-align: left; font-size: 0.8em;">
+    <ul style="list-style-type: none; padding: 0;">
+      <li style="margin-bottom: 15px;">✨ <b>Drafting:</b> AI writes your emails.</li>
+      <li style="margin-bottom: 15px;">🌐 <b>Translation:</b> Auto-translate texts.</li>
+      <li>Click the ✨ button next to text boxes!</li>
+    </ul>
+  </div>
+</div>
 
 ---
 
-### Slide 7: Creating Invoices & Taking Payments
-**Title:** Getting Paid Faster
-* **Generate Invoice:** Go to the Billing tab. Click "New Invoice", add your line items (products/services), apply any taxes, and click "Send".
-* **Online Payments:** Zenith ERP automatically attaches a secure Razorpay payment link to the email/SMS.
-* **Tracking:** You don't need to ask the client if they paid. The invoice status will automatically turn to a green "Paid" the second the transaction clears!
-
----
-
-### Slide 8: AI Assistant (Your Co-Worker)
-**Title:** Let AI Write For You
-* Look for the **"AI Assistant"** button next to text boxes throughout the software.
-* **Email Drafting:** Tell the AI "Write a polite reminder about an overdue payment", and it will write a professional email for you in seconds.
-* **Translation:** Need to text a client in their native language? The AI will translate your message perfectly before you hit send.
-
----
-
-### Slide 9: Upgrades & The Add-On Store
-**Title:** Scaling the Software
+### Upgrades & The Add-On Store
 *(Note: Only Admins can usually purchase Add-ons)*
-* If your company runs out of WhatsApp credits or AI tokens, Admins can navigate to the **Settings -> Billing** page.
-* From the Add-on Store, you can instantly purchase more SMS limits, extra storage, or higher AI quotas without needing to call support!
+<iframe data-src="https://zenitherp.online/pricing" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>
 
 ---
 
-### Slide 10: Support & Custom Requests
-**Title:** Need Help or Custom Code?
-* **Bug Reports:** If you find a bug or don't know how to do something, click the **"Support Ticket"** button. Our technical team receives it instantly.
-* **Meet an Expert:** Does your company need a custom feature built, a mobile app, or industrial PLC automation? Click the **"Meet an Expert"** button to request custom engineering services directly from ZenVerse!
+### Need Help or Custom Code?
+*Request custom apps or report bugs directly to our engineering team.*
+<iframe data-src="https://zenitherp.online/contact" width="100%" height="450px" style="border: 2px solid #333; border-radius: 10px; margin-top: 20px;"></iframe>
