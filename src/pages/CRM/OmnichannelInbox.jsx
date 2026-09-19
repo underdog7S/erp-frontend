@@ -32,6 +32,7 @@ const OmnichannelInbox = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [managedAssets, setManagedAssets] = useState(null);
   const messagesEndRef = useRef(null);
 
   // Fetch threads on load
@@ -50,7 +51,20 @@ const OmnichannelInbox = () => {
         setLoading(false);
       }
     };
+    
+    const fetchAssets = async () => {
+      try {
+        const res = await api.get('/plan/feature-usage/');
+        if(res.data.managed_assets) {
+          setManagedAssets(res.data.managed_assets);
+        }
+      } catch (err) {
+        console.error("Failed to fetch assets", err);
+      }
+    };
+
     fetchThreads();
+    fetchAssets();
   }, []);
 
   const handleSelectThread = async (id) => {
@@ -129,6 +143,16 @@ const OmnichannelInbox = () => {
           Omnichannel Inbox
         </Typography>
       </Box>
+      
+      {managedAssets && (
+        <Box sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: managedAssets.phone_number ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)', border: '1px solid', borderColor: managedAssets.phone_number ? 'success.main' : 'warning.main', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body1" sx={{ color: managedAssets.phone_number ? 'success.light' : 'warning.light' }}>
+            {managedAssets.phone_number 
+              ? `✅ Telecom Live! Receiving messages at: ${managedAssets.phone_number} | Support Email: ${managedAssets.email_address || 'Pending'}` 
+              : `⏳ Provisioning your dedicated telecom numbers... Please allow 1-2 hours for engineering to assign your numbers.`}
+          </Typography>
+        </Box>
+      )}
 
       <Card sx={{ display: 'flex', height: '75vh', bgcolor: '#1a1a24', borderRadius: 3, border: '1px solid rgba(255,255,255,0.05)' }}>
         
