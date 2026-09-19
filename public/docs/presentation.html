@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>ZenVerse Presentations</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Reveal.js core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <!-- Dark theme perfectly matching ZenVerse -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css">
+    <style>
+      .reveal h1, .reveal h2, .reveal h3 {
+        color: #ffd700; /* Gold accents */
+        text-transform: none;
+      }
+      .reveal ul {
+        list-style-type: none;
+      }
+      .reveal li {
+        margin-bottom: 15px;
+        padding-left: 30px;
+        position: relative;
+      }
+      .reveal li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: #2196f3;
+      }
+      .speaker-notes-label {
+        font-size: 0.5em;
+        color: #888;
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- Markdown content will be loaded here -->
+        <section data-markdown id="md-section" 
+                 data-separator="^---" 
+                 data-separator-vertical="^--">
+        </section>
+      </div>
+    </div>
+
+    <!-- Reveal.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/markdown/markdown.js"></script>
+    <script>
+      // Get the markdown file name from the URL (e.g., ?file=sales_pitch.md)
+      const urlParams = new URLSearchParams(window.location.search);
+      const file = urlParams.get('file') || 'zenverse_sales_pitch.md';
+      
+      // Set the data-markdown attribute to fetch the file
+      document.getElementById('md-section').setAttribute('data-markdown', file);
+
+      // Initialize Reveal.js with animations
+      Reveal.initialize({
+        plugins: [ RevealMarkdown ],
+        controls: true,
+        progress: true,
+        center: true,
+        hash: true,
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        backgroundTransition: 'fade',
+      });
+    </script>
+  </body>
+</html>
