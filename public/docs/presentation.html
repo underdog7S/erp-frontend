@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>ZenVerse Presentations</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- Reveal.js core CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
     <!-- Dark theme perfectly matching ZenVerse -->
@@ -20,6 +20,7 @@
         margin-bottom: 15px;
         padding-left: 30px;
         position: relative;
+        line-height: 1.4;
       }
       .reveal li::before {
         content: '→';
@@ -31,6 +32,46 @@
         font-size: 0.5em;
         color: #888;
         margin-top: 50px;
+      }
+      
+      /* Make sure tall slides scroll nicely instead of cutting off */
+      .reveal .slides section {
+        max-height: 95vh;
+        overflow-y: auto !important;
+        overflow-x: hidden;
+        padding-right: 15px; /* space for scrollbar */
+      }
+      
+      /* Custom scrollbar for slides */
+      .reveal .slides section::-webkit-scrollbar {
+        width: 8px;
+      }
+      .reveal .slides section::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .reveal .slides section::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+      }
+      
+      /* Responsive base font sizes */
+      .reveal {
+        font-size: 34px;
+      }
+      
+      /* Standardize iframe sizing so it doesn't blow out the layout */
+      .reveal iframe {
+        max-width: 100%;
+        max-height: 70vh;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      }
+      
+      /* Ensure code blocks don't cause horizontal clipping */
+      .reveal pre {
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
       }
     </style>
   </head>
@@ -56,15 +97,29 @@
       // Set the data-markdown attribute to fetch the file
       document.getElementById('md-section').setAttribute('data-markdown', file);
 
-      // Initialize Reveal.js with animations
+      // Initialize Reveal.js with robust scaling and layout configurations
       Reveal.initialize({
         plugins: [ RevealMarkdown ],
         controls: true,
         progress: true,
-        center: true,
+        center: true, // Center text vertically
         hash: true,
-        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        transition: 'slide',
         backgroundTransition: 'fade',
+        
+        // Standard Presentation Dimensions (16:9 aspect ratio)
+        width: 1100,
+        height: 700,
+        
+        // Factor of the display size that should remain empty around the content
+        margin: 0.04,
+        
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 2.0,
+        
+        // Ensure that text isn't shrunk so much it's unreadable, and if it exceeds, the CSS overflow-y kicks in
+        disableLayout: false 
       });
     </script>
   </body>
