@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Button, TextField, Grid, CircularProgress, Alert } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { fetchUserMe, api } from '../services/api';
+import api, { fetchUserMe } from '../services/api';
 
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || 'YOUR_RAZORPAY_KEY_ID';
 const isRazorpayConfigured = RAZORPAY_KEY_ID !== 'YOUR_RAZORPAY_KEY_ID' && RAZORPAY_KEY_ID !== '';
