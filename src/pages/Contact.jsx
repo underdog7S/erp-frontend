@@ -72,9 +72,15 @@ const Contact = () => {
 
     setLoading(true);
     try {
-      // Here you would call your contact form API
-      // For now, we'll simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await submitCustomServiceRequest({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company_name: formData.company,
+        service_type: formData.inquiry_type,
+        budget_range: formData.subject, // Map subject to budget field dynamically
+        description: formData.message
+      });
       setSuccess(true);
       setFormData({
         name: '',
@@ -118,7 +124,7 @@ const Contact = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#fafafa', py: 4 }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', py: 4 }}>
       <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -139,6 +145,8 @@ const Contact = () => {
                   key={index}
                   sx={{
                     p: 3,
+                    bgcolor: 'rgba(255,255,255,0.03)',
+                    color: 'white',
                     transition: 'all 0.3s ease',
                     '&:hover': {
                       transform: 'translateY(-4px)',
@@ -192,7 +200,7 @@ const Contact = () => {
 
           {/* Contact Form */}
           <Grid item xs={12} md={8}>
-            <Card sx={{ p: 4 }}>
+            <Card sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.03)', color: 'white' }}>
               {success && (
                 <Alert 
                   severity="success" 
@@ -284,6 +292,7 @@ const Contact = () => {
                     >
                       <option value="general">General Inquiry</option>
                       <option value="sales">Sales & Pricing</option>
+                      <option value="bug">Report a Bug / Issue</option>
                       <option value="support">Technical Support</option>
                       <option value="partnership">Partnership</option>
                       <option value="custom">Custom Development</option>
