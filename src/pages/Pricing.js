@@ -144,7 +144,7 @@ const Pricing = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#fafafa', minHeight: '100vh', py: 4 }}>
+    <Box sx={{ bgcolor: '#0a0a0f', minHeight: '100vh', py: 4 }}>
       <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
         {/* Header */}
         <Box textAlign="center" mb={6}>
@@ -162,6 +162,8 @@ const Pricing = () => {
             <Grid gridColumn="span 3" key={plan.key}>
               <Card
                 sx={{
+                  bgcolor: 'rgba(255,255,255,0.03)',
+                  color: 'white',
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
