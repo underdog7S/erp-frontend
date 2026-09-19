@@ -130,6 +130,7 @@ function App() {
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
                     <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
+                    <Route path="/settings/integrations" element={<AuthCheck><Integrations /></AuthCheck>} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/erp" element={<PublicERP />} />
                     <Route path="/crm" element={<PublicCRM />} />

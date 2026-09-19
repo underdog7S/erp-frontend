@@ -43,72 +43,67 @@ const Pricing = () => {
         '2 Users',
         '500 MB Storage',
         '1 Industry Module',
-        'Email Support',
-        'Core ERP Features',
-        'Mobile Access',
-        'Basic Reports'
+        'Standard ERP Features',
+        'Community Support'
       ]
     },
     {
       key: 'starter',
       name: 'Starter',
       description: 'Ideal for growing businesses',
-      price: 4500,
-      original_price: 8000, // Marketing strategy: show original price
+      price: 2499,
+      original_price: 5000,
       billing_cycle: 'year',
       color: '#2196f3',
-      popular: false,
+      popular: true,
       icon: <BusinessIcon />,
       features: [
-        '25 Users',
+        '15 Users',
         '5 GB Storage',
         '1 Industry Module',
-        'Daily Backups',
-        'Priority Support',
-        'Advanced Reports',
-        'API Access'
+        'AI Virtual Assistant (OpenAI)',
+        'WhatsApp & SMS API Ready',
+        'Bring-Your-Own Email Domain',
+        'Priority Email Support'
       ]
     },
     {
       key: 'pro',
       name: 'Pro',
       description: 'Perfect for established organizations',
-      price: 8999,
-      original_price: 15000, // Marketing strategy: show original price
+      price: 6999,
+      original_price: 12000,
       billing_cycle: 'year',
       color: '#9c27b0',
-      popular: true,
+      popular: false,
       icon: <PremiumIcon />,
       features: [
-        '100 Users',
+        '50 Users',
         '20 GB Storage',
-        '1 Industry Module',
-        'API Access',
-        'Priority Support',
-        'Advanced Analytics',
-        'Custom Integrations',
-        'White-label Options'
+        'All Industry Modules',
+        'Advanced Analytics Dashboard',
+        'White-Label Ready (No Watermarks)',
+        'Dedicated Cloud Sandbox',
+        '24/7 Priority Support'
       ]
     },
     {
-      key: 'business',
-      name: 'Business',
-      description: 'Enterprise-grade solution with dedicated support',
-      price: 19999,
-      original_price: 30000, // Marketing strategy: show original price
+      key: 'enterprise',
+      name: 'Enterprise',
+      description: 'For large scale deployments',
+      price: 14999,
+      original_price: 25000,
       billing_cycle: 'year',
       color: '#ff9800',
       popular: false,
       icon: <StarIcon />,
       features: [
         'Unlimited Users',
-        '50 GB Storage',
-        'All Industry Modules',
-        '24/7 Priority Support',
+        '100 GB Storage',
+        'Custom App Development',
         'Dedicated Account Manager',
-        'Custom Development',
-        'SLA Guarantee',
-        'On-premise Option'
+        'Custom SLA Guarantees',
+        'On-Premise Deployment Option'
       ]
     }
   ];

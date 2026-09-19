@@ -44,7 +44,7 @@ const AddonStore = () => {
     setTimeout(async () => {
       try {
         // Mocking the backend Razorpay verify endpoint
-        await api.post('/razorpay/verify-payment/', {
+        await api.post('/payments/razorpay/verify/', {
           razorpay_payment_id: 'pay_mock_' + Date.now(),
           razorpay_order_id: 'order_mock_' + Date.now(),
           razorpay_signature: 'mock_sig',
