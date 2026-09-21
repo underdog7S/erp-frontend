@@ -228,7 +228,7 @@ const HomePage = () => {
                 
                 <motion.div variants={fadeInUp}>
                   <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.7)', maxWidth: 600, mx: { xs: 'auto', md: 0 }, mb: 6, lineHeight: 1.6, fontWeight: 400 }}>
-                    We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
+                    We provide custom apps, web applications, and tailored ERP and CRM systems to transform your business operations into an autonomous powerhouse.
                   </Typography>
                 </motion.div>
                 

@@ -16,8 +16,7 @@ const GoogleBookingEmbed = ({ height = 640 }) => {
         <iframe
           title="Select a consultation date and time"
           src={expertBookingEmbedUrl}
-          style={{ border: 0, width: '100%', height, display: 'block' }}
-          loading="lazy"
+          style={{ border: 0, width: '100%', minHeight: height, height, display: 'block' }}
         />
       </Box>
     );

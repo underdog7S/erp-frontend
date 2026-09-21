@@ -272,7 +272,16 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
         '& .MuiFormHelperText-root.Mui-error': { color: '#fca5a5' },
       }}>
         <Grid container spacing={3} alignItems="flex-start">
-          <Grid item xs={12} md={5}>
+          <Grid item xs={12} md={7} sx={{ order: { xs: 1, md: 2 } }}>
+            <Typography variant="h6" fontWeight={600} sx={{ color: 'white', mb: 1 }}>
+              Select an appointment time
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)', mb: 2 }}>
+              30-minute Google Meet. Times are shown in India Standard Time.
+            </Typography>
+            <GoogleBookingEmbed height={620} />
+          </Grid>
+          <Grid item xs={12} md={5} sx={{ order: { xs: 2, md: 1 } }}>
         {success ? (
           <Box sx={{ textAlign: 'center', py: { xs: 1, md: 4 } }}>
     <Box
@@ -646,15 +655,6 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     </Box>
           </form>
         )}
-          </Grid>
-          <Grid item xs={12} md={7}>
-            <Typography variant="h6" fontWeight={600} sx={{ color: 'white', mb: 1 }}>
-              Select an appointment time
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)', mb: 2 }}>
-              30-minute Google Meet. Times are shown in India Standard Time.
-            </Typography>
-            <GoogleBookingEmbed height={600} />
           </Grid>
         </Grid>
       </DialogContent>

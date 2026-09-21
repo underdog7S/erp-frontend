@@ -21,14 +21,14 @@ const Footer = () => {
               <span style={{ background: 'linear-gradient(90deg, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ZV | ZenVerse</span>
             </Typography>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
-              We provide Custom Apps, Web Applications, tailored ERPs, CRMs, and full White Labeling services to transform your business operations into an autonomous powerhouse.
+              We provide custom apps, web applications, and tailored ERP and CRM systems to transform your business operations into an autonomous powerhouse.
             </Typography>
           </Grid>
           <Grid item xs={6} md={2}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>What We Provide</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {['Custom Apps', 'Web Apps', 'White Labeling', 'API Integrations'].map(item => (
-                <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => scrollToSection('solutions')}>{item}</Typography>
+              {['Custom Apps', 'Web Apps', 'Custom ERP', 'API Integrations'].map(item => (
+                <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => item === 'Custom ERP' ? navigate('/contact') : scrollToSection('solutions')}>{item}</Typography>
               ))}
             </Box>
           </Grid>
@@ -36,13 +36,13 @@ const Footer = () => {
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>Zen Suite</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               {[
-                { name: 'Zen ERP (Tenant Modules)', icon: 'erp.png' },
-                { name: 'Zen CRM', icon: 'crm.png' },
-                { name: 'Zen App', icon: 'app.png' },
-                { name: 'Zen Web', icon: 'web.png' },
-                { name: 'White Labeling', icon: 'whitelable.png' }
+                { name: 'Zen ERP', icon: 'erp.png', path: '/erp' },
+                { name: 'Zen CRM', icon: 'crm.png', path: '/crm' },
+                { name: 'Zen App', icon: 'app.png', path: '/zen-app' },
+                { name: 'Zen Web', icon: 'web.png', path: '/zen-web' },
+                { name: 'Custom ERP', icon: 'erp.png', path: '/contact' }
               ].map(item => (
-                <Box key={item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', '&:hover p': { color: '#00f2fe' } }} onClick={() => scrollToSection('modules')}>
+                <Box key={item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, cursor: 'pointer', '&:hover p': { color: '#00f2fe' } }} onClick={() => navigate(item.path)}>
                   <img src={process.env.PUBLIC_URL + `/assets/${item.icon}`} alt={item.name} style={{ width: '16px', height: '16px', objectFit: 'contain', opacity: 0.7 }} />
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', transition: 'color 0.2s' }}>{item.name}</Typography>
                 </Box>
@@ -74,7 +74,9 @@ const Footer = () => {
             © {new Date().getFullYear()} ZenVerse Tech Solutions. Architected with precision.
           </Typography>
           <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.3)' }}>
-            Privacy Policy • Terms of Service
+            <Box component="span" sx={{ cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/privacy')}>Privacy Policy</Box>
+            {' • '}
+            <Box component="span" sx={{ cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate('/terms')}>Terms of Service</Box>
           </Typography>
         </Box>
       </Container>
