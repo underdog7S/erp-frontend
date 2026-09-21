@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, Box, Typography, TextField, Button, CircularProgress, IconButton, Grid, Alert } from '@mui/material';
 import { Close as CloseIcon, Check as CheckIcon, ArrowForward as ArrowIcon, Settings as SettingsIcon, Web as WebIcon, Smartphone as AppIcon, Code as CodeIcon, Computer as ComputerIcon, Memory as MemoryIcon } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../../services/api';
-import { expertBookingUrl } from '../../utils/expertBooking';
+import { expertBookingUrl, openExpertBooking } from '../../utils/expertBooking';
 
 const CustomServiceFormDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -287,9 +287,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                 variant="contained" 
                 color="primary"
                 size="large"
-                href={expertBookingUrl || undefined}
-                target="_blank"
-                rel="noreferrer"
+                onClick={() => openExpertBooking()}
                 disabled={!expertBookingUrl}
                 sx={{ 
                   py: 1.5, px: 4, 

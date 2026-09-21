@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
-import { Box, Container, Typography, Button, Grid, Card, CardContent, Drawer, List, ListItem, ListItemText, ListItemIcon, IconButton, Collapse, Divider } from '@mui/material';
-import { ArrowForward as ArrowIcon, PlayCircleOutline as PlayIcon, Menu as MenuIcon, Close as CloseIcon, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Grid, Drawer, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { ArrowForward as ArrowIcon, Menu as MenuIcon, Close as CloseIcon } from '@mui/icons-material';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 // Import Modular Components
@@ -11,6 +11,7 @@ import TargetAudience from '../components/landing/TargetAudience';
 import TechStackMarquee from '../components/landing/TechStackMarquee';
 import AgencyProcess from '../components/landing/AgencyProcess';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
+import { openExpertBooking } from '../utils/expertBooking';
 import IntegrationsDemo from '../components/landing/IntegrationsDemo';
 import Testimonials from '../components/landing/Testimonials';
 import FAQ from '../components/landing/FAQ';
@@ -40,11 +41,10 @@ const HomePage = () => {
   const [auditDialogOpen, setAuditDialogOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenus, setOpenMenus] = useState({});
   const { scrollY } = useScroll();
 
-  const toggleMenu = (menu) => {
-    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  const handleBookConsultation = () => {
+    if (!openExpertBooking()) setAuditDialogOpen(true);
   };
 
   const handleMobileNav = (section) => {
@@ -120,141 +120,24 @@ const HomePage = () => {
             </Box>
             
             {/* Smooth Scroll Links with 3D Hover */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4, alignItems: 'center', perspective: 1000, mr: 4 }}>
-              
-              {/* Zen Suite Dropdown */}
-              <Box sx={{ position: 'relative', '&:hover .suite-menu': { opacity: 1, visibility: 'visible', transform: 'translateY(0)' } }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: { md: 2, lg: 3 }, alignItems: 'center', perspective: 1000, mr: 2, flexWrap: 'wrap' }}>
+              {[
+                { label: 'Zen ERP', path: '/erp' },
+                { label: 'Zen CRM', path: '/crm' },
+                { label: 'Zen App', path: '/zen-app' },
+                { label: 'Zen Web', path: '/zen-web' },
+                { label: 'Custom ERP', path: '/contact' },
+              ].map((item) => (
                 <Box
+                  key={item.path}
                   component={motion.div}
-                  whileHover={{ scale: 1.1, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
-                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 2 }}
+                  whileHover={{ scale: 1.06, z: 20, textShadow: '0px 0px 8px rgb(0,242,254)' }}
+                  onClick={() => navigate(item.path)}
+                  sx={{ cursor: 'pointer', fontWeight: 600, color: 'rgba(255,255,255,0.7)', transition: 'all 0.3s', py: 1, whiteSpace: 'nowrap', fontSize: '0.95rem' }}
                 >
-                  Zen Suite ▾
+                  {item.label}
                 </Box>
-                <Box 
-                  className="suite-menu"
-                  sx={{ 
-                    position: 'absolute', top: '100%', left: '-100px', pt: 1,
-                    opacity: 0, visibility: 'hidden', transform: 'translateY(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 100 
-                  }}
-                >
-                  <Box sx={{ 
-                    bgcolor: 'rgba(15,15,22,0.95)', 
-                    border: '1px solid rgba(0,242,254,0.3)', 
-                    borderRadius: 3, 
-                    p: 2, 
-                    width: '380px', 
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 20px rgba(0,242,254,0.1)',
-                    backdropFilter: 'blur(20px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 1
-                  }}>
-                    {[
-                      { title: 'Zen ERP', desc: 'Tenant Modules: Retail, Pharmacy, Education, Hotel, Restaurant, Salon', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Zen ERP" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00f2fe', path: '/erp' },
-                      { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#ff9a9e', path: '/crm' },
-                      { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#b388ff', path: '/zen-app' },
-                      { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00e676', path: '/zen-web' },
-                    ].map(item => (
-                      <Box 
-                        key={item.title} 
-                        onClick={() => navigate(item.path)}
-                        sx={{ 
-                          p: 1.5, 
-                          color: 'white', 
-                          cursor: 'pointer', 
-                          borderRadius: 2, 
-                          border: '1px solid transparent',
-                          transition: 'all 0.2s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          '&:hover': { 
-                            bgcolor: 'rgba(0,242,254,0.05)', 
-                            borderColor: 'rgba(0,242,254,0.2)',
-                            transform: 'translateX(4px)'
-                          } 
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            {item.icon}
-                            <Typography variant="subtitle1" sx={{ color: item.color, fontWeight: 700, mb: 0 }}>
-                              {item.title}
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mt: 0.5 }}>
-                            {item.desc}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    ))}
-                    
-                    <Divider sx={{ my: 1, borderColor: 'rgba(255,165,0,0.3)' }} />
-                    <Typography variant="caption" sx={{ color: 'rgba(255,165,0,0.7)', px: 1.5, fontWeight: 700, letterSpacing: 1 }}>
-                      CUSTOM BUILT
-                    </Typography>
-                    {[
-                      { title: 'Custom ERP / CRM', desc: 'Fully custom-built ERP or CRM tailored to your exact business workflow', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Custom ERP" style={{ width: 'auto', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/contact' },
-                      { title: 'White Labeling', desc: 'Your brand, your domain — launch Zenith ERP under your own identity', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/white-label' },
-                    ].map(item => (
-                      <Box 
-                        key={item.title} 
-                        onClick={() => navigate(item.path)}
-                        sx={{ 
-                          p: 1.5, color: 'white', cursor: 'pointer', borderRadius: 2, 
-                          border: '1px solid transparent', transition: 'all 0.2s ease',
-                          display: 'flex', alignItems: 'center', gap: 2,
-                          '&:hover': { bgcolor: 'rgba(251,192,45,0.05)', borderColor: 'rgba(251,192,45,0.3)', transform: 'translateX(4px)' } 
-                        }}
-                      >
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            {item.icon}
-                            <Typography variant="subtitle1" sx={{ color: item.color, fontWeight: 700, mb: 0 }}>
-                              {item.title}
-                            </Typography>
-                          </Box>
-                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mt: 0.5 }}>
-                            {item.desc}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    ))}
-                    
-                    <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
-                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                      <Button 
-                        fullWidth 
-                        variant="outlined" 
-                        onClick={() => window.location.href='/login'}
-                        sx={{ 
-                          color: 'white', 
-                          borderColor: 'rgba(255,255,255,0.2)',
-                          '&:hover': { borderColor: '#00f2fe', bgcolor: 'rgba(0,242,254,0.05)' }
-                        }}
-                      >
-                        Login / Sign Up
-                      </Button>
-                      <Button 
-                        fullWidth 
-                        variant="contained"
-                        onClick={() => window.location.href='/pricing'}
-                        sx={{ 
-                          background: 'linear-gradient(45deg, #00f2fe 0%, #4facfe 100%)',
-                          color: '#000',
-                          fontWeight: 700
-                        }}
-                      >
-                        Free Trial
-                      </Button>
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-              
-              {/* Client Portal Link */}
-              
+              ))}
             </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <IconButton 
@@ -281,7 +164,7 @@ const HomePage = () => {
                   y: -3
                 }}
                 whileTap={{ scale: 0.95, y: 0, boxShadow: '0 5px 10px rgba(0, 242, 254, 0.4)' }}
-                onClick={() => setAuditDialogOpen(true)}
+                onClick={handleBookConsultation}
                 sx={{ 
                   background: 'linear-gradient(45deg, #00f2fe, #4facfe)', 
                   color: 'black', 
@@ -355,7 +238,7 @@ const HomePage = () => {
                 <Button 
                   variant="contained" 
                   size="large"
-                  onClick={() => setAuditDialogOpen(true)}
+                  onClick={handleBookConsultation}
                   endIcon={<ArrowIcon />}
                   sx={{ 
                     background: 'linear-gradient(45deg, #00f2fe, #4facfe)',
@@ -496,7 +379,7 @@ const HomePage = () => {
                 <Button 
                   variant="contained" 
                   size="large"
-                  onClick={() => setAuditDialogOpen(true)}
+                  onClick={handleBookConsultation}
                   sx={{ 
                     background: 'linear-gradient(45deg, #00f2fe, #4facfe)',
                     color: 'black', 
@@ -539,35 +422,17 @@ const HomePage = () => {
             </IconButton>
           </Box>
           <List sx={{ p: 0 }}>
-            <ListItem button onClick={() => toggleMenu('suite')} sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              <ListItemText primary="Zen Suite" primaryTypographyProps={{ fontWeight: 600 }} />
-              {openMenus.suite ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={openMenus.suite} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding sx={{ bgcolor: 'rgba(0,0,0,0.2)' }}>
-                {[
-                  { name: 'Zen ERP (Tenant Modules)', path: '/erp' }, 
-                  { name: 'Zen CRM', path: '/crm' }, 
-                  { name: 'Zen App', path: '/zen-app' }, 
-                  { name: 'Zen Web', path: '/zen-web' }, 
-                ].map(item => (
-                  <ListItem key={item.name} button sx={{ pl: 4 }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
-                    <ListItemText primary={item.name} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
-                  </ListItem>
-                ))}
-                <ListItem sx={{ pl: 4, pt: 0 }}>
-                  <ListItemText primary="── CUSTOM BUILT ──" primaryTypographyProps={{ fontSize: '0.7rem', color: 'rgba(255,165,0,0.6)', fontWeight: 700, letterSpacing: 1 }} />
-                </ListItem>
-                {[
-                  { name: 'Custom ERP / CRM', path: '/contact' },
-                  { name: 'White Labeling', path: '/white-label' },
-                ].map(item => (
-                  <ListItem key={item.name} button sx={{ pl: 4 }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
-                    <ListItemText primary={item.name} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(251,192,45,0.9)' }} />
-                  </ListItem>
-                ))}
-              </List>
-            </Collapse>
+            {[
+              { name: 'Zen ERP', path: '/erp' },
+              { name: 'Zen CRM', path: '/crm' },
+              { name: 'Zen App', path: '/zen-app' },
+              { name: 'Zen Web', path: '/zen-web' },
+              { name: 'Custom ERP', path: '/contact' },
+            ].map((item) => (
+              <ListItem key={item.path} button sx={{ py: 2, borderBottom: '1px solid rgba(255,255,255,0.05)' }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
+                <ListItemText primary={item.name} primaryTypographyProps={{ fontWeight: 600 }} />
+              </ListItem>
+            ))}
 
             
 
@@ -584,7 +449,7 @@ const HomePage = () => {
                 fullWidth 
                 variant="contained" 
                 sx={{ background: 'linear-gradient(45deg, #00f2fe, #4facfe)', color: 'black', fontWeight: 800 }}
-                onClick={() => { setMobileOpen(false); setAuditDialogOpen(true); }}
+                onClick={() => { setMobileOpen(false); handleBookConsultation(); }}
               >
                 Book a free consultation
               </Button>

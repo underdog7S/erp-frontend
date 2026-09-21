@@ -47,7 +47,7 @@ import {
   SupportAgent as SupportIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { expertBookingUrl } from '../utils/expertBooking';
+import { expertBookingUrl, openExpertBooking } from '../utils/expertBooking';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import LandingCard from '../components/landing/LandingCard';
 import { darkSurface, darkText } from '../theme/landingSurfaces';
@@ -145,7 +145,10 @@ const About = () => {
   const [consultOpen, setConsultOpen] = useState(false);
 
   const handleBookConsultation = (event) => {
-    if (expertBookingUrl) return;
+    if (openExpertBooking()) {
+      event.preventDefault();
+      return;
+    }
     event.preventDefault();
     setConsultOpen(true);
   };

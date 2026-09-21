@@ -24,7 +24,7 @@ import {
   Language as WebsiteIcon
 } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../services/api';
-import { expertBookingUrl } from '../utils/expertBooking';
+import { expertBookingUrl, openExpertBooking } from '../utils/expertBooking';
 
 const Contact = () => {
   const theme = useTheme();
@@ -231,10 +231,7 @@ const Contact = () => {
                     </Typography>
                     {expertBookingUrl && (
                       <Button
-                        component="a"
-                        href={expertBookingUrl}
-                        target="_blank"
-                        rel="noreferrer"
+                        onClick={() => openExpertBooking()}
                         size="small"
                         variant="contained"
                         sx={{ alignSelf: 'flex-start' }}
