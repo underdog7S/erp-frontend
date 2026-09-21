@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogContent, Box, Typography, TextField, Button, CircularProgress, IconButton, Grid, Alert } from '@mui/material';
 import { Close as CloseIcon, Check as CheckIcon, ArrowForward as ArrowIcon, Settings as SettingsIcon, Web as WebIcon, Smartphone as AppIcon, Code as CodeIcon, Computer as ComputerIcon, Memory as MemoryIcon } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../../services/api';
-import { expertBookingUrl, openExpertBooking } from '../../utils/expertBooking';
+import GoogleBookingEmbed from './GoogleBookingEmbed';
 
 const CustomServiceFormDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -101,11 +101,19 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     return 'grey.300';
   };
 
+  useEffect(() => {
+    if (open) return;
+    setSuccess(false);
+    setCurrentStep(1);
+    setErrors({});
+    setLoading(false);
+  }, [open]);
+
   return (
     <Dialog 
       open={open} 
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         sx: {
@@ -115,6 +123,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
           position: 'relative',
           bgcolor: '#12121c',
           color: 'white',
+          maxHeight: '92vh',
           '&::before': {
             content: '""',
         position: 'absolute',
@@ -248,6 +257,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
         position: 'relative',
         bgcolor: '#12121c',
         color: 'white',
+        overflow: 'auto',
         '& .MuiOutlinedInput-root': {
           background: 'rgba(7, 12, 24, 0.88)',
           color: '#f8fafc',
@@ -261,8 +271,10 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
         '& .MuiFormHelperText-root': { color: 'rgba(226, 232, 240, 0.68)' },
         '& .MuiFormHelperText-root.Mui-error': { color: '#fca5a5' },
       }}>
+        <Grid container spacing={3} alignItems="flex-start">
+          <Grid item xs={12} md={5}>
         {success ? (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Box sx={{ textAlign: 'center', py: { xs: 1, md: 4 } }}>
     <Box
       sx={{
                 animation: 'successPulse 0.6s ease-out',
@@ -278,44 +290,12 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
             <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: 'white' }}>
               Request Submitted Successfully!
             </Typography>
-            <Typography variant="body1" sx={{ mb: 4, color: 'rgba(255,255,255,0.7)' }}>
-              Choose a time that works for you and our team will send a calendar invitation.
+            <Typography variant="body1" sx={{ mb: 3, color: 'rgba(255,255,255,0.7)' }}>
+              Pick a date and time on the calendar. We will send a Google Meet invitation after you book.
             </Typography>
-            
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
-              <Button 
-                variant="contained" 
-                color="primary"
-                size="large"
-                onClick={() => openExpertBooking()}
-                disabled={!expertBookingUrl}
-                sx={{ 
-                  py: 1.5, px: 4, 
-                  background: 'linear-gradient(45deg, #4285F4, #34A853)',
-                  boxShadow: '0 4px 15px rgba(66, 133, 244, 0.4)',
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 20px rgba(66, 133, 244, 0.6)'
-                  }
-                }}
-              >
-                <span>Book your free consultation</span>
-              </Button>
-              {!expertBookingUrl && (
-                <Alert severity="info" sx={{ maxWidth: 460 }}>
-                  Our scheduling calendar is being updated. Our team will contact you using the details you provided.
-                </Alert>
-              )}
-              
-              <Button 
-                variant="text" 
-                onClick={onClose}
-                sx={{ color: 'text.secondary' }}
-              >
-                I'll do this later
-              </Button>
-            </Box>
+            <Button variant="text" onClick={onClose} sx={{ color: 'text.secondary' }}>
+              I'll do this later
+            </Button>
           </Box>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -666,6 +646,17 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     </Box>
           </form>
         )}
+          </Grid>
+          <Grid item xs={12} md={7}>
+            <Typography variant="h6" fontWeight={600} sx={{ color: 'white', mb: 1 }}>
+              Select an appointment time
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.65)', mb: 2 }}>
+              30-minute Google Meet. Times are shown in India Standard Time.
+            </Typography>
+            <GoogleBookingEmbed height={600} />
+          </Grid>
+        </Grid>
       </DialogContent>
     </Dialog>
   );

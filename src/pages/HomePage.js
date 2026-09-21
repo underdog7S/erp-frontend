@@ -11,7 +11,6 @@ import TargetAudience from '../components/landing/TargetAudience';
 import TechStackMarquee from '../components/landing/TechStackMarquee';
 import AgencyProcess from '../components/landing/AgencyProcess';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
-import { openExpertBooking } from '../utils/expertBooking';
 import IntegrationsDemo from '../components/landing/IntegrationsDemo';
 import Testimonials from '../components/landing/Testimonials';
 import FAQ from '../components/landing/FAQ';
@@ -44,7 +43,7 @@ const HomePage = () => {
   const { scrollY } = useScroll();
 
   const handleBookConsultation = () => {
-    if (!openExpertBooking()) setAuditDialogOpen(true);
+    setAuditDialogOpen(true);
   };
 
   const handleMobileNav = (section) => {

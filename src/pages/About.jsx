@@ -47,7 +47,7 @@ import {
   SupportAgent as SupportIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { expertBookingUrl, openExpertBooking } from '../utils/expertBooking';
+import { expertBookingUrl } from '../utils/expertBooking';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import LandingCard from '../components/landing/LandingCard';
 import { darkSurface, darkText } from '../theme/landingSurfaces';
@@ -145,10 +145,6 @@ const About = () => {
   const [consultOpen, setConsultOpen] = useState(false);
 
   const handleBookConsultation = (event) => {
-    if (openExpertBooking()) {
-      event.preventDefault();
-      return;
-    }
     event.preventDefault();
     setConsultOpen(true);
   };
@@ -483,9 +479,6 @@ const About = () => {
                 size="large"
                 endIcon={<ArrowIcon />}
                 onClick={handleBookConsultation}
-                href={expertBookingUrl || undefined}
-                target={expertBookingUrl ? '_blank' : undefined}
-                rel={expertBookingUrl ? 'noreferrer' : undefined}
                 sx={consultButtonSx}
               >
                 Book a free consultation

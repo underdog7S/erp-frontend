@@ -24,7 +24,8 @@ import {
   Language as WebsiteIcon
 } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../services/api';
-import { expertBookingUrl, openExpertBooking } from '../utils/expertBooking';
+import { expertBookingEmbedUrl } from '../utils/expertBooking';
+import GoogleBookingEmbed from '../components/landing/GoogleBookingEmbed';
 
 const Contact = () => {
   const theme = useTheme();
@@ -227,17 +228,10 @@ const Contact = () => {
                 >
                   <Stack spacing={1}>
                     <Typography variant="body2">
-                      Message sent successfully! We'll get back to you soon.
+                      Message sent successfully! Pick a time on the calendar below if you would like a call.
                     </Typography>
-                    {expertBookingUrl && (
-                      <Button
-                        onClick={() => openExpertBooking()}
-                        size="small"
-                        variant="contained"
-                        sx={{ alignSelf: 'flex-start' }}
-                      >
-                        Book a consultation now
-                      </Button>
+                    {expertBookingEmbedUrl && (
+                      <GoogleBookingEmbed height={520} />
                     )}
                   </Stack>
                 </Alert>
