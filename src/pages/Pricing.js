@@ -48,6 +48,27 @@ const Pricing = () => {
       ]
     },
     {
+      key: 'platform',
+      name: 'Platform',
+      description: 'Full ERP for businesses with their own comms setup',
+      price: 999,
+      original_price: 2000,
+      billing_cycle: 'month',
+      color: '#00e676',
+      popular: false,
+      icon: <BusinessIcon />,
+      badge: 'BYOK',
+      features: [
+        '10 Users',
+        '2 GB Storage',
+        'All Industry Modules',
+        'Plug In Your Own WhatsApp',
+        'Plug In Your Own SMS (Twilio)',
+        'Plug In Your Own Email (SMTP)',
+        'API Access'
+      ]
+    },
+    {
       key: 'starter',
       name: 'Starter',
       description: 'Ideal for growing businesses',
@@ -212,7 +233,23 @@ const Pricing = () => {
                     }}
                   />
                 )}
-
+                {/* BYOK Badge for Platform Plan */}
+                {plan.badge && (
+                  <Chip
+                    label={plan.badge}
+                    sx={{
+                      position: 'absolute',
+                      top: 12,
+                      right: 12,
+                      zIndex: 1,
+                      bgcolor: '#00e676',
+                      color: '#000',
+                      fontWeight: 800,
+                      fontSize: '0.7rem',
+                      letterSpacing: 1,
+                    }}
+                  />
+                )}
                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
                   {/* Plan Header */}
                   <Box textAlign="center" mb={3}>

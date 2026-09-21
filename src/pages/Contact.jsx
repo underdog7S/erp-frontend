@@ -24,6 +24,7 @@ import {
   Language as WebsiteIcon
 } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../services/api';
+import { expertBookingUrl } from '../utils/expertBooking';
 
 const Contact = () => {
   const theme = useTheme();
@@ -131,7 +132,7 @@ const Contact = () => {
           <Typography variant="h2" component="h1" fontWeight={700} gutterBottom sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
             Get In Touch
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto' }}>
+          <Typography variant="h6" sx={{ maxWidth: 700, mx: 'auto', color: 'rgba(226,232,240,0.72)' }}>
             Have questions? We're here to help! Reach out to us and we'll respond as soon as possible.
           </Typography>
         </Box>
@@ -145,7 +146,7 @@ const Contact = () => {
                   key={index}
                   sx={{
                     p: 3,
-                    bgcolor: 'rgba(255,255,255,0.03)',
+                    background: 'rgba(16, 20, 34, 0.92)',
                     color: 'white',
                     transition: 'all 0.3s ease',
                     '&:hover': {
@@ -169,7 +170,7 @@ const Contact = () => {
                       {info.icon}
                     </Box>
                     <Box>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" sx={{ color: 'rgba(226,232,240,0.65)' }}>
                         {info.label}
                       </Typography>
                       {info.link ? (
@@ -179,7 +180,7 @@ const Contact = () => {
                           variant="body1"
                           fontWeight={600}
                           sx={{
-                            color: 'text.primary',
+                            color: '#f8fafc',
                             textDecoration: 'none',
                             '&:hover': { color: info.color }
                           }}
@@ -187,7 +188,7 @@ const Contact = () => {
                           {info.value}
                         </Typography>
                       ) : (
-                        <Typography variant="body1" fontWeight={600}>
+                        <Typography variant="body1" fontWeight={600} sx={{ color: '#f8fafc' }}>
                           {info.value}
                         </Typography>
                       )}
@@ -200,7 +201,23 @@ const Contact = () => {
 
           {/* Contact Form */}
           <Grid item xs={12} md={8}>
-            <Card sx={{ p: 4, bgcolor: 'rgba(255,255,255,0.03)', color: 'white' }}>
+            <Card sx={{
+              p: 4,
+              background: 'rgba(16, 20, 34, 0.94)',
+              color: 'white',
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(7, 12, 24, 0.88)',
+                color: '#f8fafc',
+                '& fieldset': { borderColor: 'rgba(148, 163, 184, 0.55)' },
+                '&:hover fieldset': { borderColor: '#4facfe' },
+                '&.Mui-focused fieldset': { borderColor: '#00f2fe' },
+              },
+              '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.8)' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#00f2fe' },
+              '& .MuiInputBase-input::placeholder': { color: 'rgba(203, 213, 225, 0.65)', opacity: 1 },
+              '& .MuiFormHelperText-root': { color: 'rgba(226, 232, 240, 0.68)' },
+              '& .MuiFormHelperText-root.Mui-error': { color: '#fca5a5' },
+            }}>
               {success && (
                 <Alert 
                   severity="success" 
@@ -208,14 +225,31 @@ const Contact = () => {
                   sx={{ mb: 3 }}
                   onClose={() => setSuccess(false)}
                 >
-                  Message sent successfully! We'll get back to you soon.
+                  <Stack spacing={1}>
+                    <Typography variant="body2">
+                      Message sent successfully! We'll get back to you soon.
+                    </Typography>
+                    {expertBookingUrl && (
+                      <Button
+                        component="a"
+                        href={expertBookingUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        size="small"
+                        variant="contained"
+                        sx={{ alignSelf: 'flex-start' }}
+                      >
+                        Book a consultation now
+                      </Button>
+                    )}
+                  </Stack>
                 </Alert>
               )}
               
               <Typography variant="h5" fontWeight={700} gutterBottom>
                 Send Us a Message
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+              <Typography variant="body2" sx={{ mb: 4, color: 'rgba(226,232,240,0.65)' }}>
                 Fill out the form below and we'll respond within 24 hours.
               </Typography>
 
@@ -364,7 +398,7 @@ const Contact = () => {
         </Grid>
 
         {/* Quick Response Info */}
-        <Card sx={{ mt: 6, p: 4, bgcolor: 'primary.main', color: 'white' }}>
+        <Card sx={{ mt: 6, p: 4, background: 'linear-gradient(135deg, #1976d2 0%, #0d47a1 100%)', color: 'white' }}>
           <Grid container spacing={4} alignItems="center">
             <Grid item xs={12} md={8}>
               <Typography variant="h5" fontWeight={700} gutterBottom>

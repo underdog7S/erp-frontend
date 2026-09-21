@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, TextField, Button, MenuItem, CircularProgress, IconButton, Grid, Card, Alert } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Box, Typography, TextField, Button, CircularProgress, IconButton, Grid, Alert } from '@mui/material';
 import { Close as CloseIcon, Check as CheckIcon, ArrowForward as ArrowIcon, Settings as SettingsIcon, Web as WebIcon, Smartphone as AppIcon, Code as CodeIcon, Computer as ComputerIcon, Memory as MemoryIcon } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../../services/api';
+import { expertBookingUrl } from '../../utils/expertBooking';
 
 const CustomServiceFormDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState({
@@ -109,9 +110,11 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
       PaperProps={{
         sx: {
           borderRadius: 4,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
           overflow: 'hidden',
           position: 'relative',
+          bgcolor: '#12121c',
+          color: 'white',
           '&::before': {
             content: '""',
         position: 'absolute',
@@ -159,11 +162,12 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
             }
           }} />
           <Typography variant="h5" fontWeight={700}>
-            Meet an Expert
+            Book a free consultation
           </Typography>
         </Box>
         <IconButton 
-          onClick={onClose} 
+          onClick={onClose}
+          aria-label="Close consultation form" 
           sx={{ 
             color: 'white',
             position: 'relative',
@@ -181,10 +185,10 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
       {/* Step Indicator */}
       {!success && (
         <Box sx={{ 
-          bgcolor: '#f5f5f5', 
+          bgcolor: 'rgba(255,255,255,0.05)', 
           px: 4, 
           py: 2,
-          borderBottom: '1px solid #e0e0e0'
+          borderBottom: '1px solid rgba(255,255,255,0.08)'
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             {[1, 2, 3].map((step) => (
@@ -213,7 +217,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                     sx={{ 
                       display: { xs: 'none', sm: 'block' },
                       fontWeight: step === currentStep ? 600 : 400,
-                      color: step <= currentStep ? 'primary.main' : 'text.secondary'
+                      color: step <= currentStep ? '#4facfe' : 'rgba(255,255,255,0.4)'
                     }}
                   >
                     {step === 1 ? 'Service' : step === 2 ? 'Contact' : 'Details'}
@@ -233,10 +237,30 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               </React.Fragment>
             ))}
           </Box>
+          <Typography variant="body2" sx={{ color: 'rgba(226,232,240,0.85)', mt: 1.5 }}>
+            30-minute call. We typically reply within one business day. We never sell your contact details.
+          </Typography>
         </Box>
       )}
 
-      <DialogContent sx={{ p: 4, position: 'relative' }}>
+      <DialogContent sx={{
+        p: 4,
+        position: 'relative',
+        bgcolor: '#12121c',
+        color: 'white',
+        '& .MuiOutlinedInput-root': {
+          background: 'rgba(7, 12, 24, 0.88)',
+          color: '#f8fafc',
+          '& fieldset': { borderColor: 'rgba(148, 163, 184, 0.55)' },
+          '&:hover fieldset': { borderColor: '#4facfe' },
+          '&.Mui-focused fieldset': { borderColor: '#00f2fe' },
+        },
+        '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.8)' },
+        '& .MuiInputLabel-root.Mui-focused': { color: '#00f2fe' },
+        '& .MuiInputBase-input::placeholder': { color: 'rgba(203, 213, 225, 0.65)', opacity: 1 },
+        '& .MuiFormHelperText-root': { color: 'rgba(226, 232, 240, 0.68)' },
+        '& .MuiFormHelperText-root.Mui-error': { color: '#fca5a5' },
+      }}>
         {success ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
     <Box
@@ -251,12 +275,11 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
             >
               <CheckIcon sx={{ fontSize: 80, color: 'success.main', mb: 2 }} />
             </Box>
-            <Typography variant="h5" fontWeight={600} gutterBottom>
+            <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: 'white' }}>
               Request Submitted Successfully!
             </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              Next step: Pick a time to meet with our expert on Google Calendar. 
-              This will automatically send an invite to both of our calendars!
+            <Typography variant="body1" sx={{ mb: 4, color: 'rgba(255,255,255,0.7)' }}>
+              Choose a time that works for you and our team will send a calendar invitation.
             </Typography>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
@@ -264,8 +287,10 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                 variant="contained" 
                 color="primary"
                 size="large"
-                href="https://calendly.com/"
+                href={expertBookingUrl || undefined}
                 target="_blank"
+                rel="noreferrer"
+                disabled={!expertBookingUrl}
                 sx={{ 
                   py: 1.5, px: 4, 
                   background: 'linear-gradient(45deg, #4285F4, #34A853)',
@@ -277,8 +302,13 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                   }
                 }}
               >
-                📅 Schedule Google Meet
+                <span>Book your free consultation</span>
               </Button>
+              {!expertBookingUrl && (
+                <Alert severity="info" sx={{ maxWidth: 460 }}>
+                  Our scheduling calendar is being updated. Our team will contact you using the details you provided.
+                </Alert>
+              )}
               
               <Button 
                 variant="text" 
@@ -296,7 +326,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               <Box sx={{ 
                 animation: 'slideInRight 0.4s ease-out'
               }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3, color: 'white' }}>
                   What service do you need?
                 </Typography>
                 <Grid container spacing={2}>
@@ -310,7 +340,8 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                     { value: 'control_operation', label: 'Control & Operation', icon: <MemoryIcon />, color: '#1976d2', desc: 'Industrial control systems and operational automation solutions' }
                   ].map((service) => (
                     <Grid item xs={12} sm={6} key={service.value}>
-                      <Card
+                      {/* Use a plain Box instead of Card to avoid MUI theme background override */}
+                      <Box
                         onClick={() => {
                           setFormData(prev => ({ ...prev, service_type: service.value }));
                           setErrors(prev => ({ ...prev, service_type: '' }));
@@ -319,19 +350,21 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                         sx={{
                           p: 3,
                           cursor: 'pointer',
-                          border: formData.service_type === service.value ? `3px solid ${service.color}` : '2px solid #e0e0e0',
-                          bgcolor: formData.service_type === service.value ? `${service.color}10` : 'white',
+                          borderRadius: 2,
+                          border: formData.service_type === service.value
+                            ? `2px solid ${service.color}`
+                            : '1px solid rgba(255,255,255,0.12)',
+                          backgroundColor: formData.service_type === service.value
+                            ? `${service.color}25`
+                            : 'rgba(255,255,255,0.06)',
                           transition: 'all 0.3s ease',
                           position: 'relative',
                           overflow: 'hidden',
-        '&:hover': {
-                            transform: 'translateY(-4px) scale(1.02)',
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
                             boxShadow: `0 8px 24px ${service.color}40`,
                             borderColor: service.color,
-                            '& .service-icon': {
-                              transform: 'scale(1.2) rotate(5deg)',
-                              color: service.color
-                            }
+                            backgroundColor: `${service.color}18`,
                           },
                           '&::before': {
                             content: '""',
@@ -341,49 +374,28 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                             width: 4,
                             height: '100%',
                             bgcolor: service.color,
-                            transform: 'scaleY(0)',
+                            transform: formData.service_type === service.value ? 'scaleY(1)' : 'scaleY(0)',
                             transition: 'transform 0.3s ease'
                           },
-                          '&:hover::before': {
-                            transform: 'scaleY(1)'
-                          }
                         }}
                       >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                          <Box 
-                            className="service-icon"
-                            sx={{ 
-                              color: service.color, 
-                              transition: 'all 0.3s ease',
-                              fontSize: '2.5rem'
-                            }}
-                          >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Box sx={{ color: service.color, fontSize: '2rem', display: 'flex', alignItems: 'center' }}>
                             {service.icon}
-    </Box>
+                          </Box>
                           <Box>
-                            <Typography variant="h6" fontWeight={600}>
+                            <Typography variant="h6" fontWeight={600} sx={{ color: 'white', lineHeight: 1.2 }}>
                               {service.label}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)', mt: 0.3 }}>
                               {service.desc}
                             </Typography>
                           </Box>
+                          {formData.service_type === service.value && (
+                            <CheckIcon sx={{ ml: 'auto', color: service.color }} />
+                          )}
                         </Box>
-                        {formData.service_type === service.value && (
-                          <Box sx={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: 1, 
-                            color: service.color,
-                            mt: 1,
-                            opacity: 0,
-                            animation: 'fadeInSelected 0.3s ease forwards'
-                          }}>
-                            <CheckIcon fontSize="small" />
-                            <Typography variant="body2" fontWeight={600}>Selected</Typography>
-                          </Box>
-                        )}
-                      </Card>
+                      </Box>
                     </Grid>
                   ))}
                 </Grid>
@@ -398,7 +410,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               <Box sx={{ 
                 animation: 'slideInRight 0.4s ease-out'
               }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3, color: 'white' }}>
                   Tell us about yourself
                 </Typography>
                 <Grid container spacing={3}>
@@ -514,7 +526,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               <Box sx={{ 
                 animation: 'slideInRight 0.4s ease-out'
               }}>
-                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3 }}>
+                <Typography variant="h6" fontWeight={600} gutterBottom sx={{ mb: 3, color: 'white' }}>
                   Project Requirements
                 </Typography>
                 <Grid container spacing={3}>
@@ -555,7 +567,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                       onChange={handleChange}
                       onFocus={() => setHoveredField('budget')}
                       onBlur={() => setHoveredField(null)}
-                      placeholder="e.g., ₹50k-1L, ₹1L-5L, ₹5L+"
+                      placeholder="e.g., Rs. 50k-1L, Rs. 1L-5L, Rs. 5L+"
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           transition: 'all 0.3s ease',
@@ -603,14 +615,17 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               </Box>
             )}
 
-            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'space-between' }}>
+            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.08)', pt: 3 }}>
               <Button 
                 onClick={currentStep === 1 ? onClose : handleBack}
                 variant="outlined"
       sx={{
                   transition: 'all 0.3s ease',
+                  color: 'rgba(255,255,255,0.7)',
+                  borderColor: 'rgba(255,255,255,0.2)',
                   '&:hover': {
-                    transform: 'translateX(-4px)'
+                    transform: 'translateX(-4px)',
+                    borderColor: 'rgba(255,255,255,0.5)'
                   }
                 }}
               >

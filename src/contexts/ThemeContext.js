@@ -62,7 +62,7 @@ const buildTheme = (mode) => createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          background: mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
+          backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
           backdropFilter: mode === 'dark' ? 'blur(20px)' : 'none',
           border: mode === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
           transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -106,7 +106,7 @@ const buildTheme = (mode) => createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
-          background: mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
+          backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.04)' : '#ffffff',
           backdropFilter: mode === 'dark' ? 'blur(20px)' : 'none',
         },
       },

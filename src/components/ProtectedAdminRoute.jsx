@@ -31,15 +31,11 @@ const ProtectedAdminRoute = ({ children }) => {
         const userObj = JSON.parse(userStr);
         setUser(userObj);
 
-        // Check if user has admin permissions
-        const canManageUsers = hasPermission(userObj, PERMISSIONS.MANAGE_USERS);
-        const isAdminRole = userObj.role && (
-          userObj.role.toLowerCase() === 'admin' || 
-          userObj.role === '1' || 
-          userObj.role === 1
-        );
+        // SECURITY: Only allow Django is_staff or is_superuser (platform superadmins).
+        // Regular tenant admins have role='admin' but is_staff=false — they must NOT see this panel.
+        const isPlatformSuperAdmin = userObj.is_staff === true || userObj.is_superuser === true;
 
-        if (canManageUsers || isAdminRole) {
+        if (isPlatformSuperAdmin) {
           setHasAccess(true);
         } else {
           setHasAccess(false);

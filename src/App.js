@@ -58,6 +58,7 @@ const SalonCRM = lazy(() => import('./pages/Salon/SalonCRM'));
 const SalonBilling = lazy(() => import('./pages/Salon/SalonBilling'));
 const AddonStore = lazy(() => import('./pages/Billing/AddonStore'));
 const Integrations = lazy(() => import('./pages/Settings/Integrations'));
+const SettingsHub = lazy(() => import('./pages/Settings/Settings'));
 const ContactManagement = lazy(() => import('./pages/CRM/ContactManagement'));
 const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
@@ -130,6 +131,7 @@ function App() {
                     <Route path="/admin/public-settings" element={<ProtectedAdminRoute><AdminPublicSettings /></ProtectedAdminRoute>} />
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
+                    <Route path="/settings" element={<AuthCheck><SettingsHub /></AuthCheck>} />
                     <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
                     <Route path="/settings/integrations" element={<AuthCheck><Integrations /></AuthCheck>} />
                     <Route path="/pricing" element={<Pricing />} />
@@ -222,10 +224,11 @@ function MainContent({ children }) {
 function AppContent({ isAuthenticated }) {
   const location = useLocation();
 
-  // Define routes where footer should be hidden (authenticated routes)
+  // Define routes where footer should be hidden (authenticated / app routes)
   const authenticatedRoutes = [
-    '/dashboard', '/education', '/pharmacy', '/retail', 
-    '/hotel', '/restaurant', '/salon', '/payment', '/admin'
+    '/dashboard', '/education', '/pharmacy', '/retail',
+    '/hotel', '/restaurant', '/salon', '/payment', '/admin',
+    '/crm', '/settings', '/error'
   ];
   
   const shouldShowFooter = !isAuthenticated && !authenticatedRoutes.some(route => 

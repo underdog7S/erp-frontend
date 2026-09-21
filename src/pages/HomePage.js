@@ -155,7 +155,6 @@ const HomePage = () => {
                       { title: 'Zen CRM', desc: 'Leads, Deals, Email Marketing & Pipelines', icon: <img src={process.env.PUBLIC_URL + '/assets/crm.png'} alt="Zen CRM" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#ff9a9e', path: '/crm' },
                       { title: 'Zen App', desc: 'Custom Mobile Applications (iOS/Android)', icon: <img src={process.env.PUBLIC_URL + '/assets/app.png'} alt="Zen App" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#b388ff', path: '/zen-app' },
                       { title: 'Zen Web', desc: 'High-Performance Web Portals & Dashboards', icon: <img src={process.env.PUBLIC_URL + '/assets/web.png'} alt="Zen Web" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#00e676', path: '/zen-web' },
-                      { title: 'White Labeling', desc: 'Custom branding & domains for your business', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '32px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/white-label' }
                     ].map(item => (
                       <Box 
                         key={item.title} 
@@ -175,6 +174,38 @@ const HomePage = () => {
                             borderColor: 'rgba(0,242,254,0.2)',
                             transform: 'translateX(4px)'
                           } 
+                        }}
+                      >
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            {item.icon}
+                            <Typography variant="subtitle1" sx={{ color: item.color, fontWeight: 700, mb: 0 }}>
+                              {item.title}
+                            </Typography>
+                          </Box>
+                          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)', display: 'block', mt: 0.5 }}>
+                            {item.desc}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                    
+                    <Divider sx={{ my: 1, borderColor: 'rgba(255,165,0,0.3)' }} />
+                    <Typography variant="caption" sx={{ color: 'rgba(255,165,0,0.7)', px: 1.5, fontWeight: 700, letterSpacing: 1 }}>
+                      CUSTOM BUILT
+                    </Typography>
+                    {[
+                      { title: 'Custom ERP / CRM', desc: 'Fully custom-built ERP or CRM tailored to your exact business workflow', icon: <img src={process.env.PUBLIC_URL + '/assets/erp.png'} alt="Custom ERP" style={{ width: 'auto', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/contact' },
+                      { title: 'White Labeling', desc: 'Your brand, your domain — launch Zenith ERP under your own identity', icon: <img src={process.env.PUBLIC_URL + '/assets/whitelable.png'} alt="White Labeling" style={{ width: 'auto', height: '28px', objectFit: 'contain' }} />, color: '#fbc02d', path: '/white-label' },
+                    ].map(item => (
+                      <Box 
+                        key={item.title} 
+                        onClick={() => navigate(item.path)}
+                        sx={{ 
+                          p: 1.5, color: 'white', cursor: 'pointer', borderRadius: 2, 
+                          border: '1px solid transparent', transition: 'all 0.2s ease',
+                          display: 'flex', alignItems: 'center', gap: 2,
+                          '&:hover': { bgcolor: 'rgba(251,192,45,0.05)', borderColor: 'rgba(251,192,45,0.3)', transform: 'translateX(4px)' } 
                         }}
                       >
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
@@ -261,7 +292,7 @@ const HomePage = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                Meet an Expert
+                Book a free consultation
               </Button>
             </Box>
           </Container>
@@ -338,7 +369,7 @@ const HomePage = () => {
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  Meet an Expert
+                  Book a free consultation
                 </Button>
                 <Button 
                   variant="outlined" 
@@ -519,10 +550,20 @@ const HomePage = () => {
                   { name: 'Zen CRM', path: '/crm' }, 
                   { name: 'Zen App', path: '/zen-app' }, 
                   { name: 'Zen Web', path: '/zen-web' }, 
-                  { name: 'White Labeling', path: '/white-label' }
                 ].map(item => (
                   <ListItem key={item.name} button sx={{ pl: 4 }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
                     <ListItemText primary={item.name} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }} />
+                  </ListItem>
+                ))}
+                <ListItem sx={{ pl: 4, pt: 0 }}>
+                  <ListItemText primary="── CUSTOM BUILT ──" primaryTypographyProps={{ fontSize: '0.7rem', color: 'rgba(255,165,0,0.6)', fontWeight: 700, letterSpacing: 1 }} />
+                </ListItem>
+                {[
+                  { name: 'Custom ERP / CRM', path: '/contact' },
+                  { name: 'White Labeling', path: '/white-label' },
+                ].map(item => (
+                  <ListItem key={item.name} button sx={{ pl: 4 }} onClick={() => { setMobileOpen(false); navigate(item.path); }}>
+                    <ListItemText primary={item.name} primaryTypographyProps={{ fontSize: '0.9rem', color: 'rgba(251,192,45,0.9)' }} />
                   </ListItem>
                 ))}
               </List>
@@ -545,7 +586,7 @@ const HomePage = () => {
                 sx={{ background: 'linear-gradient(45deg, #00f2fe, #4facfe)', color: 'black', fontWeight: 800 }}
                 onClick={() => { setMobileOpen(false); setAuditDialogOpen(true); }}
               >
-                Meet an Expert
+                Book a free consultation
               </Button>
             </Box>
           </List>
