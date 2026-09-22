@@ -8,7 +8,7 @@ import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Navigation from "./components/Navigation";
-import { PublicERP, PublicCRM, PublicApp, PublicWeb, PublicWhiteLabel } from './pages/PublicPages';
+import { PublicERP, PublicCRM, PublicApp, PublicWeb, PublicConsult, PublicWhiteLabel } from './pages/PublicPages';
 
 // HomePage is lazy loaded below
 import About from './pages/About';
@@ -139,6 +139,7 @@ function App() {
                     <Route path="/crm" element={<PublicCRM />} />
                     <Route path="/zen-app" element={<PublicApp />} />
                     <Route path="/zen-web" element={<PublicWeb />} />
+                    <Route path="/zen-consult" element={<PublicConsult />} />
                     <Route path="/white-label" element={<PublicWhiteLabel />} />
                     <Route path="/verify-email" element={<EmailVerification />} />
                     <Route path="/pay-fees" element={<PublicFeePayment />} />

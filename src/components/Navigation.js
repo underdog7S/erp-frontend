@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../services/api";
 import { useSidebar } from "../contexts/SidebarContext";
+import MegaNav from "./landing/MegaNav";
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
@@ -1049,6 +1050,15 @@ const Navigation = () => {
 
   if (shouldHideNavigation) {
     return null;
+  }
+
+  // Logged-out visitors on public marketing pages (/pricing, /erp, /about,
+  // /login, etc.) get the same ZenWeb/ZenApp/ZenConsult/ZenERP/ZenCRM/About
+  // mega-menu as the homepage, instead of the flat button list below (which
+  // also used to render "About" twice). Logged-in users keep the dashboard
+  // nav/sidebar below untouched.
+  if (!isAuthenticated) {
+    return <MegaNav transparent={false} />;
   }
 
   return (

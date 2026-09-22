@@ -1,6 +1,8 @@
-import React from 'react';
-import { Box, Container, Typography, Grid, Card, CardContent } from '@mui/material';
+import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Box, Container, Typography, Grid, Card, CardContent, Button } from '@mui/material';
 import EnterpriseModules from '../components/landing/EnterpriseModules';
+import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import EmailIcon from '@mui/icons-material/Email';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -10,23 +12,48 @@ import DomainIcon from '@mui/icons-material/Domain';
 import PaletteIcon from '@mui/icons-material/Palette';
 import PublicIcon from '@mui/icons-material/Public';
 import StorefrontIcon from '@mui/icons-material/Storefront';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { MEGA_NAV } from '../data/megaNavData';
 
-const FeatureCard = ({ icon, title, desc }) => (
-  <Grid item xs={12} md={4}>
-    <Card sx={{ 
-      height: '100%', 
-      bgcolor: 'rgba(255,255,255,0.03)', 
+// One icon per item key, shared across every product page's card grid.
+const ICONS = {
+  'business-website': <WebIcon sx={{ fontSize: 50 }} />,
+  'ecommerce': <StorefrontIcon sx={{ fontSize: 50 }} />,
+  'web-portal': <DomainIcon sx={{ fontSize: 50 }} />,
+  'client-portal': <PublicIcon sx={{ fontSize: 50 }} />,
+  'ios-android': <PhoneIphoneIcon sx={{ fontSize: 50 }} />,
+  'booking-apps': <StorefrontIcon sx={{ fontSize: 50 }} />,
+  'erp-sync': <ContactsIcon sx={{ fontSize: 50 }} />,
+  'push-notifications': <PhoneIphoneIcon sx={{ fontSize: 50 }} />,
+  'business-gtm': <RocketLaunchIcon sx={{ fontSize: 50 }} />,
+  'sales-plan': <TrendingUpIcon sx={{ fontSize: 50 }} />,
+  'free-consultation': <EventAvailableIcon sx={{ fontSize: 50 }} />,
+  'pipelines': <ContactsIcon sx={{ fontSize: 50 }} />,
+  'inbox': <EmailIcon sx={{ fontSize: 50 }} />,
+  'ai-scoring': <SmartToyIcon sx={{ fontSize: 50 }} />,
+  'analytics': <SmartToyIcon sx={{ fontSize: 50 }} />,
+  'white-label': <PaletteIcon sx={{ fontSize: 50 }} />,
+};
+
+const FeatureCard = ({ icon, title, desc, expanded }) => (
+  <Grid item xs={12} md={expanded ? 12 : 4}>
+    <Card sx={{
+      height: '100%',
+      bgcolor: 'rgba(255,255,255,0.03)',
       backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255,255,255,0.1)',
+      border: expanded ? '1px solid rgba(0,242,254,0.4)' : '1px solid rgba(255,255,255,0.1)',
       transition: 'transform 0.3s, border-color 0.3s',
       '&:hover': { transform: 'translateY(-5px)', borderColor: '#00f2fe' }
     }}>
-      <CardContent sx={{ p: 4 }}>
+      <CardContent sx={{ p: expanded ? 6 : 4 }}>
         <Box sx={{ color: '#00f2fe', mb: 2 }}>{icon}</Box>
-        <Typography variant="h5" fontWeight="bold" color="white" gutterBottom>
+        <Typography variant={expanded ? 'h4' : 'h5'} fontWeight="bold" color="white" gutterBottom>
           {title}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7, maxWidth: expanded ? 700 : 'none' }}>
           {desc}
         </Typography>
       </CardContent>
@@ -45,184 +72,163 @@ const PageHero = ({ title, highlight, subtitle }) => (
   </Box>
 );
 
+// Shared card-grid body for the ZenWeb/ZenApp/ZenConsult/ZenCRM product
+// pages: reads its content from megaNavData (the same data the nav dropdown
+// uses, so the two never drift apart) and supports `?focus=<item-key>` -
+// arriving via a dropdown sub-item click shows just that one card, expanded,
+// with a link back to the full list.
+const ProductGrid = ({ sectionKey, onBookConsultation }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const focus = searchParams.get('focus');
+  const section = MEGA_NAV.find((s) => s.key === sectionKey);
+  if (!section) return null;
+
+  const items = focus ? section.items.filter((i) => i.key === focus) : section.items;
+  const showBackLink = Boolean(focus) && items.length > 0;
+
+  return (
+    <Container maxWidth="lg">
+      {showBackLink && (
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => setSearchParams({})}
+          sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, textTransform: 'none' }}
+        >
+          See everything {section.label} does
+        </Button>
+      )}
+      <Grid container spacing={4}>
+        {items.map((item) => (
+          <FeatureCard
+            key={item.key}
+            icon={ICONS[item.key] || <WebIcon sx={{ fontSize: 50 }} />}
+            title={item.label}
+            desc={item.description}
+            expanded={showBackLink}
+          />
+        ))}
+      </Grid>
+      {section.key === 'zenconsult' && !focus && onBookConsultation && (
+        <Box sx={{ textAlign: 'center', mt: 6 }}>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={onBookConsultation}
+            sx={{ background: 'linear-gradient(45deg, #00f2fe, #4facfe)', color: 'black', fontWeight: 800, px: 5, py: 1.5, borderRadius: 2 }}
+          >
+            Book your free consultation
+          </Button>
+        </Box>
+      )}
+    </Container>
+  );
+};
+
 export const PublicERP = () => (
   <Box sx={{ pt: 4, minHeight: '100vh', bgcolor: '#0a0a0f' }}>
-    <PageHero 
-      title="Zen ERP" 
-      highlight="Modules" 
+    <PageHero
+      title="Zen ERP"
+      highlight="Modules"
       subtitle="Purpose-built operating systems for your specific industry. Manage inventory, staff, and sales in one unified platform."
     />
     <EnterpriseModules />
+    <Box sx={{ py: 10 }}>
+      <Container maxWidth="lg" sx={{ textAlign: 'center', mb: 6 }}>
+        <Typography variant="overline" sx={{ color: '#b388ff', letterSpacing: 2, fontWeight: 700 }}>
+          Beyond the standard verticals
+        </Typography>
+        <Typography variant="h4" fontWeight={800} sx={{ mt: 1 }}>
+          Custom ERP & White Label
+        </Typography>
+      </Container>
+      <ProductGrid sectionKey="zenerp" />
+    </Box>
   </Box>
 );
 
 export const PublicCRM = () => (
   <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', pb: 10 }}>
-    <PageHero 
-      title="Zen" 
-      highlight="CRM" 
+    <PageHero
+      title="Zen"
+      highlight="CRM"
       subtitle="The ultimate Omnichannel Customer Relationship Management tool. Close deals faster with AI-powered automations."
     />
-    <Container maxWidth="lg">
-      <Grid container spacing={4}>
-        <FeatureCard 
-          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
-          title="Smart Lead Pipelines"
-          desc="Visualize your sales funnel with drag-and-drop Deal stages. Automatically track probabilities and expected close dates."
-        />
-        <FeatureCard 
-          icon={<EmailIcon sx={{ fontSize: 50 }} />}
-          title="Omnichannel Inbox"
-          desc="Reply to WhatsApp, SMS, and Email from a single unified chat interface. No more jumping between different applications."
-        />
-        <FeatureCard 
-          icon={<SmartToyIcon sx={{ fontSize: 50 }} />}
-          title="AI Virtual SDR"
-          desc="Our integrated AI reads customer sentiment and automatically creates Hot Leads in your pipeline when it detects buying intent."
-        />
-        <FeatureCard 
-          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
-          title="Team Collaboration"
-          desc="Leave internal notes on deals, tag team members, and set automated follow-up reminders directly inside the customer profile."
-        />
-        <FeatureCard 
-          icon={<EmailIcon sx={{ fontSize: 50 }} />}
-          title="Mass Broadcasting"
-          desc="Send targeted WhatsApp and SMS marketing campaigns directly from your ERP to all your qualified leads."
-        />
-        <FeatureCard 
-          icon={<SmartToyIcon sx={{ fontSize: 50 }} />}
-          title="Advanced Analytics"
-          desc="Generate complex revenue forecasting, team performance reports, and pipeline velocity charts."
-        />
-      </Grid>
-    </Container>
+    <ProductGrid sectionKey="zencrm" />
   </Box>
 );
 
 export const PublicApp = () => (
   <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', pb: 10 }}>
-    <PageHero 
-      title="Zen App" 
-      highlight="Development" 
+    <PageHero
+      title="Zen App"
+      highlight="Development"
       subtitle="Native, high-performance mobile applications built specifically for your business and deeply integrated with your ERP."
     />
-    <Container maxWidth="lg">
-      <Grid container spacing={4}>
-        <FeatureCard 
-          icon={<PhoneIphoneIcon sx={{ fontSize: 50 }} />}
-          title="iOS & Android Native"
-          desc="Cross-platform excellence. We build beautiful, responsive apps that feel right at home on both Apple and Android devices."
-        />
-        <FeatureCard 
-          icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
-          title="Customer Booking Apps"
-          desc="Give your customers the power to book appointments, buy products, and track orders directly from their phones."
-        />
-        <FeatureCard 
-          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
-          title="Real-Time ERP Sync"
-          desc="Everything your customers do on the mobile app instantly syncs with your ZenVerse ERP Dashboard and live inventory."
-        />
-        <FeatureCard 
-          icon={<PhoneIphoneIcon sx={{ fontSize: 50 }} />}
-          title="Push Notifications"
-          desc="Re-engage your customers with automated push notifications for abandoned carts, upcoming appointments, and new offers."
-        />
-        <FeatureCard 
-          icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
-          title="Offline Mode Support"
-          desc="Crucial features remain accessible even when your staff or customers lose internet connection, syncing automatically when back online."
-        />
-        <FeatureCard 
-          icon={<ContactsIcon sx={{ fontSize: 50 }} />}
-          title="Biometric Security"
-          desc="Secure your app with FaceID and TouchID integration, ensuring enterprise-grade protection for sensitive business data."
-        />
-      </Grid>
-    </Container>
+    <ProductGrid sectionKey="zenapp" />
   </Box>
 );
 
 export const PublicWeb = () => (
   <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', pb: 10 }}>
-    <PageHero 
-      title="Zen Web" 
-      highlight="Portals" 
+    <PageHero
+      title="Zen Web"
+      highlight="Portals"
       subtitle="Lightning-fast, highly scalable Web Portals and Administrative Dashboards for your staff and clients."
     />
-    <Container maxWidth="lg">
-      <Grid container spacing={4}>
-        <FeatureCard 
-          icon={<WebIcon sx={{ fontSize: 50 }} />}
-          title="Modern Architecture"
-          desc="Built on React and Django. Your web portal will be secure, lightning fast, and capable of handling millions of requests."
-        />
-        <FeatureCard 
-          icon={<PublicIcon sx={{ fontSize: 50 }} />}
-          title="SEO Optimized"
-          desc="If you need a public-facing e-commerce or landing page, our architecture ensures maximum visibility on Google and Bing."
-        />
-        <FeatureCard 
-          icon={<DomainIcon sx={{ fontSize: 50 }} />}
-          title="Custom Admin Dashboards"
-          desc="Need specialized analytics? We can build custom web dashboards tailored to exactly how your management team operates."
-        />
-        <FeatureCard 
-          icon={<WebIcon sx={{ fontSize: 50 }} />}
-          title="Secure Role-Based Access"
-          desc="Bank-grade security with granular permissions. Give exact levels of access to staff, managers, and external partners."
-        />
-        <FeatureCard 
-          icon={<PublicIcon sx={{ fontSize: 50 }} />}
-          title="Client Self-Service Portals"
-          desc="Let your clients log in, view their invoices, track project progress, and upload documents securely 24/7."
-        />
-        <FeatureCard 
-          icon={<DomainIcon sx={{ fontSize: 50 }} />}
-          title="Third-Party Integrations"
-          desc="We seamlessly connect your web portal to Zapier, Stripe, Twilio, QuickBooks, and any other API you rely on."
-        />
-      </Grid>
-    </Container>
+    <ProductGrid sectionKey="zenweb" />
   </Box>
 );
 
+export const PublicConsult = () => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', pb: 10 }}>
+      <PageHero
+        title="Zen"
+        highlight="Consult"
+        subtitle="Strategy and go-to-market help from people who also build the software — so the plan is one you can actually execute."
+      />
+      <ProductGrid sectionKey="zenconsult" onBookConsultation={() => setDialogOpen(true)} />
+      <CustomServiceFormDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
+    </Box>
+  );
+};
+
 export const PublicWhiteLabel = () => (
   <Box sx={{ minHeight: '100vh', bgcolor: '#0a0a0f', pb: 10 }}>
-    <PageHero 
-      title="White Label" 
-      highlight="Solutions" 
+    <PageHero
+      title="White Label"
+      highlight="Solutions"
       subtitle="Make ZenVerse your own. Resell our powerful software under your own brand, domain, and company colors."
     />
     <Container maxWidth="lg">
       <Grid container spacing={4}>
-        <FeatureCard 
+        <FeatureCard
           icon={<PaletteIcon sx={{ fontSize: 50 }} />}
           title="Your Logo & Colors"
           desc="We replace all Zenith ERP branding with your logo, brand colors, and typography to ensure complete brand consistency."
         />
-        <FeatureCard 
+        <FeatureCard
           icon={<DomainIcon sx={{ fontSize: 50 }} />}
           title="Custom Domains"
           desc="Host the ERP on your own domain (e.g., portal.yourcompany.com). Your clients will never know we exist."
         />
-        <FeatureCard 
+        <FeatureCard
           icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
           title="Reseller Opportunities"
           desc="Want to sell an ERP to your own clients? White-label our solution, set your own pricing, and keep 100% of the profits."
         />
-        <FeatureCard 
+        <FeatureCard
           icon={<PaletteIcon sx={{ fontSize: 50 }} />}
           title="Custom App Store Listings"
           desc="We publish your mobile apps directly to the Apple App Store and Google Play under your own Apple/Google developer accounts."
         />
-        <FeatureCard 
+        <FeatureCard
           icon={<DomainIcon sx={{ fontSize: 50 }} />}
           title="Dedicated Cloud Infrastructure"
           desc="Run your white-labeled instance on isolated, dedicated cloud instances for maximum data privacy and custom SLA guarantees."
         />
-        <FeatureCard 
+        <FeatureCard
           icon={<StorefrontIcon sx={{ fontSize: 50 }} />}
           title="Tailored Onboarding"
           desc="Custom login screens, welcome emails, and automated onboarding sequences that match your specific business voice."

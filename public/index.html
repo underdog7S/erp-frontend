@@ -3,65 +3,11 @@
   <head>
     <meta charset="utf-8" />
 
-    <!-- Animated ZenVerse Favicon -->
-    <link id="favicon" rel="icon" type="image/png" href="%PUBLIC_URL%/assets/erp.png" />
-    <link id="apple-favicon" rel="apple-touch-icon" href="%PUBLIC_URL%/assets/erp.png" />
-    <script>
-      (function() {
-        var canvas = document.createElement('canvas');
-        canvas.width = 64;
-        canvas.height = 64;
-        var ctx = canvas.getContext('2d');
-        var favicon = document.getElementById('favicon');
-        var appleFavicon = document.getElementById('apple-favicon');
-        var step = 0;
-
-        setInterval(function() {
-          // Clear background
-          ctx.clearRect(0, 0, 64, 64);
-          
-          // Animate a rotating gradient
-          var angle = step * 0.15;
-          var x2 = 32 + 32 * Math.cos(angle);
-          var y2 = 32 + 32 * Math.sin(angle);
-          var gradient = ctx.createLinearGradient(32 - 32 * Math.cos(angle), 32 - 32 * Math.sin(angle), x2, y2);
-          
-          // Brand colors
-          gradient.addColorStop(0, '#00f2fe');
-          gradient.addColorStop(0.5, '#4facfe');
-          gradient.addColorStop(1, '#b388ff');
-          
-          // Draw rounded rectangle background
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          if (ctx.roundRect) {
-            ctx.roundRect(0, 0, 64, 64, 16);
-          } else {
-            ctx.fillRect(0, 0, 64, 64); // Fallback
-          }
-          ctx.fill();
-
-          // Draw "ZV" text
-          ctx.fillStyle = 'white';
-          ctx.font = 'bold 34px "Segoe UI", Arial, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          
-          // Add subtle glow
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-          ctx.shadowBlur = 4;
-          
-          ctx.fillText('ZV', 32, 34);
-
-          // Update icons
-          var dataUrl = canvas.toDataURL('image/png');
-          if (favicon) favicon.href = dataUrl;
-          if (appleFavicon) appleFavicon.href = dataUrl;
-          
-          step++;
-        }, 150); // 150ms interval for smooth but not overly taxing animation
-      })();
-    </script>
+    <!-- ZenVerse favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/assets/logo/favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/assets/logo/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="%PUBLIC_URL%/assets/logo/favicon-48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/assets/logo/apple-touch-icon.png" />
 
             <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1976d2" />
@@ -83,7 +29,7 @@
     <meta property="og:url" content="https://zenitherp.online/" />
     <meta property="og:title" content="Zenith ERP - Universal Cloud ERP Solution | Free Plan Available" />
     <meta property="og:description" content="Empower your business with Zenith ERP - the universal cloud-based Enterprise Resource Planning solution. Streamline operations across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries. Free plan available. Start your digital transformation today!" />
-    <meta property="og:image" content="https://zenverse.online/logo.png" />
+    <meta property="og:image" content="https://zenitherp.online/assets/logo/zenverse-og.png" />
     <meta property="og:site_name" content="Zenith ERP" />
     
     <!-- Twitter -->
@@ -91,7 +37,7 @@
     <meta name="twitter:url" content="https://zenitherp.online/" />
     <meta name="twitter:title" content="Zenith ERP - Universal Cloud ERP Solution | Free Plan Available" />
     <meta name="twitter:description" content="Empower your business with Zenith ERP - the universal cloud-based Enterprise Resource Planning solution. Streamline operations across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries. Free plan available!" />
-    <meta name="twitter:image" content="https://zenverse.online/logo.png" />
+    <meta name="twitter:image" content="https://zenitherp.online/assets/logo/zenverse-og.png" />
     
     <!-- Mobile -->
     <meta name="mobile-web-app-capable" content="yes" />
@@ -119,7 +65,7 @@
       "@type": "Organization",
       "name": "Zenith ERP",
       "url": "https://zenitherp.online",
-      "logo": "https://zenverse.online/logo.png",
+      "logo": "https://zenitherp.online/assets/logo/zenverse-og.png",
       "description": "Universal cloud-based Enterprise Resource Planning solution empowering businesses across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries with comprehensive automation, real-time analytics, and enterprise-grade security.",
       "foundingDate": "2024",
       "numberOfEmployees": {
