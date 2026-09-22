@@ -13,7 +13,10 @@ import {
   AttachFile as AttachFileIcon,
   MoreVert as MoreVertIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+
+const BYOK_PLANS = ['platform', 'enterprise'];
 
 const getSourceIcon = (source) => {
   switch(source?.toLowerCase()) {
@@ -25,6 +28,7 @@ const getSourceIcon = (source) => {
 };
 
 const OmnichannelInbox = () => {
+  const navigate = useNavigate();
   const [threads, setThreads] = useState([]);
   const [messages, setMessages] = useState([]);
   const [activeThreadId, setActiveThreadId] = useState(null);
@@ -33,6 +37,7 @@ const OmnichannelInbox = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [managedAssets, setManagedAssets] = useState(null);
+  const [planKey, setPlanKey] = useState('');
   const messagesEndRef = useRef(null);
 
   // Fetch threads on load
@@ -58,6 +63,7 @@ const OmnichannelInbox = () => {
         if(res.data.managed_assets) {
           setManagedAssets(res.data.managed_assets);
         }
+        setPlanKey((res.data.plan || '').toLowerCase());
       } catch (err) {
         console.error("Failed to fetch assets", err);
       }
@@ -144,12 +150,33 @@ const OmnichannelInbox = () => {
         </Typography>
       </Box>
       
-      {managedAssets && (
-        <Box sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: managedAssets.phone_number ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)', border: '1px solid', borderColor: managedAssets.phone_number ? 'success.main' : 'warning.main', display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body1" sx={{ color: managedAssets.phone_number ? 'success.light' : 'warning.light' }}>
-            {managedAssets.phone_number 
-              ? `✅ Telecom Live! Receiving messages at: ${managedAssets.phone_number} | Support Email: ${managedAssets.email_address || 'Pending'}` 
-              : `⏳ Provisioning your dedicated telecom numbers... Please allow 1-2 hours for engineering to assign your numbers.`}
+      {managedAssets && managedAssets.phone_number && (
+        <Box sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: 'rgba(76, 175, 80, 0.1)', border: '1px solid', borderColor: 'success.main', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body1" sx={{ color: 'success.light' }}>
+            {`✅ Telecom Live! Receiving messages at: ${managedAssets.phone_number} | Support Email: ${managedAssets.email_address || 'Pending'}`}
+          </Typography>
+        </Box>
+      )}
+
+      {managedAssets && !managedAssets.phone_number && BYOK_PLANS.includes(planKey) && (
+        <Box sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: 'rgba(0, 242, 254, 0.08)', border: '1px solid', borderColor: '#00f2fe', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+          <Typography variant="body1" sx={{ color: '#00f2fe' }}>
+            🔌 Your plan brings your own WhatsApp/SMS/Email — connect them to start receiving messages here.
+          </Typography>
+          <Box
+            component="button"
+            onClick={() => navigate('/settings/integrations')}
+            sx={{ bgcolor: '#00f2fe', color: 'black', border: 'none', borderRadius: 1, px: 2, py: 1, fontWeight: 'bold', cursor: 'pointer' }}
+          >
+            Connect Now
+          </Box>
+        </Box>
+      )}
+
+      {managedAssets && !managedAssets.phone_number && !BYOK_PLANS.includes(planKey) && (
+        <Box sx={{ p: 2, mb: 3, borderRadius: 2, bgcolor: 'rgba(255, 152, 0, 0.1)', border: '1px solid', borderColor: 'warning.main', display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="body1" sx={{ color: 'warning.light' }}>
+            ⏳ Provisioning your dedicated telecom numbers... Please allow 1-2 hours for engineering to assign your numbers.
           </Typography>
         </Box>
       )}
