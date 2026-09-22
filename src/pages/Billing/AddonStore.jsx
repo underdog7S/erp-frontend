@@ -35,33 +35,70 @@ const AddonStore = () => {
 
   useEffect(() => {
     fetchUsage();
+    if (!window.Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
   }, []);
 
   const handleBuyAddon = async (addonName, priceINR) => {
+    const razorpayKeyId = process.env.REACT_APP_RAZORPAY_KEY_ID;
+    if (!window.Razorpay || !razorpayKeyId) {
+      alert('Payments are not configured yet. Please contact the administrator.');
+      return;
+    }
+
     setProcessingAddon(addonName);
-    
-    // Simulate Razorpay popup
-    setTimeout(async () => {
-      try {
-        // Mocking the backend Razorpay verify endpoint
-        await api.post('/payments/razorpay/verify/', {
-          razorpay_payment_id: 'pay_mock_' + Date.now(),
-          razorpay_order_id: 'order_mock_' + Date.now(),
-          razorpay_signature: 'mock_sig',
-          addon: addonName
-        }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-        });
-        
-        setSuccessDialog({ open: true, addon: addonName });
-        fetchUsage(); // Refresh usage limits
-      } catch (error) {
-        console.error("Payment failed", error);
-        alert("Payment failed or backend returned error. See console.");
-      } finally {
+    try {
+      const orderRes = await api.post('/payments/razorpay/order/', {
+        amount: priceINR,
+        currency: 'INR',
+        receipt: `addon_${addonName}_${Date.now()}`
+      });
+      const order = orderRes.data.order;
+
+      const rzp = new window.Razorpay({
+        key: razorpayKeyId,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: 'ZenERP',
+        description: `${addonName.toUpperCase()} Add-on`,
+        theme: { color: '#00f2fe' },
+        handler: async (response) => {
+          try {
+            await api.post('/payments/razorpay/verify/', {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              addon: addonName
+            });
+            setSuccessDialog({ open: true, addon: addonName });
+            fetchUsage(); // Refresh usage limits
+          } catch (error) {
+            console.error("Payment verification failed", error);
+            alert(error.response?.data?.error || "Payment verification failed. Please contact support.");
+          } finally {
+            setProcessingAddon(null);
+          }
+        },
+        modal: {
+          ondismiss: () => setProcessingAddon(null)
+        }
+      });
+      rzp.on('payment.failed', (response) => {
+        console.error("Payment failed", response.error);
+        alert(response.error?.description || 'Payment failed.');
         setProcessingAddon(null);
-      }
-    }, 1500); // Mock 1.5s Razorpay flow
+      });
+      rzp.open();
+    } catch (error) {
+      console.error("Failed to create payment order", error);
+      alert(error.response?.data?.error || "Failed to start payment. Please try again.");
+      setProcessingAddon(null);
+    }
   };
 
   if (loading) return <Box p={4} display="flex" justifyContent="center"><CircularProgress /></Box>;
