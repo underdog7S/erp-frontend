@@ -4,33 +4,12 @@ import TeacherDashboard from '../pages/TeacherDashboard';
 import AccountantDashboard from '../pages/AccountantDashboard';
 import StudentDashboard from '../pages/StudentDashboard';
 import StaffDashboard from '../pages/StaffDashboard';
-// import PrincipalDashboard from '../pages/PrincipalDashboard'; // Placeholder, create if missing
-// import LibrarianDashboard from '../pages/LibrarianDashboard'; // Placeholder, create if missing
+import PrincipalDashboard from '../pages/PrincipalDashboard';
+import LibrarianDashboard from '../pages/LibrarianDashboard';
 import { Box, Typography, Alert } from '@mui/material';
 import { hasPermission, PERMISSIONS } from '../permissions';
 import Tooltip from '@mui/material/Tooltip';
 import { getStoredUser } from '../services/api';
-
-// Add placeholder components if missing
-export const PrincipalDashboard = () => (
-  <Box sx={{ p: 3 }}>
-    <Alert severity="info">
-      <Typography variant="h5">Principal Dashboard</Typography>
-      <Typography variant="body2">This is a placeholder for the Principal dashboard. Implement as needed.</Typography>
-      <Typography variant="caption" color="text.secondary">(Requires MANAGE_USERS, MANAGE_CLASSES, MANAGE_ATTENDANCE, VIEW_REPORTS permissions)</Typography>
-    </Alert>
-  </Box>
-);
-
-export const LibrarianDashboard = () => (
-  <Box sx={{ p: 3 }}>
-    <Alert severity="info">
-      <Typography variant="h5">Librarian Dashboard</Typography>
-      <Typography variant="body2">This is a placeholder for the Librarian dashboard. Implement as needed.</Typography>
-      <Typography variant="caption" color="text.secondary">(Requires VIEW_DASHBOARD, VIEW_REPORTS permissions)</Typography>
-    </Alert>
-  </Box>
-);
 
 const RoleBasedDashboard = () => {
   const userProfile = getStoredUser();
