@@ -1,4 +1,4 @@
-// Centralized permission utility for Zenith ERP frontend
+// Centralized permission utility for ZenERP frontend
 // Usage: import { hasPermission, PERMISSIONS } from './permissions';
 
 // Define common actions and resources

@@ -5,7 +5,7 @@ import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
 
 const testimonials = [
   {
-    quote: "Zenith's custom ERP completely transformed our multi-store inventory. We cut manual data entry by 40% in the first month alone.",
+    quote: "ZenVerse's custom ERP completely transformed our multi-store inventory. We cut manual data entry by 40% in the first month alone.",
     name: "Sarah Jenkins",
     role: "Operations Director, Retail Group",
     initial: "S",

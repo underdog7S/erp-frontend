@@ -17,7 +17,7 @@ import { submitCustomServiceRequest } from '../../services/api';
 import GoogleBookingEmbed from './GoogleBookingEmbed';
 
 const SERVICE_OPTIONS = [
-  { value: 'customization', label: 'ERP customization', icon: <SettingsIcon />, hint: 'Tailor Zenith to your workflow' },
+  { value: 'customization', label: 'ERP customization', icon: <SettingsIcon />, hint: 'Tailor ZenERP to your workflow' },
   { value: 'web_development', label: 'Web app', icon: <WebIcon />, hint: 'Portals and dashboards' },
   { value: 'app_development', label: 'Mobile app', icon: <AppIcon />, hint: 'iOS and Android' },
   { value: 'both', label: 'Web + app', icon: <CodeIcon />, hint: 'Full product build' },

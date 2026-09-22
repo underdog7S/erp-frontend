@@ -15,21 +15,21 @@ import { Helmet } from 'react-helmet-async';
  * />
  */
 const SEO = ({
-  title = "Zenith ERP - Universal Cloud ERP Solution for Education, Pharmacy, Retail, Hotel & More",
-  description = "Empower your business with Zenith ERP - the universal cloud-based Enterprise Resource Planning solution. Streamline operations, automate workflows, and boost productivity across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries. Free plan available. Start your digital transformation today!",
+  title = "ZenVerse - Custom Apps, Web Development & Multi-Industry ERP Solutions",
+  description = "ZenVerse builds custom apps, web platforms, and ZenERP - a universal cloud-based ERP - for businesses across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries. Free plan available. Start your digital transformation today!",
   keywords = "ERP Software, Enterprise Resource Planning, Cloud ERP, Education ERP, School Management System, Pharmacy Management Software, Retail ERP, POS System, Hotel Management System, Restaurant Management Software, Salon Management, Multi-tenant SaaS, Business Management Software, Inventory Management, Accounting Software, HR Management, Free ERP, Affordable ERP India, Cloud-based ERP Solution, Digital Transformation, Business Automation",
-  image = "https://zenverse.online/logo.png",
+  image = "https://zenitherp.online/assets/logo/zenverse-og.png",
   url = "https://zenitherp.online",
   type = "website",
-  author = "Zenith ERP",
-  siteName = "Zenith ERP",
+  author = "ZenVerse Tech Solutions",
+  siteName = "ZenVerse",
   twitterHandle = "@zenitherp",
   structuredData = null,
   canonical = null,
   noindex = false,
   nofollow = false
 }) => {
-  const fullTitle = title.includes('Zenith ERP') ? title : `${title} | Zenith ERP`;
+  const fullTitle = title.includes('ZenVerse') ? title : `${title} | ZenVerse`;
   const fullUrl = url.startsWith('http') ? url : `https://zenitherp.online${url}`;
   const fullImage = image.startsWith('http') ? image : `https://zenitherp.online${image}`;
 
@@ -37,10 +37,10 @@ const SEO = ({
   const defaultStructuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Zenith ERP",
+    "name": "ZenVerse Tech Solutions",
     "url": "https://zenitherp.online",
-    "logo": "https://zenverse.online/logo.png",
-    "description": description || "Universal cloud-based Enterprise Resource Planning solution empowering businesses across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries with comprehensive automation, real-time analytics, and enterprise-grade security.",
+    "logo": "https://zenitherp.online/assets/logo/zenverse-og.png",
+    "description": description || "ZenVerse builds custom apps, web platforms, and ZenERP - a universal cloud-based Enterprise Resource Planning solution - for businesses across Education, Pharmacy, Retail, Hotel, Restaurant, and Salon industries, with comprehensive automation, real-time analytics, and enterprise-grade security.",
     "foundingDate": "2024",
     "numberOfEmployees": {
       "@type": "QuantitativeValue",
@@ -137,7 +137,7 @@ const SEO = ({
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      <meta name="apple-mobile-web-app-title" content="Zenith ERP" />
+      <meta name="apple-mobile-web-app-title" content="ZenVerse" />
 
       {/* Structured Data (JSON-LD) */}
       <script type="application/ld+json">

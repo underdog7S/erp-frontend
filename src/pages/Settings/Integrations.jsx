@@ -130,7 +130,7 @@ const Integrations = () => {
         Bring Your Own Setup (BYOK)
       </Typography>
       <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
-        Connect your existing SMS provider, WhatsApp Business account, email server, or OpenAI key directly to Zenith ERP.
+        Connect your existing SMS provider, WhatsApp Business account, email server, or OpenAI key directly to ZenERP.
       </Typography>
 
       {/* Plan banner */}

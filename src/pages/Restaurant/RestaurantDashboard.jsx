@@ -55,7 +55,7 @@ const RestaurantDashboard = () => {
           Back to Main Dashboard
         </Button>
 
-        {/* Zenith Header */}
+        {/* Restaurant Header */}
         <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography variant="h3" fontWeight="800" sx={{ 
@@ -68,7 +68,7 @@ const RestaurantDashboard = () => {
               Restaurant Engine
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 600 }}>
-              Seamlessly manage your POS, kitchen operations, and dynamic menus with Zenith hospitality infrastructure.
+              Seamlessly manage your POS, kitchen operations, and dynamic menus with ZenERP hospitality infrastructure.
             </Typography>
           </Box>
           
@@ -97,7 +97,7 @@ const RestaurantDashboard = () => {
           )}
         </Box>
 
-        {/* Custom Zenith Tabs */}
+        {/* Custom Restaurant Tabs */}
         <Box sx={{ mb: 4, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Tabs 
             value={tab} 

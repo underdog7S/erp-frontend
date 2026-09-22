@@ -47,7 +47,7 @@ const AdminEnhanced = () => {
     <Box sx={{ minHeight: '100vh', bgcolor: '#0f0c29', color: 'white', pt: 4, pb: 8, px: { xs: 2, md: 6 } }}>
       <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
         
-        {/* Zenith Header */}
+        {/* Admin Header */}
         <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography variant="h3" fontWeight="800" sx={{ 
@@ -60,7 +60,7 @@ const AdminEnhanced = () => {
               Master Control System
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 600 }}>
-              Global management panel for all tenants, users, and infrastructure configuration across the Zenith ERP ecosystem.
+              Global management panel for all tenants, users, and infrastructure configuration across the ZenERP ecosystem.
             </Typography>
           </Box>
           
@@ -89,7 +89,7 @@ const AdminEnhanced = () => {
           )}
         </Box>
 
-        {/* Custom Zenith Tabs */}
+        {/* Custom Admin Tabs */}
         <Box sx={{ mb: 4, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Tabs 
             value={tab} 

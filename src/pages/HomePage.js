@@ -49,7 +49,7 @@ const HomePage = () => {
       <SEO
         title="ZenVerse Tech Solutions - Full-Stack, AI & Cloud Agency"
         description="We ship websites, AI agents and custom dashboards for businesses that are tired of losing money to slow tech and manual work."
-        keywords="AI Agency, Full-Stack Development, Cloud Migration, Custom ERP, Tech Solutions, Zenith ERP"
+        keywords="AI Agency, Full-Stack Development, Cloud Migration, Custom ERP, Tech Solutions, ZenERP"
         url="https://zenitherp.online"
         type="website"
       />

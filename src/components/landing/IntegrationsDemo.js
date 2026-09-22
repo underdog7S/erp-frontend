@@ -35,7 +35,7 @@ const IntegrationsDemo = () => {
               Integrate Everything. Or <span style={{ color: '#00f2fe' }}>Demo Ours</span>.
             </Typography>
             <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 800, mx: 'auto', fontWeight: 400 }}>
-              Whether you want to seamlessly connect your existing tools like Zoho and Odoo, or you want to migrate to Zenith's proprietary autonomous ERP, we build the bridges that make your data flow instantly.
+              Whether you want to seamlessly connect your existing tools like Zoho and Odoo, or you want to migrate to our proprietary autonomous ZenERP platform, we build the bridges that make your data flow instantly.
             </Typography>
           </motion.div>
         </Box>
@@ -98,7 +98,7 @@ const IntegrationsDemo = () => {
                 }} />
                 
                 <Typography variant="h4" fontWeight={800} color="white" gutterBottom sx={{ position: 'relative', zIndex: 1 }}>
-                  See Zenith ERP in Action
+                  See ZenERP in Action
                 </Typography>
                 <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.7)', mb: 4, position: 'relative', zIndex: 1 }}>
                   Tired of clunky software? Request a live demo of our proprietary CRM and ERP modules. We'll show you exactly how our AI-powered dashboards can automate your specific industry workflows.

@@ -126,7 +126,7 @@ const Login = () => {
               WebkitTextFillColor: 'transparent',
               mb: 0.5
             }}>
-              Zenith Portal
+              ZenERP Portal
             </Typography>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }} textAlign="center">
               Authenticate to access your unified dashboard

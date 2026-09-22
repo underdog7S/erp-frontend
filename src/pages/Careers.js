@@ -1,14 +1,12 @@
 import React from 'react';
 import { Box, Typography, Container, Button } from '@mui/material';
-import Navigation from '../components/Navigation';
 
 const Careers = () => {
   return (
     <Box sx={{ bgcolor: '#050505', minHeight: '100vh', color: 'white' }}>
-      <Navigation />
       <Container sx={{ pt: 15, pb: 10, textAlign: 'center' }}>
         <Typography variant="h2" fontWeight={800} gutterBottom sx={{ color: '#00f2fe' }}>
-          Join Zenith
+          Join ZenVerse
         </Typography>
         <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.7)', mb: 4, maxWidth: 600, mx: 'auto' }}>
           We are always looking for talented engineers, designers, and innovators to build the future of autonomous ERP and CRM.

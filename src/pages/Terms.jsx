@@ -24,7 +24,7 @@ const Terms = () => {
       icon: <AccountIcon />,
       title: 'Account Registration & Usage',
       content: [
-        'By registering for Zenith ERP, you agree to provide accurate, current, and complete information during registration.',
+        'By registering for ZenERP, you agree to provide accurate, current, and complete information during registration.',
         'You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.',
         'You must be at least 18 years old to use our services or have parental consent if under 18.',
         'You agree to notify us immediately of any unauthorized use of your account or any other breach of security.',
@@ -52,7 +52,7 @@ const Terms = () => {
         'Scheduled maintenance will be announced in advance via email or in-app notifications.',
         'We reserve the right to suspend or terminate service for maintenance, security, or legal reasons.',
         'Your data is automatically backed up daily. We maintain backups for 30 days.',
-        'Zenith ERP is provided "as-is" without warranties of any kind, express or implied.',
+        'ZenERP is provided "as-is" without warranties of any kind, express or implied.',
         'We are not liable for any loss of data, revenue, or business opportunities resulting from service interruptions.'
       ]
     },
@@ -60,7 +60,7 @@ const Terms = () => {
       icon: <SecurityIcon />,
       title: 'Data & Security',
       content: [
-        'You retain full ownership of all data uploaded to Zenith ERP.',
+        'You retain full ownership of all data uploaded to ZenERP.',
         'We implement industry-standard security measures including encryption, firewalls, and access controls.',
         'You are responsible for ensuring your data complies with applicable laws and regulations.',
         'We will not access, use, or disclose your data except as necessary to provide services or as required by law.',
@@ -72,7 +72,7 @@ const Terms = () => {
       icon: <GavelIcon />,
       title: 'Acceptable Use Policy',
       content: [
-        'You may not use Zenith ERP for any illegal, harmful, or fraudulent activities.',
+        'You may not use ZenERP for any illegal, harmful, or fraudulent activities.',
         'You may not attempt to breach, hack, or disrupt our systems or services.',
         'You may not reverse engineer, decompile, or attempt to extract source code.',
         'You may not use automated tools to access our services without authorization (except official APIs).',
@@ -108,7 +108,7 @@ const Terms = () => {
             sx={{ mt: 2 }}
           />
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', mt: 3, lineHeight: 1.8 }}>
-            Please read these Terms and Conditions carefully before using Zenith ERP. By accessing or using our services, 
+            Please read these Terms and Conditions carefully before using ZenERP. By accessing or using our services,
             you agree to be bound by these terms. If you do not agree to these terms, please do not use our services.
           </Typography>
         </Box>
@@ -120,8 +120,8 @@ const Terms = () => {
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.95, lineHeight: 1.8 }}>
             These Terms and Conditions ("Terms") constitute a legally binding agreement between you ("User", "Customer", or "You") 
-            and Zenith ERP ("Company", "We", "Us", or "Our") governing your use of our cloud-based Enterprise Resource Planning (ERP) 
-            software services. By registering, accessing, or using Zenith ERP, you acknowledge that you have read, understood, and agree 
+            and ZenVerse Tech Solutions ("Company", "We", "Us", or "Our") governing your use of our cloud-based Enterprise Resource Planning (ERP)
+            software service, ZenERP. By registering, accessing, or using ZenERP, you acknowledge that you have read, understood, and agree
             to be bound by these Terms.
           </Typography>
         </Card>
@@ -161,7 +161,7 @@ const Terms = () => {
             Limitation of Liability
           </Typography>
           <Typography variant="body1" sx={{ lineHeight: 1.8, mb: 2 }}>
-            To the maximum extent permitted by law, Zenith ERP shall not be liable for any indirect, incidental, special, 
+            To the maximum extent permitted by law, ZenVerse Tech Solutions shall not be liable for any indirect, incidental, special,
             consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, 
             or any loss of data, use, goodwill, or other intangible losses resulting from your use of our services.
           </Typography>
@@ -183,7 +183,7 @@ const Terms = () => {
             Email: support@zenitherp.online
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
-            By using Zenith ERP, you acknowledge that you have read and understood these Terms and agree to be bound by them.
+            By using ZenERP, you acknowledge that you have read and understood these Terms and agree to be bound by them.
           </Typography>
         </Card>
       </Container>

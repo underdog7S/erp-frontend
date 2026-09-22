@@ -34,7 +34,7 @@ const RefundPolicy = () => {
             sx={{ mt: 2 }}
           />
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', mt: 3, lineHeight: 1.8 }}>
-            Zenith ERP offers flexible cancellation and refund options. We believe in fair policies that protect both our 
+            ZenERP offers flexible cancellation and refund options. We believe in fair policies that protect both our 
             customers and our business. Please read this policy carefully before making a purchase.
           </Typography>
         </Box>
@@ -45,7 +45,7 @@ const RefundPolicy = () => {
             30-Day Money-Back Guarantee
           </Typography>
           <Typography variant="body1">
-            We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied with Zenith ERP within the 
+            We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied with ZenERP within the 
             first 30 days of your subscription, contact us for a full refund - no questions asked.
           </Typography>
         </Alert>

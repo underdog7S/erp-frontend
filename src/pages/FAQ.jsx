@@ -50,26 +50,26 @@ const faqs = [
     { 
       id: 'gen1',
       category: 'general',
-      q: 'What is Zenith ERP?', 
-      a: 'Zenith ERP is a comprehensive, cloud-based Enterprise Resource Planning solution designed for businesses across six industries: Education, Pharmacy, Retail, Hotel, Restaurant, and Salon. It helps streamline operations, manage resources, and drive business growth with industry-specific modules and real-time analytics.' 
+      q: 'What is ZenERP?', 
+      a: 'ZenERP is a comprehensive, cloud-based Enterprise Resource Planning solution designed for businesses across six industries: Education, Pharmacy, Retail, Hotel, Restaurant, and Salon. It helps streamline operations, manage resources, and drive business growth with industry-specific modules and real-time analytics.' 
     },
     { 
       id: 'gen2',
       category: 'general',
-      q: 'Is Zenith ERP suitable for my business?', 
-      a: 'Yes! Zenith ERP is designed for small to large businesses across multiple industries. Whether you run a school, pharmacy, retail store, hotel, restaurant, or salon, we have specialized modules tailored to your industry needs. Our flexible plans scale with your business growth.' 
+      q: 'Is ZenERP suitable for my business?', 
+      a: 'Yes! ZenERP is designed for small to large businesses across multiple industries. Whether you run a school, pharmacy, retail store, hotel, restaurant, or salon, we have specialized modules tailored to your industry needs. Our flexible plans scale with your business growth.' 
     },
     { 
       id: 'gen3',
       category: 'general',
-      q: 'How many industries does Zenith ERP support?', 
-      a: 'Zenith ERP currently supports six industries: Education (25+ schools), Pharmacy (30+ pharmacies), Retail (50+ stores), Hotel (15+ hotels), Restaurant (40+ restaurants), and Salon (35+ salons). We continue to add more industry-specific modules based on customer needs.' 
+      q: 'How many industries does ZenERP support?', 
+      a: 'ZenERP currently supports six industries: Education (25+ schools), Pharmacy (30+ pharmacies), Retail (50+ stores), Hotel (15+ hotels), Restaurant (40+ restaurants), and Salon (35+ salons). We continue to add more industry-specific modules based on customer needs.' 
     },
     { 
       id: 'gen4',
       category: 'general',
-      q: 'Do I need technical knowledge to use Zenith ERP?', 
-      a: 'No! Zenith ERP is designed to be user-friendly and intuitive. Our interface is simple enough for non-technical users, while still offering powerful features for advanced users. We provide comprehensive documentation, video tutorials, and support to help you get started.' 
+      q: 'Do I need technical knowledge to use ZenERP?', 
+      a: 'No! ZenERP is designed to be user-friendly and intuitive. Our interface is simple enough for non-technical users, while still offering powerful features for advanced users. We provide comprehensive documentation, video tutorials, and support to help you get started.' 
     },
 
     // Pricing
@@ -114,14 +114,14 @@ const faqs = [
     { 
       id: 'feat2',
       category: 'features',
-      q: 'Can I access Zenith ERP on mobile devices?', 
-      a: 'Yes! Zenith ERP is fully responsive and works seamlessly on smartphones and tablets. You can access all features, view dashboards, manage inventory, process transactions, and more from any device with a web browser.' 
+      q: 'Can I access ZenERP on mobile devices?', 
+      a: 'Yes! ZenERP is fully responsive and works seamlessly on smartphones and tablets. You can access all features, view dashboards, manage inventory, process transactions, and more from any device with a web browser.' 
     },
     { 
       id: 'feat3',
       category: 'features',
-      q: 'Does Zenith ERP support API access?', 
-      a: 'API access is available on Starter, Pro, and Business plans. Our RESTful API allows you to integrate Zenith ERP with other systems, automate workflows, and build custom applications. API documentation is available for all API-enabled plans.' 
+      q: 'Does ZenERP support API access?', 
+      a: 'API access is available on Starter, Pro, and Business plans. Our RESTful API allows you to integrate ZenERP with other systems, automate workflows, and build custom applications. API documentation is available for all API-enabled plans.' 
     },
     { 
       id: 'feat4',
@@ -133,7 +133,7 @@ const faqs = [
       id: 'feat5',
       category: 'features',
       q: 'What kind of reports and analytics are available?', 
-      a: 'Zenith ERP provides comprehensive real-time analytics including: Revenue reports, Inventory reports, Sales trends, Customer analytics, Staff performance, Attendance reports, Financial summaries, and Custom report generation. Advanced analytics are available on Pro and Business plans.' 
+      a: 'ZenERP provides comprehensive real-time analytics including: Revenue reports, Inventory reports, Sales trends, Customer analytics, Staff performance, Attendance reports, Financial summaries, and Custom report generation. Advanced analytics are available on Pro and Business plans.' 
     },
 
     // Technical
@@ -159,7 +159,7 @@ const faqs = [
       id: 'tech4',
       category: 'technical',
       q: 'What browsers are supported?', 
-      a: 'Zenith ERP works on all modern browsers including Chrome, Firefox, Safari, Edge, and Opera. We recommend using the latest version of your preferred browser for the best experience. Mobile browsers are fully supported.' 
+      a: 'ZenERP works on all modern browsers including Chrome, Firefox, Safari, Edge, and Opera. We recommend using the latest version of your preferred browser for the best experience. Mobile browsers are fully supported.' 
     },
     { 
       id: 'tech5',
@@ -254,7 +254,7 @@ const faqs = [
             Frequently Asked Questions
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', mb: 4 }}>
-            Find answers to common questions about Zenith ERP. Can't find what you're looking for? Contact our support team.
+            Find answers to common questions about ZenERP. Can't find what you're looking for? Contact our support team.
           </Typography>
 
           {/* Search Bar */}

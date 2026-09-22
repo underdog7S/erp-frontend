@@ -278,7 +278,7 @@ export const PublicWhiteLabel = () => (
         <FeatureCard
           icon={<PaletteIcon sx={{ fontSize: 50 }} />}
           title="Your Logo & Colors"
-          desc="We replace all Zenith ERP branding with your logo, brand colors, and typography to ensure complete brand consistency."
+          desc="We replace all ZenVerse branding with your logo, brand colors, and typography to ensure complete brand consistency."
         />
         <FeatureCard
           icon={<DomainIcon sx={{ fontSize: 50 }} />}

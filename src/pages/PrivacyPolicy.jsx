@@ -73,7 +73,7 @@ const PrivacyPolicy = () => {
             sx={{ mt: 2 }}
           />
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', mt: 3, lineHeight: 1.8 }}>
-            At Zenith ERP, we are committed to protecting your privacy and ensuring the security of your personal and business data. 
+            At ZenVerse Tech Solutions, we are committed to protecting your privacy and ensuring the security of your personal and business data.
             This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services.
           </Typography>
         </Box>
@@ -84,7 +84,7 @@ const PrivacyPolicy = () => {
             Our Commitment to Your Privacy
           </Typography>
           <Typography variant="body1" sx={{ opacity: 0.95, lineHeight: 1.8 }}>
-            Zenith ERP ("we", "us", "our") respects your privacy and is committed to protecting your personal information. 
+            ZenVerse Tech Solutions ("we", "us", "our") respects your privacy and is committed to protecting your personal information.
             This policy applies to all users of our cloud-based ERP software services and describes how we collect, use, 
             and protect your information in accordance with applicable data protection laws.
           </Typography>

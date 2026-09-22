@@ -200,7 +200,7 @@ const About = () => {
 
   const tenantFeatures = [
     { icon: <PhoneIcon />, color: '#00f2fe', title: 'Dedicated Phone Number', desc: 'Each Starter/Pro subscriber receives their own Twilio virtual number for SMS and WhatsApp: no shared numbers, no confusion.' },
-    { icon: <EmailIcon />, color: '#4facfe', title: 'Custom Email Identity', desc: 'Send invoices and alerts from your own business email (for example, billing@yourschool.com), not a generic Zenith address.' },
+    { icon: <EmailIcon />, color: '#4facfe', title: 'Custom Email Identity', desc: 'Send invoices and alerts from your own business email (for example, billing@yourschool.com), not a generic ZenVerse address.' },
     { icon: <LockIcon />, color: '#b388ff', title: 'Isolated Data Store', desc: "Every tenant's records, files, and reports are completely isolated. No cross-tenant data leakage." },
     { icon: <ChartIcon />, color: '#00e676', title: 'Live Usage Dashboard', desc: 'Track your SMS, WhatsApp, AI tokens, and storage in real time from your admin dashboard.' },
     { icon: <AiIcon />, color: '#ffc107', title: 'AI-Powered Inbox', desc: 'The Omnichannel Inbox uses OpenAI to auto-suggest replies across WhatsApp, SMS, and email.' },
@@ -272,7 +272,7 @@ const About = () => {
               gutterBottom
               sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, textAlign: 'center' }}
             >
-              About Zenith ERP
+              About ZenVerse
             </Typography>
           </FadeInOnScroll>
           <FadeInOnScroll delay={1}>
@@ -411,7 +411,7 @@ const About = () => {
         <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
           <FadeInOnScroll delay={0}>
             <Typography variant="h3" component="h2" fontWeight={700} textAlign="center" gutterBottom sx={{ color: darkText.primary }}>
-              Why Choose Zenith ERP?
+              Why Choose ZenERP?
             </Typography>
             <Typography variant="h6" textAlign="center" sx={{ mb: 6, maxWidth: 700, mx: 'auto', color: darkText.muted }}>
               Enterprise-grade features designed to transform your business operations
@@ -576,7 +576,7 @@ const About = () => {
               Ready to Transform Your Business?
             </Typography>
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-              Join 500+ organizations already using Zenith ERP to streamline operations
+              Join 500+ organizations already using ZenERP to streamline operations
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
               <Button
@@ -638,10 +638,10 @@ const About = () => {
         <Container maxWidth="lg">
           <FadeInOnScroll delay={0}>
             <Typography variant="h4" fontWeight={800} textAlign="center" sx={{ color: darkText.primary, mb: 2 }}>
-              The SaaS Architecture Behind Zenith
+              The SaaS Architecture Behind ZenERP
             </Typography>
             <Typography variant="body1" textAlign="center" sx={{ color: darkText.muted, mb: 8, maxWidth: 700, mx: 'auto' }}>
-              Every business that subscribes to Zenith ERP gets a fully isolated, independently configurable environment. Here is what every tenant gets:
+              Every business that subscribes to ZenERP gets a fully isolated, independently configurable environment. Here is what every tenant gets:
             </Typography>
           </FadeInOnScroll>
           <Grid container spacing={4}>

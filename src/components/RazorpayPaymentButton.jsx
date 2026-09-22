@@ -76,7 +76,7 @@ const RazorpayPaymentButton = ({
         key: orderData.key_id,
         amount: orderData.amount,
         currency: orderData.currency || 'INR',
-        name: 'Zenith ERP',
+        name: 'ZenERP',
         description: description,
         order_id: orderData.order_id,
         handler: async function (response) {

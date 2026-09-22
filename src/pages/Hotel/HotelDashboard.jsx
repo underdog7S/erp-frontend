@@ -55,7 +55,7 @@ const HotelDashboard = () => {
           Back to Main Dashboard
         </Button>
 
-        {/* Zenith Header */}
+        {/* Hotel Header */}
         <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography variant="h3" fontWeight="800" sx={{ 
@@ -68,7 +68,7 @@ const HotelDashboard = () => {
               Hospitality Engine
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 600 }}>
-              Manage bookings, automate housekeeping, and monitor room inventory with Zenith hospitality infrastructure.
+              Manage bookings, automate housekeeping, and monitor room inventory with ZenERP hospitality infrastructure.
             </Typography>
           </Box>
           
@@ -97,7 +97,7 @@ const HotelDashboard = () => {
           )}
         </Box>
 
-        {/* Custom Zenith Tabs */}
+        {/* Custom Hotel Tabs */}
         <Box sx={{ mb: 4, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Tabs 
             value={tab} 

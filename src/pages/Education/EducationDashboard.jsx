@@ -158,7 +158,7 @@ const EducationDashboard = () => {
   const [recentPayments, setRecentPayments] = useState([]);
   const [recentReportCards, setRecentReportCards] = useState([]);
   const [overduePayments, setOverduePayments] = useState([]);
-  const [schoolName, setSchoolName] = useState('Zenith ERP System');
+  const [schoolName, setSchoolName] = useState('ZenERP System');
   const [currentUser, setCurrentUser] = useState(null);
   
   // Fee Structure states
@@ -270,7 +270,7 @@ const EducationDashboard = () => {
       setCurrentUser(response.data);
       
       // Get school name from tenant
-      const school = response.data.tenant || response.data.tenant_name || 'Zenith ERP System';
+      const school = response.data.tenant || response.data.tenant_name || 'ZenERP System';
       setSchoolName(school);
     } catch (error) {
       // Keep default value
@@ -1906,6 +1906,60 @@ const EducationDashboard = () => {
                 </Grid>
               </Box>
             )}
+
+      {/* Enterprise Modules Tab */}
+      {tabValue === 5 && (
+        <Grid container spacing={3}>
+          {/* Transport Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="primary.main" gutterBottom>
+                  🚌 Transport & Fleet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Manage bus routes, assign vehicles, and track student transport fees.
+                </Typography>
+                <Button variant="outlined" fullWidth onClick={() => alert('Transport Module Active - Link to sub-routes coming soon')}>
+                  Open Transport System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Library Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="secondary.main" gutterBottom>
+                  📚 Library Management
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Track book inventory, manage issuing to students, and calculate late fines.
+                </Typography>
+                <Button variant="outlined" color="secondary" fullWidth onClick={() => alert('Library Module Active - Link to sub-routes coming soon')}>
+                  Open Library System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          {/* Hostel Card */}
+          <Grid size={{ xs: 12, md: 4 }}>
+            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
+              <CardContent>
+                <Typography variant="h5" color="success.main" gutterBottom>
+                  🏢 Hostel & Dormitory
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Allocate rooms, manage wardens, and collect mess and dormitory fees.
+                </Typography>
+                <Button variant="outlined" color="success" fullWidth onClick={() => alert('Hostel Module Active - Link to sub-routes coming soon')}>
+                  Open Hostel System
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      )}
           </CardContent>
         </Card>
 
@@ -2190,63 +2244,6 @@ const EducationDashboard = () => {
           </Card>
         </Grid>
       </Grid>
-            )}
-        </CardContent>
-      </Card>
-
-      {/* Enterprise Modules Tab */}
-      {tabValue === 5 && (
-        <Grid container spacing={3}>
-          {/* Transport Card */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
-              <CardContent>
-                <Typography variant="h5" color="primary.main" gutterBottom>
-                  🚌 Transport & Fleet
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Manage bus routes, assign vehicles, and track student transport fees.
-                </Typography>
-                <Button variant="outlined" fullWidth onClick={() => alert('Transport Module Active - Link to sub-routes coming soon')}>
-                  Open Transport System
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-          {/* Library Card */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
-              <CardContent>
-                <Typography variant="h5" color="secondary.main" gutterBottom>
-                  📚 Library Management
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Track book inventory, manage issuing to students, and calculate late fines.
-                </Typography>
-                <Button variant="outlined" color="secondary" fullWidth onClick={() => alert('Library Module Active - Link to sub-routes coming soon')}>
-                  Open Library System
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-          {/* Hostel Card */}
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Card sx={{ height: '100%', bgcolor: 'rgba(20, 20, 30, 0.4)' }}>
-              <CardContent>
-                <Typography variant="h5" color="success.main" gutterBottom>
-                  🏢 Hostel & Dormitory
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Allocate rooms, manage wardens, and collect mess and dormitory fees.
-                </Typography>
-                <Button variant="outlined" color="success" fullWidth onClick={() => alert('Hostel Module Active - Link to sub-routes coming soon')}>
-                  Open Hostel System
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      )}
 
       {/* Add Student Dialog */}
       <Dialog open={addStudentDialog} onClose={() => setAddStudentDialog(false)} maxWidth="md" fullWidth>

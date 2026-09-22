@@ -4,6 +4,7 @@ import { register } from "../services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Card, CardContent, Typography, TextField, Button, Alert, Avatar, CircularProgress, MenuItem, Select, InputLabel, FormControl, Divider, Grid } from '@mui/material';
 import PricingModal from '../components/PricingModal';
+import Logo from '../components/Logo';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import GoogleIcon from '@mui/icons-material/Google';
 
@@ -185,16 +186,8 @@ const Register = () => {
         }}>
           <CardContent>
             <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
-              {/* Zenith Logo */}
-              <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="h3" fontWeight="800" sx={{ 
-                  background: '-webkit-linear-gradient(45deg, #00f2fe, #4facfe)', 
-                  WebkitBackgroundClip: 'text', 
-                  WebkitTextFillColor: 'transparent',
-                  letterSpacing: '-1px'
-                }}>
-                  Zenith
-                </Typography>
+              <Box sx={{ mb: 2 }}>
+                <Logo height={40} textVariant="h5" />
               </Box>
               <Typography variant="h5" fontWeight="600" gutterBottom>Create Your Account</Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }} textAlign="center">

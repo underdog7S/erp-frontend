@@ -66,7 +66,7 @@ const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
 const LoadingFallback = () => (
   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
     <CircularProgress size={60} thickness={4} />
-    <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>Loading Zenith Workspace...</Typography>
+    <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>Loading ZenVerse Workspace...</Typography>
   </Box>
 );
 

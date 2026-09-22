@@ -17,8 +17,8 @@ const faqs = [
     answer: "You get full access to a demo environment of the Zen Suite. You can explore the dashboards, test the POS, and see the analytics in real-time. No credit card is required to start your trial."
   },
   {
-    question: "Can Zenith integrate with our existing software?",
-    answer: "Absolutely. We specialize in seamless API integrations. We can bridge Zenith with your legacy systems, payment gateways (like Razorpay), WhatsApp, Telegram, and any other third-party tools you rely on."
+    question: "Can ZenVerse integrate with our existing software?",
+    answer: "Absolutely. We specialize in seamless API integrations. We can bridge ZenVerse with your legacy systems, payment gateways (like Razorpay), WhatsApp, Telegram, and any other third-party tools you rely on."
   }
 ];
 

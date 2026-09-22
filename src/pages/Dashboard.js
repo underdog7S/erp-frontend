@@ -272,7 +272,7 @@ const Dashboard = () => {
         </Typography>
         <Typography variant="h6" sx={{ opacity: 0.85, maxWidth: 600, position: 'relative', zIndex: 1, fontWeight: 300, lineHeight: 1.6 }}>
           You are currently logged into the {userIndustry || 'System'} control center.
-          Manage your operations, monitor revenue, and drive growth with Zenith technology.
+          Manage your operations, monitor revenue, and drive growth with ZenERP technology.
         </Typography>
       </Box>
 

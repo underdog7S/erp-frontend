@@ -57,7 +57,7 @@ const ServiceDeliveryPolicy = () => {
             sx={{ mt: 2 }}
           />
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', mt: 3, lineHeight: 1.8 }}>
-            This policy outlines how Zenith ERP delivers its cloud-based services to customers, including service availability, 
+            This policy outlines how ZenERP delivers its cloud-based services to customers, including service availability, 
             onboarding, support, and what you can expect from our service delivery.
           </Typography>
         </Box>
@@ -95,7 +95,7 @@ const ServiceDeliveryPolicy = () => {
                 Service Delivery Method
               </Typography>
               <Typography variant="body1" sx={{ lineHeight: 1.8 }}>
-                Zenith ERP is delivered as a cloud-based Software-as-a-Service (SaaS) platform. You can access the service 
+                ZenERP is delivered as a cloud-based Software-as-a-Service (SaaS) platform. You can access the service 
                 immediately through any web browser or mobile device with an internet connection. No software installation, 
                 downloads, or physical delivery is required.
               </Typography>

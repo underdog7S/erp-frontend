@@ -56,7 +56,7 @@ const Settings = () => {
           Settings
         </Typography>
         <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 6 }}>
-          Configure your Zenith ERP workspace, integrations, and security.
+          Configure your ZenERP workspace, integrations, and security.
         </Typography>
 
         <Grid container spacing={4}>

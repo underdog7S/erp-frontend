@@ -56,7 +56,7 @@ const SalonDashboard = () => {
           Back to Main Dashboard
         </Button>
 
-        {/* Zenith Header */}
+        {/* Salon Header */}
         <Box sx={{ mb: 5, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography variant="h3" fontWeight="800" sx={{ 
@@ -69,7 +69,7 @@ const SalonDashboard = () => {
               Salon Engine
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.6)', maxWidth: 600 }}>
-              Seamlessly manage your appointments, stylists, and service offerings with Zenith beauty infrastructure.
+              Seamlessly manage your appointments, stylists, and service offerings with ZenERP beauty infrastructure.
             </Typography>
           </Box>
           
@@ -98,7 +98,7 @@ const SalonDashboard = () => {
           )}
         </Box>
 
-        {/* Custom Zenith Tabs */}
+        {/* Custom Salon Tabs */}
         <Box sx={{ mb: 4, borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Tabs 
             value={tab} 
