@@ -7,15 +7,21 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import LanguageIcon from '@mui/icons-material/Language';
+import PaymentIcon from '@mui/icons-material/Payment';
 
-// Define the absolute coordinates for nodes (percentage based 0-100)
+// Define the absolute coordinates for nodes (percentage based 0-100).
+// 6 satellites on a hexagon around a center shifted to (45,50) - the outer
+// wrapper only shows inner x <~80% before overflow:hidden clips it (it's
+// offset "left: 35%, width: 80%" at the md breakpoint), so the hexagon is
+// pulled left and narrowed on the x-axis to keep every node fully visible.
 const nodes = {
-  erp: { x: 50, y: 50, label: 'Zen ERP & CRM', icon: <StorageIcon fontSize="large" />, color: '#00f2fe' },
-  app: { x: 50, y: 15, label: 'E-Commerce App', icon: <ShoppingCartIcon fontSize="large" />, color: '#b388ff' },
-  ai: { x: 85, y: 50, label: 'AI & WhatsApp', icon: <SmartToyIcon fontSize="large" />, color: '#00e676' },
-  data: { x: 50, y: 85, label: 'Data Analytics', icon: <BarChartIcon fontSize="large" />, color: '#fbc02d' },
+  erp: { x: 45, y: 50, label: 'Zen ERP & CRM', icon: <StorageIcon fontSize="large" />, color: '#00f2fe' },
+  app: { x: 58, y: 20, label: 'E-Commerce App', icon: <ShoppingCartIcon fontSize="large" />, color: '#b388ff' },
+  ai: { x: 71, y: 50, label: 'Omnichannel', icon: <SmartToyIcon fontSize="large" />, color: '#00e676' },
+  billing: { x: 58, y: 80, label: 'Billing & Plans', icon: <PaymentIcon fontSize="large" />, color: '#ff6ec7' },
+  data: { x: 30, y: 80, label: 'Data Analytics', icon: <BarChartIcon fontSize="large" />, color: '#fbc02d' },
   pos: { x: 15, y: 50, label: 'Retail POS', icon: <StorefrontIcon fontSize="large" />, color: '#ff9a9e' },
-  web: { x: 15, y: 15, label: 'Web Portal', icon: <LanguageIcon fontSize="large" />, color: '#4facfe' }
+  web: { x: 30, y: 20, label: 'Web Portal', icon: <LanguageIcon fontSize="large" />, color: '#4facfe' }
 };
 
 const sequence = [
@@ -24,7 +30,7 @@ const sequence = [
   { activeNode: null, popup: null, pulse: { from: 'app', to: 'erp' }, duration: 1000 },
   { activeNode: 'erp', popup: 'Inventory updated, Invoice generated', pulse: null, duration: 2000 },
   { activeNode: null, popup: null, pulse: { from: 'erp', to: 'ai' }, duration: 1000 },
-  { activeNode: 'ai', popup: 'WhatsApp Bot: "Order Shipped!"', pulse: null, duration: 2000 },
+  { activeNode: 'ai', popup: 'Omnichannel Inbox: "Order Shipped!" sent via WhatsApp', pulse: null, duration: 2000 },
   { activeNode: null, popup: null, pulse: null, duration: 1000 }, // Pause
 
   // Flow 2: Offline POS Sale
@@ -40,7 +46,15 @@ const sequence = [
   { activeNode: null, popup: null, pulse: { from: 'web', to: 'erp' }, duration: 1000 },
   { activeNode: 'erp', popup: 'CRM Pipeline auto-assigns Lead', pulse: null, duration: 2000 },
   { activeNode: null, popup: null, pulse: { from: 'erp', to: 'ai' }, duration: 1000 },
-  { activeNode: 'ai', popup: 'Telegram Alert: "New High Value Lead!"', pulse: null, duration: 2000 },
+  { activeNode: 'ai', popup: 'Omnichannel Inbox: "New High Value Lead!"', pulse: null, duration: 2000 },
+  { activeNode: null, popup: null, pulse: null, duration: 1000 }, // Pause
+
+  // Flow 4: Plan Upgrade
+  { activeNode: 'billing', popup: 'Tenant upgrades to Platform plan via Razorpay', pulse: null, duration: 1500 },
+  { activeNode: null, popup: null, pulse: { from: 'billing', to: 'erp' }, duration: 1000 },
+  { activeNode: 'erp', popup: 'SMS, WhatsApp & AI instantly unlocked', pulse: null, duration: 2000 },
+  { activeNode: null, popup: null, pulse: { from: 'erp', to: 'ai' }, duration: 1000 },
+  { activeNode: 'ai', popup: 'Omnichannel Inbox: "3 new conversations"', pulse: null, duration: 2000 },
   { activeNode: null, popup: null, pulse: null, duration: 1000 } // Loop restart
 ];
 

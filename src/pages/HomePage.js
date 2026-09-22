@@ -59,9 +59,9 @@ const HomePage = () => {
         <MegaNav onBookConsultation={handleBookConsultation} />
 
         {/* Hero Section with 3D Background */}
-        <Box id="top" sx={{ 
-          pt: { xs: 15, md: 18 }, 
-          pb: { xs: 10, md: 15 }, 
+        <Box id="top" sx={{
+          pt: { xs: 12, md: 12 },
+          pb: { xs: 10, md: 15 },
           position: 'relative',
           minHeight: { xs: '100vh', md: '90vh' },
           display: 'flex',
