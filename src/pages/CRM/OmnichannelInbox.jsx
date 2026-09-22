@@ -54,7 +54,7 @@ const OmnichannelInbox = () => {
     
     const fetchAssets = async () => {
       try {
-        const res = await api.get('/plan/feature-usage/');
+        const res = await api.get('/plans/saas-usage/');
         if(res.data.managed_assets) {
           setManagedAssets(res.data.managed_assets);
         }

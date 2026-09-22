@@ -60,7 +60,7 @@ const Integrations = () => {
     try {
       const [intResp, planResp] = await Promise.all([
         api.get('/settings/integrations/'),
-        api.get('/plan/feature-usage/')
+        api.get('/plans/saas-usage/')
       ]);
       setKeys(prev => ({ ...prev, ...intResp.data }));
       setPlanName(planResp.data?.plan?.toLowerCase() || '');
