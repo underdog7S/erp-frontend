@@ -148,7 +148,7 @@ const About = () => {
   };
 
   const stats = [
-    { value: 500, suffix: '+', label: 'Organizations', icon: <BusinessIcon />, color: '#1976d2' },
+    { value: 6, suffix: '', label: 'Industries', icon: <BusinessIcon />, color: '#1976d2' },
     { value: 99.9, suffix: '%', label: 'Uptime', icon: <TrendingUpIcon />, color: '#4caf50' },
     { value: 24, suffix: '/7', label: 'Support', icon: <PeopleIcon />, color: '#ff9800' },
     { value: 5, suffix: '.0', label: 'Rated', icon: <StarIcon />, color: '#9c27b0' }
@@ -576,7 +576,7 @@ const About = () => {
               Ready to Transform Your Business?
             </Typography>
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-              Join 500+ organizations already using ZenERP to streamline operations
+              Serving 6 industries already using ZenERP to streamline operations
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
               <Button
