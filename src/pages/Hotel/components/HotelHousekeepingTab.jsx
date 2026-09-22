@@ -21,12 +21,12 @@ const HotelHousekeepingTab = () => {
 
   useEffect(() => { fetchTasks(); }, []);
 
-  const handleMarkClean = async (roomId) => {
+  const handleMarkClean = async (taskId) => {
     try {
-      await api.put(`/hotel/rooms/${roomId}/`, { status: 'CLEAN' });
+      await api.post(`/hotel/housekeeping/${taskId}/complete/`);
       fetchTasks();
     } catch {
-      alert('Failed to update room status.');
+      alert('Failed to mark task complete.');
     }
   };
 
@@ -46,11 +46,12 @@ const HotelHousekeepingTab = () => {
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                     <Typography variant="h6">Room {task.room_number}</Typography>
-                    <Chip label="DIRTY" sx={{ bgcolor: 'rgba(255, 152, 0, 0.2)', color: '#ff9800' }} />
+                    <Chip label={task.status === 'in_progress' ? 'IN PROGRESS' : 'PENDING'} sx={{ bgcolor: 'rgba(255, 152, 0, 0.2)', color: '#ff9800' }} />
                   </Box>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 2 }}>Guest checked out at {task.checkout_time || 'N/A'}</Typography>
-                  
-                  <Button variant="contained" color="success" fullWidth onClick={() => handleMarkClean(task.room_id)}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mb: 1 }}>{task.task_type}</Typography>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', mb: 2 }}>Queued at {task.created_at ? new Date(task.created_at).toLocaleString() : 'N/A'}</Typography>
+
+                  <Button variant="contained" color="success" fullWidth onClick={() => handleMarkClean(task.id)}>
                     Mark as Clean
                   </Button>
                 </CardContent>
