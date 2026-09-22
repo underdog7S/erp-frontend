@@ -8,8 +8,10 @@ const Logo = ({ height = 32, showText = true, textColor = 'white', textVariant =
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
     <Box
       component="img"
-      src="/assets/logo/zenverse-logo.png"
+      src="/assets/logo/zenverse-logo.webp"
       alt="ZenVerse"
+      width={487}
+      height={240}
       sx={{ height, width: 'auto', display: 'block' }}
     />
     {showText && (

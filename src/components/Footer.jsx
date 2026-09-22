@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Logo from './Logo';
@@ -12,6 +12,31 @@ const PROVIDE_LINKS = {
 
 const Footer = () => {
   const navigate = useNavigate();
+  const videoWrapRef = useRef(null);
+  const [videoVisible, setVideoVisible] = useState(false);
+
+  // The footer sits below the fold on every page - loading and decoding its
+  // video immediately would compete with the page's actual above-the-fold
+  // content for bandwidth on first load. Only fetch/play it once it's about
+  // to scroll into view.
+  useEffect(() => {
+    const node = videoWrapRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') {
+      setVideoVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVideoVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -25,12 +50,34 @@ const Footer = () => {
       <Container maxWidth="lg">
         <Grid container spacing={4} sx={{ mb: 6 }}>
           <Grid item xs={12} md={4}>
-            <Box sx={{ mb: 2 }}>
-              <Logo height={28} textVariant="h5" />
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+              <Box
+                ref={videoWrapRef}
+                sx={{ width: 72, height: 72, borderRadius: 2, overflow: 'hidden', flexShrink: 0, bgcolor: '#000' }}
+              >
+                {videoVisible && (
+                  <Box
+                    component="video"
+                    src="/assets/media/footer-loop.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="none"
+                    aria-hidden="true"
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                )}
+              </Box>
+              <Box>
+                <Box sx={{ mb: 2 }}>
+                  <Logo height={28} textVariant="h5" />
+                </Box>
+                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
+                  We provide custom apps, web applications, and tailored ERP and CRM systems to transform your business operations into an autonomous powerhouse.
+                </Typography>
+              </Box>
             </Box>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
-              We provide custom apps, web applications, and tailored ERP and CRM systems to transform your business operations into an autonomous powerhouse.
-            </Typography>
           </Grid>
           <Grid item xs={6} md={2}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>What We Provide</Typography>
