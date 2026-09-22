@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, Box, Typography, TextField, Button,
   CircularProgress, IconButton, Grid, Alert, Chip
@@ -10,9 +10,11 @@ import {
   Web as WebIcon,
   Smartphone as AppIcon,
   Code as CodeIcon,
-  Videocam as MeetIcon
+  Videocam as MeetIcon,
+  ArrowForward as ArrowIcon
 } from '@mui/icons-material';
 import { submitCustomServiceRequest } from '../../services/api';
+import GoogleBookingEmbed from './GoogleBookingEmbed';
 
 const SERVICE_OPTIONS = [
   { value: 'customization', label: 'ERP customization', icon: <SettingsIcon />, hint: 'Tailor Zenith to your workflow' },
@@ -23,109 +25,31 @@ const SERVICE_OPTIONS = [
 
 const TOPIC_CHIPS = ['Retail / POS', 'Education', 'Pharmacy', 'Hotel', 'CRM & leads', 'Integrations'];
 
-const TIME_SLOTS = [
-  '10:00', '10:30', '11:00', '11:30', '12:00', '12:30',
-  '13:00', '13:30', '14:00', '14:30', '15:00', '15:30',
-  '16:00', '16:30', '17:00', '17:30'
-];
-
 const emptyForm = {
   service_type: '',
   name: '',
   email: '',
   phone: '',
   company_name: '',
-  description: '',
-  appointment_date: '',
-  appointment_time: ''
+  description: ''
 };
 
-const istParts = (date = new Date()) => {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Kolkata',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    weekday: 'short'
-  }).formatToParts(date);
-  const get = (type) => parts.find((part) => part.type === type)?.value;
-  return {
-    iso: `${get('year')}-${get('month')}-${get('day')}`,
-    weekday: get('weekday'),
-    day: Number(get('day')),
-    month: get('month')
-  };
-};
-
-const addDaysIso = (iso, days) => {
-  const [y, m, d] = iso.split('-').map(Number);
-  const utc = Date.UTC(y, m - 1, d + days, 6, 30);
-  return istParts(new Date(utc));
-};
-
-const monthLabel = (iso) => new Intl.DateTimeFormat('en-IN', {
-  timeZone: 'Asia/Kolkata',
-  month: 'long',
-  year: 'numeric'
-}).format(new Date(`${iso}T12:00:00+05:30`));
-
-const slotDateTime = (date, time) => new Date(`${date}T${time}:00+05:30`);
-
-const formatSlot = (date, time) => new Intl.DateTimeFormat('en-IN', {
-  timeZone: 'Asia/Kolkata',
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  hour: 'numeric',
-  minute: '2-digit'
-}).format(slotDateTime(date, time));
-
-const formatTimeChip = (time) => {
-  const [h, min] = time.split(':').map(Number);
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  const hour = ((h + 11) % 12) + 1;
-  return `${hour}:${min.toString().padStart(2, '0')} ${suffix}`;
-};
-
+// Two steps, two systems: Step 1 saves the lead in our own CRM (so your team
+// has it even if the person never finishes booking) via `description`.
+// Step 2 hands off to the REAL Google Calendar Appointment Schedule
+// (GoogleBookingEmbed / utils/expertBooking.js) so the actual time slot,
+// calendar event, Google Meet link, and confirmation email are all created
+// by Google - not simulated by a custom picker that could show a "free"
+// slot that isn't actually free on the calendar.
 const CustomServiceFormDialog = ({ open, onClose }) => {
   const [formData, setFormData] = useState(emptyForm);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [bookedSlot, setBookedSlot] = useState('');
-  const [weekStart, setWeekStart] = useState(istParts().iso);
-
-  const today = istParts().iso;
-
-  const days = useMemo(
-    () => Array.from({ length: 7 }, (_, index) => addDaysIso(weekStart, index)),
-    [weekStart]
-  );
-
-  const availableTimes = useMemo(() => {
-    if (!formData.appointment_date) return [];
-    return TIME_SLOTS.filter((time) => slotDateTime(formData.appointment_date, time).getTime() > Date.now() + 30 * 60 * 1000);
-  }, [formData.appointment_date]);
-
-  const canGoBack = weekStart > today;
-  const canGoForward = addDaysIso(weekStart, 7).iso <= addDaysIso(today, 21).iso;
-
-  const canBook = Boolean(
-    formData.service_type &&
-    formData.name.trim() &&
-    formData.email.trim() &&
-    formData.appointment_date &&
-    formData.appointment_time &&
-    availableTimes.includes(formData.appointment_time)
-  );
+  const [step, setStep] = useState('details'); // 'details' | 'schedule'
 
   const setField = (name, value) => {
-    setFormData((prev) => {
-      const next = { ...prev, [name]: value };
-      if (name === 'appointment_date') next.appointment_time = '';
-      return next;
-    });
-    setErrors((prev) => ({ ...prev, [name]: '', appointment: '' }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
   const toggleTopic = (topic) => {
@@ -144,19 +68,15 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     if (!formData.name.trim()) nextErrors.name = 'Name is required';
     if (!formData.email.trim()) nextErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) nextErrors.email = 'Enter a valid email';
-    if (!formData.appointment_date || !formData.appointment_time) {
-      nextErrors.appointment = 'Select a date and a time slot to book';
-    }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleBook = async (event) => {
+  const handleContinue = async (event) => {
     event.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
-    const slotLabel = formatSlot(formData.appointment_date, formData.appointment_time);
     try {
       await submitCustomServiceRequest({
         service_type: formData.service_type,
@@ -165,12 +85,11 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
         phone: formData.phone.trim(),
         company_name: formData.company_name.trim(),
         description: formData.description.trim() || 'Free 30-minute consultation requested.',
-        timeline: `Appointment: ${slotLabel} (IST)`
+        timeline: 'Picking exact time via Google Calendar'
       });
-      setBookedSlot(slotLabel);
-      setSuccess(true);
+      setStep('schedule');
     } catch (error) {
-      setErrors({ submit: error.response?.data?.errors || 'Could not book this consultation. Please try again.' });
+      setErrors({ submit: error.response?.data?.errors || 'Could not save your request. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -181,9 +100,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
     setFormData(emptyForm);
     setErrors({});
     setLoading(false);
-    setSuccess(false);
-    setBookedSlot('');
-    setWeekStart(istParts().iso);
+    setStep('details');
   }, [open]);
 
   const selectedTopics = formData.description.split(',').map((item) => item.trim()).filter(Boolean);
@@ -227,17 +144,19 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
         },
         '& .MuiInputLabel-root': { color: 'rgba(226, 232, 240, 0.8)' },
       }}>
-        {success ? (
-          <Box sx={{ textAlign: 'center', py: 5 }}>
-            <BookIcon sx={{ fontSize: 72, color: '#00e676', mb: 2 }} />
-            <Typography variant="h6" fontWeight={800} gutterBottom>You are booked</Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.8)', mb: 3 }}>
-              {bookedSlot} IST. A Google Meet link will be sent to {formData.email}.
-            </Typography>
-            <Button variant="contained" onClick={onClose}>Done</Button>
+        {step === 'schedule' ? (
+          <Box>
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Thanks {formData.name.split(' ')[0] || 'there'} — we've saved your request. Pick your exact time
+              below and Google will email a Meet invite to {formData.email}.
+            </Alert>
+            <GoogleBookingEmbed height={620} />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Button variant="contained" onClick={onClose}>Done</Button>
+            </Box>
           </Box>
         ) : (
-          <Box component="form" onSubmit={handleBook}>
+          <Box component="form" onSubmit={handleContinue}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={5}>
                 <Typography variant="subtitle2" sx={{ color: '#00f2fe', mb: 1.5, letterSpacing: 1 }}>WHAT DO YOU NEED?</Typography>
@@ -289,71 +208,7 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
               </Grid>
 
               <Grid item xs={12} md={7}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-                  <Typography variant="subtitle2" sx={{ color: '#00f2fe', letterSpacing: 1 }}>PICK A SLOT</Typography>
-                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Button size="small" disabled={!canGoBack} onClick={() => setWeekStart(addDaysIso(weekStart, -7).iso)} sx={{ minWidth: 36, color: 'white' }}>{'‹'}</Button>
-                    <Typography variant="body2" sx={{ minWidth: 130, textAlign: 'center' }}>{monthLabel(weekStart)}</Typography>
-                    <Button size="small" disabled={!canGoForward} onClick={() => setWeekStart(addDaysIso(weekStart, 7).iso)} sx={{ minWidth: 36, color: 'white' }}>{'›'}</Button>
-                  </Box>
-                </Box>
-
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.8, mb: 2 }}>
-                  {days.map((day) => {
-                    const selected = formData.appointment_date === day.iso;
-                    const isPast = day.iso < today;
-                    return (
-                      <Box
-                        key={day.iso}
-                        onClick={() => !isPast && setField('appointment_date', day.iso)}
-                        sx={{
-                          py: 1.2,
-                          textAlign: 'center',
-                          borderRadius: 2,
-                          cursor: isPast ? 'not-allowed' : 'pointer',
-                          opacity: isPast ? 0.35 : 1,
-                          border: selected ? '2px solid #00f2fe' : '1px solid rgba(255,255,255,0.1)',
-                          bgcolor: selected ? 'rgba(0,242,254,0.16)' : 'rgba(255,255,255,0.03)',
-                          '&:hover': isPast ? {} : { borderColor: '#4facfe' }
-                        }}
-                      >
-                        <Typography variant="caption" sx={{ display: 'block', color: 'rgba(255,255,255,0.55)' }}>{day.weekday}</Typography>
-                        <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.1 }}>{day.day}</Typography>
-                      </Box>
-                    );
-                  })}
-                </Box>
-
-                {!formData.appointment_date ? (
-                  <Box sx={{ p: 3, borderRadius: 2, border: '1px dashed rgba(255,255,255,0.2)', textAlign: 'center', color: 'rgba(255,255,255,0.55)' }}>
-                    Tap a date to see open 30-minute times
-                  </Box>
-                ) : availableTimes.length === 0 ? (
-                  <Alert severity="info">No remaining slots on this date. Pick another day.</Alert>
-                ) : (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {availableTimes.map((time) => {
-                      const selected = formData.appointment_time === time;
-                      return (
-                        <Chip
-                          key={time}
-                          clickable
-                          label={formatTimeChip(time)}
-                          onClick={() => setField('appointment_time', time)}
-                          sx={{
-                            fontWeight: 700,
-                            bgcolor: selected ? '#00f2fe' : 'rgba(255,255,255,0.08)',
-                            color: selected ? '#041016' : 'white',
-                            '&:hover': { bgcolor: selected ? '#4facfe' : 'rgba(0,242,254,0.2)' }
-                          }}
-                        />
-                      );
-                    })}
-                  </Box>
-                )}
-                {errors.appointment && <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>{errors.appointment}</Typography>}
-
-                <Typography variant="subtitle2" sx={{ color: '#00f2fe', letterSpacing: 1, mt: 3, mb: 1 }}>WHAT SHOULD WE COVER?</Typography>
+                <Typography variant="subtitle2" sx={{ color: '#00f2fe', letterSpacing: 1, mb: 1.5 }}>WHAT SHOULD WE COVER?</Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1.5 }}>
                   {TOPIC_CHIPS.map((topic) => (
                     <Chip
@@ -377,7 +232,31 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                   placeholder="Anything else we should prepare for the call?"
                   value={formData.description}
                   onChange={(e) => setField('description', e.target.value)}
+                  sx={{ mb: 3 }}
                 />
+
+                <Box sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(0,242,254,0.08)',
+                  border: '1px solid rgba(0,242,254,0.2)'
+                }}>
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)', mb: 1.5 }}>
+                    Next you'll pick your exact time on our live Google Calendar — nothing here reserves a slot yet.
+                  </Typography>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    disabled={loading}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <BookIcon />}
+                    endIcon={!loading && <ArrowIcon />}
+                    sx={{ fontWeight: 800 }}
+                  >
+                    {loading ? 'Saving…' : 'Continue to pick a time'}
+                  </Button>
+                </Box>
               </Grid>
 
               {errors.submit && (
@@ -385,36 +264,6 @@ const CustomServiceFormDialog = ({ open, onClose }) => {
                   <Alert severity="error">{String(errors.submit)}</Alert>
                 </Grid>
               )}
-
-              <Grid item xs={12}>
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: { xs: 'column', sm: 'row' },
-                  gap: 2,
-                  alignItems: { sm: 'center' },
-                  justifyContent: 'space-between',
-                  p: 2,
-                  borderRadius: 2,
-                  bgcolor: 'rgba(0,242,254,0.08)',
-                  border: '1px solid rgba(0,242,254,0.2)'
-                }}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }}>
-                    {formData.appointment_date && formData.appointment_time
-                      ? `Selected: ${formatSlot(formData.appointment_date, formData.appointment_time)} IST`
-                      : 'Select a date and time to enable booking'}
-                  </Typography>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    disabled={!canBook || loading}
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <BookIcon />}
-                    sx={{ fontWeight: 800, px: 4, whiteSpace: 'nowrap' }}
-                  >
-                    {loading ? 'Booking…' : 'Book consultation'}
-                  </Button>
-                </Box>
-              </Grid>
             </Grid>
           </Box>
         )}
