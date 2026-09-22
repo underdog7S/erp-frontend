@@ -58,22 +58,22 @@ const Payment = () => {
     
     try {
       // 1. Create order on backend using Platform Keys
-      const orderResponse = await api.post('/payments/create-order/', {
+      const orderResponse = await api.post('/payments/razorpay/order/', {
         amount: displayAmount,
         currency: 'INR',
         receipt: `saas_upgrade_${plan}`
       });
 
-      const { order_id, amount: orderAmount, currency } = orderResponse.data;
+      const { order } = orderResponse.data;
 
       // 2. Open Razorpay Widget
       const options = {
         key: RAZORPAY_KEY_ID,
-        amount: orderAmount,
-        currency: currency,
+        amount: order.amount,
+        currency: order.currency,
         name: 'ZenVerse SaaS',
         description: `Upgrade to ${plan} Plan`,
-        order_id: order_id,
+        order_id: order.id,
         prefill: {
           name: userInfo?.first_name || userInfo?.username || '',
           email: userInfo?.email || ''
@@ -83,21 +83,21 @@ const Payment = () => {
         },
         handler: async function (response) {
           try {
-            await api.post('/payments/verify-payment/', {
+            // Verifying with `plan` included activates the plan and stores
+            // the transaction in one step (see RazorpayPaymentVerifyView).
+            await api.post('/payments/razorpay/verify/', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature
+              razorpay_signature: response.razorpay_signature,
+              plan: plan.toLowerCase()
             });
-            
-            // Apply SaaS Upgrade via Plan API
-            await api.post('/plan/change/', { plan: plan.toLowerCase() });
-            
+
             setSuccess('Payment successful! Your tenant has been upgraded.');
             setTimeout(() => {
               navigate('/dashboard');
             }, 3000);
           } catch (err) {
-            setError('Payment verification failed.');
+            setError(err.response?.data?.error || 'Payment verification failed.');
           }
         }
       };
