@@ -194,6 +194,16 @@ const Login = () => {
               InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.6)' } }}
               sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: '#00f2fe' } } }}
             />
+            <Box textAlign="right" mt={0.5}>
+              <Link
+                to="/forgot-password"
+                style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', textDecoration: 'none' }}
+                onMouseEnter={(e) => e.target.style.color = '#00f2fe'}
+                onMouseLeave={(e) => e.target.style.color = 'rgba(255,255,255,0.5)'}
+              >
+                Forgot password?
+              </Link>
+            </Box>
             {error && <Alert severity="error" sx={{ mt: 2, bgcolor: 'rgba(211, 47, 47, 0.1)', color: '#ff5252', border: '1px solid rgba(211, 47, 47, 0.3)' }}>{error}</Alert>}
             <Button
               type="submit"

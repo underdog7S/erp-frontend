@@ -7,6 +7,8 @@ import { ThemeContextProvider } from './contexts/ThemeContext';
 import { SidebarProvider, useSidebar } from './contexts/SidebarContext';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Navigation from "./components/Navigation";
 import { PublicERP, PublicCRM, PublicApp, PublicWeb, PublicConsult, PublicWhiteLabel } from './pages/PublicPages';
 
@@ -126,6 +128,8 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/google" element={<RegistrationForm googleUser={JSON.parse(localStorage.getItem('googleUser') || '{}')} />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                     <Route path="/admin" element={<ProtectedAdminRoute><AdminEnhanced /></ProtectedAdminRoute>} />
                     <Route path="/admin/public-settings" element={<ProtectedAdminRoute><AdminPublicSettings /></ProtectedAdminRoute>} />
