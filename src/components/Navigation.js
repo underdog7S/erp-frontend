@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../services/api";
 import { useSidebar } from "../contexts/SidebarContext";
 import MegaNav from "./landing/MegaNav";
+import Logo from "./Logo";
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
@@ -778,15 +779,7 @@ const Navigation = () => {
   const drawer = (
     <Box sx={{ width: 280, height: '100%', bgcolor: 'background.paper' }}>
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-        
-        <Typography variant="h6" fontWeight={900} sx={{ 
-          letterSpacing: -0.5,
-          background: 'linear-gradient(90deg, #00f2fe, #4facfe)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          ZV | ZenVerse
-        </Typography>
+        <Logo height={28} textVariant="h6" textColor="text.primary" />
       </Box>
       
       {user && (
@@ -1226,35 +1219,9 @@ const Navigation = () => {
           />
           
           
-          {!isMobile && (
-            <Typography 
-              className="logo-text"
-              variant="h6" 
-              component="div" 
-              sx={{ 
-                fontWeight: 700,
-                background: 'linear-gradient(90deg, #00f2fe, #4facfe)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                display: { xs: 'none', sm: 'block' },
-                transition: 'all 0.3s ease',
-                position: 'relative',
-                zIndex: 1,
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: -2,
-                  left: 0,
-                  width: 0,
-                  height: 2,
-                  bgcolor: '#ffa726',
-                  transition: 'width 0.3s ease'
-                }
-              }}
-            >
-              ZV | ZenVerse
-            </Typography>
-          )}
+          <Box className="logo-image" sx={{ display: { xs: 'flex', sm: 'flex' }, transition: 'all 0.3s ease', position: 'relative', zIndex: 1 }}>
+            <Logo height={28} showText={!isMobile} textVariant="h6" />
+          </Box>
         </Box>
 
         {/* Desktop Navigation Links - Animated - Only show for public pages */}

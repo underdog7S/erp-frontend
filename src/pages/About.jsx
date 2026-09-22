@@ -33,6 +33,8 @@ import {
   Flag as FlagIcon,
   Handshake as HandshakeIcon,
   Public as PublicIcon,
+  LinkedIn as LinkedInIcon,
+  OpenInNew as OpenInNewIcon,
   PhoneIphone as PhoneIcon,
   AlternateEmail as EmailIcon,
   BarChart as ChartIcon,
@@ -218,6 +220,35 @@ const About = () => {
     { name: 'Twilio', role: 'SMS and WhatsApp', icon: <PhoneIcon /> },
     { name: 'OpenAI', role: 'AI Intelligence', icon: <AiIcon /> },
     { name: 'Razorpay', role: 'Payments', icon: <PaymentIcon /> }
+  ];
+
+  const team = [
+    { name: 'Shadab Sheikh', role: 'Lead Developer', linkedin: 'https://www.linkedin.com/in/shadab-sheikh-7439ba220/', color: '#00f2fe' },
+    { name: 'Alfiya Sheikh', role: 'Product Owner', linkedin: null, color: '#4facfe' },
+    { name: 'Deepti M.', role: 'Assistant Manager', linkedin: null, color: '#b388ff' },
+    { name: 'Sagar G.', role: 'Software Developer', linkedin: null, color: '#00e676' },
+    { name: 'Amit S.', role: 'Developer', linkedin: null, color: '#ffa726' }
+  ];
+
+  const portfolio = [
+    {
+      name: 'Indian Heritage Spices',
+      url: 'https://indianheritagespices.com',
+      industry: 'E-commerce',
+      description: 'Full online store for 100% organic Kerala spices — product catalog, cart & checkout, a referral/loyalty program, and a wholesale-distributor application flow.'
+    },
+    {
+      name: 'GM Hospital',
+      url: 'https://mygmhospital.com',
+      industry: 'Healthcare',
+      description: 'Hospital website built around their Urology specialty, with service pages and patient-facing content.'
+    },
+    {
+      name: 'Kerala Cafe',
+      url: 'https://keralacafe.co',
+      industry: 'Hospitality',
+      description: 'Editorial-style restaurant brand site telling the story of South Indian food and culture through photography.'
+    }
   ];
 
   const consultButtonSx = {
@@ -456,6 +487,95 @@ const About = () => {
                     <Typography variant="body2" sx={{ color: darkText.muted }}>
                       {value.description}
                     </Typography>
+                  </LandingCard>
+                </FadeInOnScroll>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      <Box sx={{ background: darkSurface.sectionAlt, py: 8 }}>
+        <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
+          <FadeInOnScroll delay={0}>
+            <Typography variant="h3" component="h2" fontWeight={700} textAlign="center" gutterBottom sx={{ color: darkText.primary }}>
+              Our Work
+            </Typography>
+            <Typography variant="h6" textAlign="center" sx={{ mb: 6, maxWidth: 700, mx: 'auto', color: darkText.muted }}>
+              Real, live projects we've built and shipped — not mockups.
+            </Typography>
+          </FadeInOnScroll>
+          <Grid container spacing={4}>
+            {portfolio.map((project, index) => (
+              <Grid item xs={12} md={4} key={project.name}>
+                <FadeInOnScroll delay={index + 1}>
+                  <LandingCard sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <Chip
+                      label={project.industry}
+                      size="small"
+                      sx={{ alignSelf: 'flex-start', mb: 2, bgcolor: 'rgba(0,242,254,0.12)', color: '#00f2fe', fontWeight: 600 }}
+                    />
+                    <Typography variant="h6" fontWeight={700} sx={{ color: darkText.primary, mb: 1 }}>
+                      {project.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: darkText.muted, lineHeight: 1.8, mb: 3, flexGrow: 1 }}>
+                      {project.description}
+                    </Typography>
+                    <Button
+                      component="a"
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      endIcon={<OpenInNewIcon fontSize="small" />}
+                      sx={{ alignSelf: 'flex-start', color: '#00f2fe', textTransform: 'none', fontWeight: 600, p: 0, '&:hover': { bgcolor: 'transparent', color: '#4facfe' } }}
+                    >
+                      Visit site
+                    </Button>
+                  </LandingCard>
+                </FadeInOnScroll>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      <Box sx={{ background: darkSurface.page, py: 8 }}>
+        <Container maxWidth={{ xs: '100%', sm: '600px', md: '960px', lg: '1280px', xl: '1400px' }}>
+          <FadeInOnScroll delay={0}>
+            <Typography variant="h3" component="h2" fontWeight={700} textAlign="center" gutterBottom sx={{ color: darkText.primary }}>
+              Meet the Team
+            </Typography>
+            <Typography variant="h6" textAlign="center" sx={{ mb: 6, maxWidth: 700, mx: 'auto', color: darkText.muted }}>
+              The people building and running ZenVerse day to day.
+            </Typography>
+          </FadeInOnScroll>
+          <Grid container spacing={3} justifyContent="center">
+            {team.map((member, index) => (
+              <Grid item xs={12} sm={6} md={2.4} key={member.name}>
+                <FadeInOnScroll delay={index + 1}>
+                  <LandingCard sx={{ p: 3, textAlign: 'center', height: '100%' }}>
+                    <Avatar sx={{ bgcolor: `${member.color}22`, color: member.color, width: 64, height: 64, mx: 'auto', mb: 2, fontSize: '1.5rem', fontWeight: 700 }}>
+                      {member.name.split(' ').map((part) => part[0]).slice(0, 2).join('')}
+                    </Avatar>
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ color: darkText.primary }}>
+                      {member.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: darkText.muted, mb: member.linkedin ? 1 : 0 }}>
+                      {member.role}
+                    </Typography>
+                    {member.linkedin && (
+                      <Button
+                        component="a"
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        startIcon={<LinkedInIcon fontSize="small" />}
+                        size="small"
+                        sx={{ color: '#4facfe', textTransform: 'none', mt: 0.5 }}
+                      >
+                        LinkedIn
+                      </Button>
+                    )}
                   </LandingCard>
                 </FadeInOnScroll>
               </Grid>

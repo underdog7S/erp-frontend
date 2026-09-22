@@ -63,8 +63,16 @@ const Footer = () => {
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => window.location.href='mailto:heritageclouds@gmail.com'}>heritageclouds@gmail.com</Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)' }}>Pune, India</Typography>
               <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>LinkedIn</Typography>
-                <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}>Twitter</Typography>
+                <Typography
+                  component="a"
+                  href="https://www.linkedin.com/company/zenversesols/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="body2"
+                  sx={{ color: 'rgba(255,255,255,0.5)', textDecoration: 'none', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }}
+                >
+                  LinkedIn
+                </Typography>
               </Box>
             </Box>
           </Grid>
