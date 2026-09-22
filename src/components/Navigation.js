@@ -74,6 +74,7 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import BrushIcon from '@mui/icons-material/Brush';
 import SpaIcon from '@mui/icons-material/Spa';
 import SettingsIcon from '@mui/icons-material/Settings';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
@@ -109,6 +110,7 @@ const MODULE_DEFINITIONS = {
         { label: 'Marks Entry', to: '/education?tab=9', icon: <GradeIcon fontSize="small" /> },
         { label: 'Report Cards', to: '/education?tab=10', icon: <AssessmentIcon fontSize="small" /> },
         { label: 'Exam Management', to: '/education/exams', icon: <AssignmentIcon fontSize="small" /> },
+        { label: 'Advanced Reporting', to: '/education/reports', icon: <BarChartIcon fontSize="small" /> },
       ],
     },
     {
@@ -534,8 +536,10 @@ const Navigation = () => {
   ] : [];
 
   const adminItems = (user && hasPermission(user, PERMISSIONS.MANAGE_USERS)) ? [
+    { label: "Settings Hub", to: "/settings", icon: <SettingsIcon fontSize="small" /> },
     { label: "Admin Console", to: "/admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
     { label: "SaaS Billing & Add-ons", to: "/settings/billing", icon: <MonetizationOnIcon fontSize="small" /> },
+    { label: "BYOK Integrations", to: "/settings/integrations", icon: <IntegrationInstructionsIcon fontSize="small" /> },
     { label: "Public Settings", to: "/admin/public-settings", icon: <AdminPanelSettingsIcon fontSize="small" /> },
     { label: "Razorpay Settings", to: "/admin/razorpay-settings", icon: <PaymentIcon fontSize="small" /> },
   ] : [];
