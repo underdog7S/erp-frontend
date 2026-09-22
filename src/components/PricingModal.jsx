@@ -53,7 +53,7 @@ const PricingModal = ({ open, onClose, onUpgraded }) => {
 									{p.popular && <Chip label="Most Popular" color="primary" size="small" sx={{ mb: 1 }} />}
 									<Typography variant="h6">{p.name}</Typography>
 									<Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{p.description}</Typography>
-									<Typography variant="h5" sx={{ mb: 1 }}>{p.price === 0 ? 'Free' : `₹${p.price}/year`}</Typography>
+									<Typography variant="h5" sx={{ mb: 1 }}>{p.price === 0 ? 'Free' : `₹${p.price}/${p.billing_cycle === 'annual' ? 'year' : 'month'}`}</Typography>
 									<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, mb: 1 }}>
 										{(p.features || []).slice(0, 5).map((f, idx) => (
 											<Typography key={idx} variant="caption"><CheckIcon fontSize="inherit" style={{ verticalAlign: 'middle' }} /> {f}</Typography>
