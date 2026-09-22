@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Typography, Card, CardContent, TextField, Button, Grid, Alert,
-  CircularProgress, Divider, Chip, Switch, FormControlLabel, Tooltip, Paper
+  CircularProgress, Divider, Chip, Switch, FormControlLabel, Tooltip, Paper,
+  Select, MenuItem, InputLabel, FormControl
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import EmailIcon from '@mui/icons-material/Email';
@@ -37,11 +38,22 @@ const Integrations = () => {
     whatsapp_phone_number_id: '',
     whatsapp_access_token: '',
     openai_api_key: '',
+    ai_provider: 'openai',
+    azure_openai_api_key: '',
+    azure_openai_endpoint: '',
+    azure_openai_deployment_name: '',
+    gemini_api_key: '',
+    gemini_model: 'gemini-1.5-flash',
+    claude_api_key: '',
+    claude_model: 'claude-3-5-sonnet-latest',
     // status flags returned by server
     has_smtp: false,
     has_twilio: false,
     has_whatsapp: false,
     has_openai: false,
+    has_azure_openai: false,
+    has_gemini: false,
+    has_claude: false,
   });
 
   useEffect(() => {
@@ -83,7 +95,7 @@ const Integrations = () => {
     setSuccess('');
     try {
       // Strip the has_* read-only flags before posting
-      const { has_smtp, has_twilio, has_whatsapp, has_openai, ...payload } = keys;
+      const { has_smtp, has_twilio, has_whatsapp, has_openai, has_azure_openai, has_gemini, has_claude, ...payload } = keys;
       await api.post('/settings/integrations/', payload);
       setSuccess('✅ Integration settings saved! Your custom endpoints are now live.');
       fetchKeys(); // Refresh to get updated has_* flags
@@ -236,26 +248,102 @@ const Integrations = () => {
           </CardContent>
         </Card>
 
-        {/* ── OpenAI ───────────────────────────────────── */}
+        {/* ── AI Assistant (multi-provider) ───────────── */}
         <Card sx={cardSx}>
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <SmartToyIcon sx={{ color: '#a78bfa', mr: 1.5, fontSize: 30 }} />
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>OpenAI (AI Assistant)</Typography>
-              <StatusDot active={keys.has_openai} />
+              <Typography variant="h6" sx={{ fontWeight: 700 }}>AI Assistant</Typography>
+              <StatusDot active={keys.has_openai || keys.has_azure_openai || keys.has_gemini || keys.has_claude} />
               <Chip label="Pro & Enterprise" size="small" sx={{ ml: 'auto', bgcolor: 'rgba(167,139,250,0.12)', color: '#a78bfa' }} />
             </Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Power the AI chat assistant, smart reply suggestions, and document generation with your own OpenAI account. You control usage and billing directly.<br />
-              <strong>Steps:</strong> <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" style={{ color: '#4facfe' }}>platform.openai.com/api-keys</a> → Create new secret key → Paste below.
+              Power the AI Auto-Responder, smart reply suggestions, and omnichannel inbox AI with your own account. Pick a provider below and paste its key.
+              {['gemini', 'claude'].includes(keys.ai_provider) && (
+                <><br /><strong>Note:</strong> Gemini and Claude currently give plain conversational replies — inventory lookup and lead-capture tool calls are OpenAI/Azure OpenAI only for now.</>
+              )}
             </Typography>
+
             <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextField fullWidth label="OpenAI API Key" type="password" placeholder="sk-proj-..." name="openai_api_key" value={keys.openai_api_key || ''} onChange={handleChange} variant="outlined" sx={fieldSx}
-                  helperText={keys.openai_api_key === '••••••••' ? '🔒 Key saved — enter new value to update' : 'Your API key stays on our servers and is never shared.'}
-                />
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth sx={fieldSx}>
+                  <InputLabel>AI Provider</InputLabel>
+                  <Select label="AI Provider" name="ai_provider" value={keys.ai_provider || 'openai'} onChange={handleChange} sx={{ color: 'white' }}>
+                    <MenuItem value="openai">OpenAI</MenuItem>
+                    <MenuItem value="azure_openai">Azure OpenAI</MenuItem>
+                    <MenuItem value="gemini">Google Gemini</MenuItem>
+                    <MenuItem value="claude">Anthropic Claude</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
+
+            {keys.ai_provider === 'openai' && (
+              <Grid container spacing={3} sx={{ mt: 0.5 }}>
+                <Grid item xs={12}>
+                  <Typography variant="caption" color="text.secondary">
+                    <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" style={{ color: '#4facfe' }}>platform.openai.com/api-keys</a> → Create new secret key → Paste below.
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField fullWidth label="OpenAI API Key" type="password" placeholder="sk-proj-..." name="openai_api_key" value={keys.openai_api_key || ''} onChange={handleChange} variant="outlined" sx={fieldSx}
+                    helperText={keys.openai_api_key === '••••••••' ? '🔒 Key saved — enter new value to update' : 'Your API key stays on our servers and is never shared.'}
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {keys.ai_provider === 'azure_openai' && (
+              <Grid container spacing={3} sx={{ mt: 0.5 }}>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Azure Endpoint" placeholder="https://your-resource.openai.azure.com/" name="azure_openai_endpoint" value={keys.azure_openai_endpoint || ''} onChange={handleChange} variant="outlined" sx={fieldSx} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Deployment Name" placeholder="gpt-4o-mini" name="azure_openai_deployment_name" value={keys.azure_openai_deployment_name || ''} onChange={handleChange} variant="outlined" sx={fieldSx} />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField fullWidth label="Azure OpenAI API Key" type="password" name="azure_openai_api_key" value={keys.azure_openai_api_key || ''} onChange={handleChange} variant="outlined" sx={fieldSx}
+                    helperText={keys.azure_openai_api_key === '••••••••' ? '🔒 Key saved — enter new value to update' : 'From your Azure OpenAI resource → Keys and Endpoint.'}
+                  />
+                </Grid>
+              </Grid>
+            )}
+
+            {keys.ai_provider === 'gemini' && (
+              <Grid container spacing={3} sx={{ mt: 0.5 }}>
+                <Grid item xs={12}>
+                  <Typography variant="caption" color="text.secondary">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" style={{ color: '#4facfe' }}>aistudio.google.com/app/apikey</a> → Create API key → Paste below.
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Gemini API Key" type="password" name="gemini_api_key" value={keys.gemini_api_key || ''} onChange={handleChange} variant="outlined" sx={fieldSx}
+                    helperText={keys.gemini_api_key === '••••••••' ? '🔒 Key saved — enter new value to update' : ''}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Model" placeholder="gemini-1.5-flash" name="gemini_model" value={keys.gemini_model || ''} onChange={handleChange} variant="outlined" sx={fieldSx} />
+                </Grid>
+              </Grid>
+            )}
+
+            {keys.ai_provider === 'claude' && (
+              <Grid container spacing={3} sx={{ mt: 0.5 }}>
+                <Grid item xs={12}>
+                  <Typography variant="caption" color="text.secondary">
+                    <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noreferrer" style={{ color: '#4facfe' }}>console.anthropic.com/settings/keys</a> → Create key → Paste below.
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Claude API Key" type="password" name="claude_api_key" value={keys.claude_api_key || ''} onChange={handleChange} variant="outlined" sx={fieldSx}
+                    helperText={keys.claude_api_key === '••••••••' ? '🔒 Key saved — enter new value to update' : ''}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="Model" placeholder="claude-3-5-sonnet-latest" name="claude_model" value={keys.claude_model || ''} onChange={handleChange} variant="outlined" sx={fieldSx} />
+                </Grid>
+              </Grid>
+            )}
           </CardContent>
         </Card>
 
