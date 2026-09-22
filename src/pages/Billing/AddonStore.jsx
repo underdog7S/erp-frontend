@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, Typography, Grid, Card, CardContent, Button, 
-  LinearProgress, Chip, Dialog, DialogTitle, DialogContent, 
-  DialogActions, CircularProgress 
+import {
+  Box, Typography, Grid, Card, CardContent, Button,
+  LinearProgress, Chip, Dialog, DialogTitle, DialogContent,
+  DialogActions, CircularProgress,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
-import { 
-  WhatsApp as WhatsAppIcon, 
-  Email as EmailIcon, 
-  Sms as SmsIcon, 
+import {
+  WhatsApp as WhatsAppIcon,
+  Email as EmailIcon,
+  Sms as SmsIcon,
   AutoAwesome as AiIcon,
-  CheckCircle as CheckCircleIcon 
+  CheckCircle as CheckCircleIcon,
+  Download as DownloadIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +21,8 @@ const AddonStore = () => {
   const navigate = useNavigate();
   const [usage, setUsage] = useState(null);
   const [plans, setPlans] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [downloadingId, setDownloadingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processingAddon, setProcessingAddon] = useState(null);
   const [successDialog, setSuccessDialog] = useState({ open: false, addon: '' });
@@ -49,9 +53,40 @@ const AddonStore = () => {
     navigate(`/payment?plan=${plan.key}&amount=${plan.price}`);
   };
 
+  const fetchTransactions = async () => {
+    try {
+      const response = await api.get('/paymenttransactions/');
+      const billingOnly = (response.data || []).filter(t => t.sector === 'general' || t.sector === 'plan');
+      setTransactions(billingOnly);
+    } catch (error) {
+      console.error("Failed to fetch payment history:", error);
+    }
+  };
+
+  const handleDownloadReceipt = async (transactionId) => {
+    setDownloadingId(transactionId);
+    try {
+      const response = await api.get(`/payments/receipt/${transactionId}/`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `receipt_${transactionId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download receipt:", error);
+      alert("Failed to download receipt. Please try again.");
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   useEffect(() => {
     fetchUsage();
     fetchPlans();
+    fetchTransactions();
     if (!window.Razorpay) {
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -94,6 +129,7 @@ const AddonStore = () => {
             });
             setSuccessDialog({ open: true, addon: addonName });
             fetchUsage(); // Refresh usage limits
+            fetchTransactions(); // Show the new payment in history
           } catch (error) {
             console.error("Payment verification failed", error);
             alert(error.response?.data?.error || "Payment verification failed. Please contact support.");
@@ -293,7 +329,63 @@ const AddonStore = () => {
         })}
       </Grid>
 
-      <Dialog 
+      {transactions.length > 0 && (
+        <>
+          <Typography variant="h5" fontWeight="bold" mb={1} mt={6} sx={{ color: 'white' }}>
+            Payment History
+          </Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Download a receipt for any past plan or add-on payment.
+          </Typography>
+          <TableContainer component={Paper} sx={{ bgcolor: '#1a1a24', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ color: 'rgba(255,255,255,0.6)' }}>Date</TableCell>
+                  <TableCell sx={{ color: 'rgba(255,255,255,0.6)' }}>Description</TableCell>
+                  <TableCell sx={{ color: 'rgba(255,255,255,0.6)' }}>Amount</TableCell>
+                  <TableCell sx={{ color: 'rgba(255,255,255,0.6)' }}>Status</TableCell>
+                  <TableCell sx={{ color: 'rgba(255,255,255,0.6)' }} align="right">Receipt</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {transactions.map(t => (
+                  <TableRow key={t.id}>
+                    <TableCell sx={{ color: 'white' }}>{new Date(t.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</TableCell>
+                    <TableCell sx={{ color: 'white' }}>{t.description || (t.plan ? `${t.plan} Plan` : 'Payment')}</TableCell>
+                    <TableCell sx={{ color: 'white' }}>₹{Number(t.amount).toLocaleString('en-IN')}</TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        label={t.status}
+                        sx={{
+                          textTransform: 'capitalize',
+                          bgcolor: t.status === 'verified' || t.status === 'success' ? 'rgba(0,230,118,0.15)' : 'rgba(255,255,255,0.1)',
+                          color: t.status === 'verified' || t.status === 'success' ? '#00e676' : 'white'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        disabled={downloadingId === t.id}
+                        startIcon={downloadingId === t.id ? <CircularProgress size={14} /> : <DownloadIcon />}
+                        onClick={() => handleDownloadReceipt(t.id)}
+                        sx={{ color: '#00f2fe', borderColor: '#00f2fe' }}
+                      >
+                        PDF
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
+
+      <Dialog
         open={successDialog.open} 
         onClose={() => setSuccessDialog({ open: false, addon: '' })}
         PaperProps={{ sx: { bgcolor: '#1a1a24', color: 'white', border: '1px solid #00f2fe' } }}
