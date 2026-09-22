@@ -92,6 +92,10 @@ const Payment = () => {
               plan: plan.toLowerCase()
             });
 
+            // Verify only sets tenant.plan - PlanChangeView is what actually
+            // turns on SMS/WhatsApp/AI toggles and limits for the new tier.
+            await api.post('/plans/change/', { plan: plan.toLowerCase() });
+
             setSuccess('Payment successful! Your tenant has been upgraded.');
             setTimeout(() => {
               navigate('/dashboard');
