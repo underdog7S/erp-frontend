@@ -12,10 +12,13 @@ import {
   CheckCircle as CheckCircleIcon 
 } from '@mui/icons-material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 const AddonStore = () => {
+  const navigate = useNavigate();
   const [usage, setUsage] = useState(null);
+  const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processingAddon, setProcessingAddon] = useState(null);
   const [successDialog, setSuccessDialog] = useState({ open: false, addon: '' });
@@ -33,8 +36,22 @@ const AddonStore = () => {
     }
   };
 
+  const fetchPlans = async () => {
+    try {
+      const response = await api.get('/plans/');
+      setPlans(response.data);
+    } catch (error) {
+      console.error("Failed to fetch plans:", error);
+    }
+  };
+
+  const handleUpgradePlan = (plan) => {
+    navigate(`/payment?plan=${plan.key}&amount=${plan.price}`);
+  };
+
   useEffect(() => {
     fetchUsage();
+    fetchPlans();
     if (!window.Razorpay) {
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -138,10 +155,68 @@ const AddonStore = () => {
   return (
     <Box p={4} sx={{ bgcolor: '#0a0a0f', minHeight: '100vh', color: 'white' }}>
       <Typography variant="h4" fontWeight="bold" mb={1} sx={{ color: '#00f2fe' }}>
-        SaaS Add-on Store
+        Billing & Plans
       </Typography>
       <Typography variant="body1" color="text.secondary" mb={4}>
-        Supercharge your ERP by purchasing API Add-ons. Limits are instantly updated upon purchase.
+        Manage your subscription plan and API add-ons in one place.
+      </Typography>
+
+      <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: 'white' }}>
+        Your Plan
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={3}>
+        Current plan: <strong>{usage.plan || 'Free'}</strong>. Upgrade anytime — takes effect immediately after payment.
+      </Typography>
+
+      <Grid container spacing={3} sx={{ mb: 6 }}>
+        {plans.map(plan => {
+          const isCurrent = (usage.plan || 'free').toLowerCase() === plan.key;
+          return (
+            <Grid item xs={12} md={6} lg={2.4} key={plan.key}>
+              <Card sx={{
+                height: '100%', display: 'flex', flexDirection: 'column',
+                bgcolor: '#1a1a24', border: '1px solid',
+                borderColor: isCurrent ? '#00e676' : (plan.popular ? '#00f2fe' : 'rgba(255,255,255,0.1)')
+              }}>
+                <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                    <Typography variant="h6" fontWeight="bold">{plan.name}</Typography>
+                    {isCurrent && <Chip size="small" label="Current" sx={{ bgcolor: 'rgba(0,230,118,0.2)', color: '#00e676' }} />}
+                    {!isCurrent && plan.popular && <Chip size="small" label="Popular" sx={{ bgcolor: 'rgba(0,242,254,0.2)', color: '#00f2fe' }} />}
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" mb={2} sx={{ flex: 1 }}>
+                    {plan.description}
+                  </Typography>
+                  <Typography variant="h5" fontWeight="bold" mb={2}>
+                    {plan.price === 0 ? 'Free' : `₹${plan.price.toLocaleString('en-IN')}`}
+                    {plan.price > 0 && <Typography component="span" variant="body2" color="text.secondary"> /{plan.billing_cycle === 'annual' ? 'yr' : 'mo'}</Typography>}
+                  </Typography>
+                  <Button
+                    variant={isCurrent ? 'outlined' : 'contained'}
+                    fullWidth
+                    disabled={isCurrent}
+                    onClick={() => handleUpgradePlan(plan)}
+                    sx={{
+                      bgcolor: isCurrent ? 'transparent' : '#00f2fe',
+                      color: isCurrent ? '#00e676' : 'black',
+                      borderColor: '#00e676',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {isCurrent ? 'Current Plan' : 'Upgrade'}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+
+      <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: 'white' }}>
+        Add-ons
+      </Typography>
+      <Typography variant="body2" color="text.secondary" mb={3}>
+        Top up individual features without changing your whole plan.
       </Typography>
 
       <Grid container spacing={3}>
