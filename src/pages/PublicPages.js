@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Box, Container, Typography, Grid, Card, CardContent, Button } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, CardContent, Button, Chip, Stack } from '@mui/material';
 import EnterpriseModules from '../components/landing/EnterpriseModules';
 import CustomServiceFormDialog from '../components/landing/CustomServiceFormDialog';
 import ContactsIcon from '@mui/icons-material/Contacts';
@@ -16,6 +16,15 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import SchoolIcon from '@mui/icons-material/School';
+import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import HotelIcon from '@mui/icons-material/Hotel';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
 import { MEGA_NAV } from '../data/megaNavData';
 
 // One icon per item key, shared across every product page's card grid.
@@ -36,9 +45,16 @@ const ICONS = {
   'ai-scoring': <SmartToyIcon sx={{ fontSize: 50 }} />,
   'analytics': <SmartToyIcon sx={{ fontSize: 50 }} />,
   'white-label': <PaletteIcon sx={{ fontSize: 50 }} />,
+  'custom-erp': <DomainIcon sx={{ fontSize: 50 }} />,
+  'education': <SchoolIcon sx={{ fontSize: 50 }} />,
+  'pharmacy': <LocalPharmacyIcon sx={{ fontSize: 50 }} />,
+  'retail': <ShoppingCartIcon sx={{ fontSize: 50 }} />,
+  'hotel': <HotelIcon sx={{ fontSize: 50 }} />,
+  'restaurant': <RestaurantIcon sx={{ fontSize: 50 }} />,
+  'salon': <ContentCutIcon sx={{ fontSize: 50 }} />,
 };
 
-const FeatureCard = ({ icon, title, desc, expanded }) => (
+const FeatureCard = ({ icon, item, expanded }) => (
   <Grid item xs={12} md={expanded ? 12 : 4}>
     <Card sx={{
       height: '100%',
@@ -51,11 +67,62 @@ const FeatureCard = ({ icon, title, desc, expanded }) => (
       <CardContent sx={{ p: expanded ? 6 : 4 }}>
         <Box sx={{ color: '#00f2fe', mb: 2 }}>{icon}</Box>
         <Typography variant={expanded ? 'h4' : 'h5'} fontWeight="bold" color="white" gutterBottom>
-          {title}
+          {item.label}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7, maxWidth: expanded ? 700 : 'none' }}>
-          {desc}
+          {item.description}
         </Typography>
+
+        {expanded && (
+          <Box sx={{ mt: 4, maxWidth: 700 }}>
+            {item.deliverables?.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="overline" sx={{ color: '#00f2fe', letterSpacing: 1 }}>What's included</Typography>
+                <Stack spacing={1} sx={{ mt: 1 }}>
+                  {item.deliverables.map((d) => (
+                    <Box key={d} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                      <CheckCircleOutlineIcon sx={{ color: '#00e676', fontSize: 20, mt: 0.3 }} />
+                      <Typography variant="body2" color="text.secondary">{d}</Typography>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+            )}
+
+            {item.techStack?.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="overline" sx={{ color: '#00f2fe', letterSpacing: 1 }}>Tech stack for this</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                  {item.techStack.map((t) => (
+                    <Chip key={t} label={t} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.08)', color: 'white' }} />
+                  ))}
+                </Box>
+              </Box>
+            )}
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, alignItems: 'center', mt: 3 }}>
+              {item.timeline && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ScheduleIcon sx={{ color: '#4facfe', fontSize: 20 }} />
+                  <Typography variant="body2" color="text.secondary">{item.timeline}</Typography>
+                </Box>
+              )}
+              {item.example && (
+                <Button
+                  component="a"
+                  href={item.example.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  endIcon={<OpenInNewIcon fontSize="small" />}
+                  size="small"
+                  sx={{ color: '#00f2fe', textTransform: 'none' }}
+                >
+                  See it live: {item.example.name}
+                </Button>
+              )}
+            </Box>
+          </Box>
+        )}
       </CardContent>
     </Card>
   </Grid>
@@ -77,13 +144,19 @@ const PageHero = ({ title, highlight, subtitle }) => (
 // uses, so the two never drift apart) and supports `?focus=<item-key>` -
 // arriving via a dropdown sub-item click shows just that one card, expanded,
 // with a link back to the full list.
-const ProductGrid = ({ sectionKey, onBookConsultation }) => {
+const ProductGrid = ({ sectionKey, onBookConsultation, hideInGrid = [] }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const focus = searchParams.get('focus');
   const section = MEGA_NAV.find((s) => s.key === sectionKey);
   if (!section) return null;
 
-  const items = focus ? section.items.filter((i) => i.key === focus) : section.items;
+  // `hideInGrid` keeps items out of the default (unfocused) grid only - a
+  // dropdown click with `?focus=<key>` still shows that item's full card.
+  // Used on /erp so the 6 industry verticals aren't listed twice (they
+  // already have their own richer grid via EnterpriseModules above).
+  const items = focus
+    ? section.items.filter((i) => i.key === focus)
+    : section.items.filter((i) => !hideInGrid.includes(i.key));
   const showBackLink = Boolean(focus) && items.length > 0;
 
   return (
@@ -102,8 +175,7 @@ const ProductGrid = ({ sectionKey, onBookConsultation }) => {
           <FeatureCard
             key={item.key}
             icon={ICONS[item.key] || <WebIcon sx={{ fontSize: 50 }} />}
-            title={item.label}
-            desc={item.description}
+            item={item}
             expanded={showBackLink}
           />
         ))}
@@ -141,7 +213,7 @@ export const PublicERP = () => (
           Custom ERP & White Label
         </Typography>
       </Container>
-      <ProductGrid sectionKey="zenerp" />
+      <ProductGrid sectionKey="zenerp" hideInGrid={['education', 'pharmacy', 'retail', 'hotel', 'restaurant', 'salon']} />
     </Box>
   </Box>
 );

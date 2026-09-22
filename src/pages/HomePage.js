@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 
 // Import Modular Components
 import MegaNav from '../components/landing/MegaNav';
-import AgencySolutions from '../components/landing/AgencySolutions';
 import TargetAudience from '../components/landing/TargetAudience';
 import TechStackMarquee from '../components/landing/TechStackMarquee';
 import AgencyProcess from '../components/landing/AgencyProcess';
@@ -194,12 +193,6 @@ const HomePage = () => {
         <Box id="process" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
           <AgencyProcess />
         </Box>
-
-        {/* Agency Solutions */}
-        <Box id="solutions" component={motion.div} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={fadeInUp}>
-          <AgencySolutions />
-        </Box>
-
 
 
         {/* Integrations and Demo */}

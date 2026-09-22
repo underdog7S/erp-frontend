@@ -40,10 +40,6 @@ import {
   BarChart as ChartIcon,
   SmartToy as AiIcon,
   Tune as TuneIcon,
-  Storage as StorageIcon,
-  Code as CodeIcon,
-  Hub as HubIcon,
-  Payment as PaymentIcon,
   FormatQuote as QuoteIcon,
   Schedule as ScheduleIcon,
   SupportAgent as SupportIcon
@@ -209,17 +205,6 @@ const About = () => {
     { icon: <ChartIcon />, color: '#00e676', title: 'Live Usage Dashboard', desc: 'Track your SMS, WhatsApp, AI tokens, and storage in real time from your admin dashboard.' },
     { icon: <AiIcon />, color: '#ffc107', title: 'AI-Powered Inbox', desc: 'The Omnichannel Inbox uses OpenAI to auto-suggest replies across WhatsApp, SMS, and email.' },
     { icon: <TuneIcon />, color: '#ff7043', title: 'BYOK for Enterprise', desc: 'Large enterprises can connect their own Twilio, Meta, and SMTP accounts for unlimited usage under their own billing.' }
-  ];
-
-  const techStack = [
-    { name: 'Django REST Framework', role: 'Backend API', icon: <StorageIcon /> },
-    { name: 'React.js', role: 'Frontend UI', icon: <CodeIcon /> },
-    { name: 'PostgreSQL', role: 'Database', icon: <StorageIcon /> },
-    { name: 'Render.com', role: 'Cloud Hosting', icon: <CloudIcon /> },
-    { name: 'Vercel', role: 'Frontend CDN', icon: <HubIcon /> },
-    { name: 'Twilio', role: 'SMS and WhatsApp', icon: <PhoneIcon /> },
-    { name: 'OpenAI', role: 'AI Intelligence', icon: <AiIcon /> },
-    { name: 'Razorpay', role: 'Payments', icon: <PaymentIcon /> }
   ];
 
   const team = [
@@ -667,32 +652,6 @@ const About = () => {
                     <Avatar sx={{ bgcolor: `${item.color}22`, color: item.color, mb: 1.5 }}>{item.icon}</Avatar>
                     <Typography variant="h6" fontWeight={700} sx={{ color: item.color, mb: 1 }}>{item.title}</Typography>
                     <Typography variant="body2" sx={{ color: darkText.muted, lineHeight: 1.8 }}>{item.desc}</Typography>
-                  </LandingCard>
-                </FadeInOnScroll>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      <Box sx={{ background: darkSurface.sectionAlt, py: 10, px: 2 }}>
-        <Container maxWidth="lg">
-          <FadeInOnScroll delay={0}>
-            <Typography variant="h4" fontWeight={800} textAlign="center" sx={{ color: darkText.primary, mb: 2 }}>
-              Enterprise-Grade Technology Stack
-            </Typography>
-            <Typography variant="body1" textAlign="center" sx={{ color: darkText.faint, mb: 8, maxWidth: 600, mx: 'auto' }}>
-              Built on proven, battle-tested technologies trusted by the world's top companies.
-            </Typography>
-          </FadeInOnScroll>
-          <Grid container spacing={3} justifyContent="center">
-            {techStack.map((tech, i) => (
-              <Grid item xs={6} sm={4} md={3} key={tech.name}>
-                <FadeInOnScroll delay={i + 1}>
-                  <LandingCard sx={{ p: 3, textAlign: 'center', borderRadius: 2 }}>
-                    <Box sx={{ color: '#00f2fe', mb: 1, display: 'flex', justifyContent: 'center' }}>{tech.icon}</Box>
-                    <Typography variant="subtitle1" fontWeight={700} sx={{ color: darkText.primary }}>{tech.name}</Typography>
-                    <Chip label={tech.role} size="small" sx={{ mt: 1, bgcolor: 'rgba(255,255,255,0.08)', color: darkText.muted }} />
                   </LandingCard>
                 </FadeInOnScroll>
               </Grid>

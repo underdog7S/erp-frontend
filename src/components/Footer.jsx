@@ -1,6 +1,14 @@
 import React from 'react';
 import { Box, Container, Grid, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Logo from './Logo';
+
+const PROVIDE_LINKS = {
+  'Custom Apps': '/zen-app',
+  'Web Apps': '/zen-web',
+  'Custom ERP': '/erp?focus=custom-erp',
+  'API Integrations': '/contact'
+};
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -17,9 +25,9 @@ const Footer = () => {
       <Container maxWidth="lg">
         <Grid container spacing={4} sx={{ mb: 6 }}>
           <Grid item xs={12} md={4}>
-            <Typography variant="h5" fontWeight={900} sx={{ letterSpacing: -1, color: '#00f2fe', mb: 2 }}>
-              <span style={{ background: 'linear-gradient(90deg, #00f2fe, #4facfe)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ZV | ZenVerse</span>
-            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <Logo height={28} textVariant="h5" />
+            </Box>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', maxWidth: 280, mb: 3 }}>
               We provide custom apps, web applications, and tailored ERP and CRM systems to transform your business operations into an autonomous powerhouse.
             </Typography>
@@ -27,8 +35,8 @@ const Footer = () => {
           <Grid item xs={6} md={2}>
             <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'white', mb: 2 }}>What We Provide</Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {['Custom Apps', 'Web Apps', 'Custom ERP', 'API Integrations'].map(item => (
-                <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => item === 'Custom ERP' ? navigate('/contact') : scrollToSection('solutions')}>{item}</Typography>
+              {Object.entries(PROVIDE_LINKS).map(([item, path]) => (
+                <Typography key={item} variant="body2" sx={{ color: 'rgba(255,255,255,0.5)', cursor: 'pointer', '&:hover': { color: '#00f2fe' } }} onClick={() => navigate(path)}>{item}</Typography>
               ))}
             </Box>
           </Grid>
