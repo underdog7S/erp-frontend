@@ -83,18 +83,17 @@ const Payment = () => {
         },
         handler: async function (response) {
           try {
-            // Verifying with `plan` included activates the plan and stores
-            // the transaction in one step (see RazorpayPaymentVerifyView).
+            // Verifying with `plan` included activates the plan, turns on
+            // the tier's SMS/WhatsApp/AI toggles, and stores the transaction
+            // all in one verified step (see RazorpayPaymentVerifyView).
+            // /plans/change/ is intentionally NOT called here - it's locked
+            // to free-tier downgrades only, since it isn't payment-verified.
             await api.post('/payments/razorpay/verify/', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               plan: plan.toLowerCase()
             });
-
-            // Verify only sets tenant.plan - PlanChangeView is what actually
-            // turns on SMS/WhatsApp/AI toggles and limits for the new tier.
-            await api.post('/plans/change/', { plan: plan.toLowerCase() });
 
             setSuccess('Payment successful! Your tenant has been upgraded.');
             setTimeout(() => {
