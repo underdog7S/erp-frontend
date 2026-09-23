@@ -33,7 +33,7 @@ const settingsSections = [
     description: 'Role-based access control, user management, and permission settings.',
     icon: <SecurityIcon sx={{ fontSize: 40 }} />,
     color: '#f44336',
-    path: '/admin',
+    path: '/settings/users',
   },
 ];
 

@@ -18,6 +18,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import PeopleIcon from '@mui/icons-material/People';
+import ForumIcon from '@mui/icons-material/Forum';
 import Box from '@mui/material/Box';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Typography from '@mui/material/Typography';
@@ -524,6 +525,7 @@ const Navigation = () => {
   const showPublicFeePortal = industryKey === 'education';
   const generalItems = [
     { label: "Dashboard", to: "/dashboard", icon: <DashboardIcon fontSize="small" /> },
+    ...(user ? [{ label: "Team Chat", to: "/team-chat", icon: <ForumIcon fontSize="small" /> }] : []),
     { label: "Payment Center", to: "/payment", icon: <PaymentIcon fontSize="small" /> },
     ...(showPublicFeePortal
       ? [{ label: "Public Fee Portal", to: "/pay-fees", icon: <AttachMoneyIcon fontSize="small" /> }]
