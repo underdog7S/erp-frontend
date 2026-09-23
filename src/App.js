@@ -61,6 +61,7 @@ const SalonBilling = lazy(() => import('./pages/Salon/SalonBilling'));
 const AddonStore = lazy(() => import('./pages/Billing/AddonStore'));
 const Integrations = lazy(() => import('./pages/Settings/Integrations'));
 const SettingsHub = lazy(() => import('./pages/Settings/Settings'));
+const AdminUserManagement = lazy(() => import('./components/AdminUserManagement'));
 const ContactManagement = lazy(() => import('./pages/CRM/ContactManagement'));
 const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
@@ -140,6 +141,7 @@ function App() {
                     <Route path="/settings" element={<AuthCheck><SettingsHub /></AuthCheck>} />
                     <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
                     <Route path="/settings/integrations" element={<AuthCheck><Integrations /></AuthCheck>} />
+                    <Route path="/settings/users" element={<AuthCheck><AdminUserManagement /></AuthCheck>} />
                     <Route path="/pricing" element={<Pricing />} />
                     <Route path="/erp" element={<PublicERP />} />
                     <Route path="/crm" element={<PublicCRM />} />

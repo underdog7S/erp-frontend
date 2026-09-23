@@ -17,6 +17,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import PeopleIcon from '@mui/icons-material/People';
 import Box from '@mui/material/Box';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Typography from '@mui/material/Typography';
@@ -538,6 +539,7 @@ const Navigation = () => {
 
   const adminItems = (user && hasPermission(user, PERMISSIONS.MANAGE_USERS)) ? [
     { label: "Settings Hub", to: "/settings", icon: <SettingsIcon fontSize="small" /> },
+    { label: "Team Members", to: "/settings/users", icon: <PeopleIcon fontSize="small" /> },
     { label: "Admin Console", to: "/admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
     { label: "SaaS Billing & Add-ons", to: "/settings/billing", icon: <MonetizationOnIcon fontSize="small" /> },
     { label: "BYOK Integrations", to: "/settings/integrations", icon: <IntegrationInstructionsIcon fontSize="small" /> },

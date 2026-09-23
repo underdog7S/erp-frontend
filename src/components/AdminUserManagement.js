@@ -9,7 +9,8 @@ import {
 import {
   Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, Search as SearchIcon,
   FilterList as FilterIcon, Download as DownloadIcon, Upload as UploadIcon,
-  Visibility as ViewIcon, Block as BlockIcon, CheckCircle as ActiveIcon
+  Visibility as ViewIcon, Block as BlockIcon, CheckCircle as ActiveIcon,
+  MailOutline as InviteIcon
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import api from '../services/api';
@@ -20,6 +21,11 @@ const AdminUserManagement = () => {
   const [error, setError] = useState('');
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openInviteDialog, setOpenInviteDialog] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ email: '', role: 'staff' });
+  const [inviteError, setInviteError] = useState('');
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteSuccess, setInviteSuccess] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
@@ -92,7 +98,18 @@ const AdminUserManagement = () => {
         status: statusFilter
       };
       const response = await api.get('/users/', { params, signal });
-      setUsers(response.data.results || []);
+      // The API nests the Django User fields under `user: {username, email, ...}`
+      // rather than returning them flat - flatten once here so every column/
+      // dialog below can keep assuming row.username / row.email exist directly.
+      // is_active isn't tracked on UserProfile at all today, so it defaults to
+      // true (there's no real status to reflect - see the Status column note).
+      const flattened = (response.data.results || []).map(u => ({
+        ...u,
+        username: u.user?.username || '(no username)',
+        email: u.user?.email || '',
+        is_active: true,
+      }));
+      setUsers(flattened);
       setTotalUsers(response.data.count || 0);
     } catch (err) {
       if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
@@ -145,6 +162,28 @@ const AdminUserManagement = () => {
     }
   };
 
+  const handleInviteUser = async () => {
+    if (!inviteForm.email) {
+      setInviteError('Email is required');
+      return;
+    }
+    setInviteSending(true);
+    setInviteError('');
+    try {
+      const res = await api.post('/users/invite/', inviteForm);
+      setInviteSuccess(res.data.message || `Invitation sent to ${inviteForm.email}.`);
+      setInviteForm({ email: '', role: 'staff' });
+      setTimeout(() => {
+        setOpenInviteDialog(false);
+        setInviteSuccess('');
+      }, 1800);
+    } catch (err) {
+      setInviteError(err.response?.data?.error || 'Failed to send invitation');
+    } finally {
+      setInviteSending(false);
+    }
+  };
+
   const handleEditUser = async () => {
     try {
       const formData = new FormData();
@@ -171,36 +210,28 @@ const AdminUserManagement = () => {
   const handleDeleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await api.delete(`/users/${userId}/`);
+        await api.delete(`/users/delete/${userId}/`);
         fetchUsers();
       } catch (err) {
-        setError('Failed to delete user');
+        setError(err.response?.data?.error || 'Failed to delete user');
       }
     }
   };
 
   const handleBulkAction = async () => {
     if (!bulkAction || selectedUsers.length === 0) return;
-    
+
     try {
-      switch (bulkAction) {
-        case 'delete':
-          await Promise.all(selectedUsers.map(id => api.delete(`/users/${id}/`)));
-          break;
-        case 'activate':
-          await Promise.all(selectedUsers.map(id => api.patch(`/users/${id}/`, { is_active: true })));
-          break;
-        case 'deactivate':
-          await Promise.all(selectedUsers.map(id => api.patch(`/users/${id}/`, { is_active: false })));
-          break;
-        default:
-          break;
+      if (bulkAction === 'delete') {
+        await Promise.all(selectedUsers.map(id => api.delete(`/users/delete/${id}/`)));
       }
+      // 'activate'/'deactivate' removed - there's no backing status field on
+      // UserProfile to toggle today (see the Status column note above).
       setSelectedUsers([]);
       setBulkAction('');
       fetchUsers();
     } catch (err) {
-      setError('Failed to perform bulk action');
+      setError(err.response?.data?.error || 'Failed to perform bulk action');
     }
   };
 
@@ -372,13 +403,22 @@ const AdminUserManagement = () => {
             <Typography variant="h5" fontWeight="bold">
               User Management
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenAddDialog(true)}
-            >
-              Add User
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant="outlined"
+                startIcon={<InviteIcon />}
+                onClick={() => setOpenInviteDialog(true)}
+              >
+                Invite User
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setOpenAddDialog(true)}
+              >
+                Add User
+              </Button>
+            </Box>
           </Box>
 
           {/* Filters */}
@@ -449,8 +489,6 @@ const AdminUserManagement = () => {
                     sx={{ color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
                   >
                     <MenuItem value="">Select Action</MenuItem>
-                    <MenuItem value="activate">Activate</MenuItem>
-                    <MenuItem value="deactivate">Deactivate</MenuItem>
                     <MenuItem value="delete">Delete</MenuItem>
                   </Select>
                 </FormControl>
@@ -509,6 +547,46 @@ const AdminUserManagement = () => {
         <DialogActions>
           <Button onClick={() => setOpenAddDialog(false)}>Cancel</Button>
           <Button onClick={handleAddUser} variant="contained">Add User</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Invite User Dialog */}
+      <Dialog open={openInviteDialog} onClose={() => { setOpenInviteDialog(false); setInviteError(''); setInviteSuccess(''); }} maxWidth="xs" fullWidth>
+        <DialogTitle>Invite a Teammate</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            We'll email them a link to activate their own account and set their own password — no need to make one up for them.
+          </Typography>
+          {inviteError && <Alert severity="error" sx={{ mb: 2 }}>{inviteError}</Alert>}
+          {inviteSuccess && <Alert severity="success" sx={{ mb: 2 }}>{inviteSuccess}</Alert>}
+          <TextField
+            autoFocus
+            fullWidth
+            label="Email"
+            type="email"
+            value={inviteForm.email}
+            onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })}
+            sx={{ mb: 2, mt: 1 }}
+            required
+          />
+          <FormControl fullWidth>
+            <InputLabel>Role</InputLabel>
+            <Select
+              value={inviteForm.role}
+              label="Role"
+              onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value })}
+            >
+              {roles.map(role => (
+                <MenuItem key={role} value={role}>{role}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setOpenInviteDialog(false); setInviteError(''); setInviteSuccess(''); }}>Cancel</Button>
+          <Button onClick={handleInviteUser} variant="contained" disabled={inviteSending}>
+            {inviteSending ? 'Sending...' : 'Send Invite'}
+          </Button>
         </DialogActions>
       </Dialog>
 
