@@ -39,6 +39,7 @@ import Maintenance from './pages/Maintenance';
 import ErrorGeneric from './pages/ErrorGeneric';
 import ErrorBoundary from './ErrorBoundary';
 import PublicFeePayment from './pages/PublicFeePayment';
+import { preloadRoutes } from './routePreload';
 
 // Lazy load authenticated modules
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -69,9 +70,14 @@ const DealsPipeline = lazy(() => import('./pages/CRM/DealsPipeline'));
 const TeamChat = lazy(() => import('./pages/CRM/TeamChat'));
 
 const LoadingFallback = () => (
-  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-    <CircularProgress size={60} thickness={4} />
-    <Typography variant="h6" sx={{ mt: 2, color: 'text.secondary' }}>Loading ZenVerse Workspace...</Typography>
+  // minHeight (not a fixed 100vh) matches MainContent's own sizing, since
+  // this only ever fills the content area below the AppBar, not the whole
+  // viewport - a fixed 100vh here caused a layout jump/scroll on every
+  // in-app navigation. Smaller spinner + shorter text since this shows on
+  // every not-yet-visited page this session, not just the initial app load.
+  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 64px)' }}>
+    <CircularProgress size={32} thickness={4} />
+    <Typography variant="body2" sx={{ mt: 1.5, color: 'text.secondary' }}>Loading...</Typography>
   </Box>
 );
 
@@ -90,6 +96,20 @@ function App() {
       window.removeEventListener('userChanged', checkAuth);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    // Warm the most commonly visited pages' code-split chunks during idle
+    // time, so the first click to Dashboard/Team Chat/Settings each session
+    // doesn't have to wait on a network fetch behind the Suspense fallback.
+    const preload = () => preloadRoutes(['/dashboard', '/team-chat', '/settings']);
+    if (window.requestIdleCallback) {
+      const handle = window.requestIdleCallback(preload);
+      return () => window.cancelIdleCallback(handle);
+    }
+    const timeoutId = setTimeout(preload, 1500);
+    return () => clearTimeout(timeoutId);
+  }, [isAuthenticated]);
 
   return (
     <ThemeContextProvider>

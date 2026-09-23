@@ -27,6 +27,7 @@ import Alert from '@mui/material/Alert';
 import Badge from '@mui/material/Badge';
 import api, { getStoredUser } from '../services/api';
 import { hasPermission, PERMISSIONS } from '../permissions';
+import { preloadRoute } from '../routePreload';
 import HotelIcon from '@mui/icons-material/Hotel';
 import RestaurantIcon from '@mui/icons-material/Restaurant';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -666,6 +667,8 @@ const Navigation = () => {
           component={NavLink}
           to={item.to}
           onClick={handleNavClick}
+          onMouseEnter={() => preloadRoute(item.to)}
+          onFocus={() => preloadRoute(item.to)}
           selected={isActive}
           sx={{
             mx: 1,
