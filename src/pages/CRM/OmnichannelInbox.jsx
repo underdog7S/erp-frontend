@@ -39,7 +39,11 @@ const OmnichannelInbox = () => {
   const [aiGenerating, setAiGenerating] = useState(false);
   const [managedAssets, setManagedAssets] = useState(null);
   const [planKey, setPlanKey] = useState('');
+  const [pendingAttachment, setPendingAttachment] = useState(null);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
+  const [attachmentError, setAttachmentError] = useState('');
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   // Fetch threads on load
   useEffect(() => {
@@ -98,29 +102,58 @@ const OmnichannelInbox = () => {
   };
 
   const handleSend = async () => {
-    if (!replyText.trim() || !activeThreadId) return;
+    if ((!replyText.trim() && !pendingAttachment) || !activeThreadId) return;
 
+    const attachment = pendingAttachment;
     const tempMsg = {
       id: Date.now(),
       text: replyText,
       sender: 'agent',
       time: 'Sending...',
-      channel: threads.find(t => t.id === activeThreadId)?.source || 'unknown'
+      channel: threads.find(t => t.id === activeThreadId)?.source || 'unknown',
+      attachment_url: attachment?.url,
+      attachment_name: attachment?.name,
+      attachment_type: attachment?.type,
     };
-    
+
     setMessages(prev => [...prev, tempMsg]);
     setReplyText('');
+    setPendingAttachment(null);
     scrollToBottom();
 
     try {
       const res = await api.post(`/omnichannel/threads/${activeThreadId}/reply/`, {
-        content: tempMsg.text
+        content: tempMsg.text,
+        attachment_url: attachment?.url,
+        attachment_name: attachment?.name,
+        attachment_type: attachment?.type,
       });
       // Replace temp message with server confirmed message
       setMessages(prev => prev.map(m => m.id === tempMsg.id ? res.data : m));
     } catch (err) {
       console.error("Failed to send message", err);
       alert("Failed to send reply. Please try again.");
+    }
+  };
+
+  const handleAttachmentSelect = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file later
+    if (!file) return;
+
+    setAttachmentError('');
+    setUploadingAttachment(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await api.post('/omnichannel/attachments/upload/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setPendingAttachment(res.data);
+    } catch (err) {
+      setAttachmentError(err.response?.data?.error || 'Failed to upload attachment');
+    } finally {
+      setUploadingAttachment(false);
     }
   };
 
@@ -280,7 +313,30 @@ const OmnichannelInbox = () => {
                         borderBottomRightRadius: isAgent ? 0 : 8,
                         borderBottomLeftRadius: isAgent ? 8 : 0
                       }}>
-                        <Typography variant="body2" color="white">{msg.text}</Typography>
+                        {msg.attachment_url && msg.attachment_type === 'image' && (
+                          <Box
+                            component="img"
+                            src={msg.attachment_url}
+                            alt={msg.attachment_name || 'attachment'}
+                            onClick={() => window.open(msg.attachment_url, '_blank')}
+                            sx={{ maxWidth: '100%', maxHeight: 220, borderRadius: 1, display: 'block', mb: msg.text ? 1 : 0, cursor: 'pointer' }}
+                          />
+                        )}
+                        {msg.attachment_url && msg.attachment_type !== 'image' && (
+                          <Box
+                            component="a"
+                            href={msg.attachment_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1, mb: msg.text ? 1 : 0, borderRadius: 1, bgcolor: 'rgba(255,255,255,0.06)', textDecoration: 'none' }}
+                          >
+                            <AttachFileIcon fontSize="small" sx={{ color: '#4facfe' }} />
+                            <Typography variant="caption" noWrap sx={{ color: '#4facfe', maxWidth: 180 }}>
+                              {msg.attachment_name || 'Attachment'}
+                            </Typography>
+                          </Box>
+                        )}
+                        {msg.text && <Typography variant="body2" color="white">{msg.text}</Typography>}
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.5, mt: 1 }}>
                           {msg.sender === 'ai' && <AiIcon sx={{ fontSize: 12, color: 'secondary.main' }} />}
                           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>{msg.time}</Typography>
@@ -295,8 +351,33 @@ const OmnichannelInbox = () => {
 
             {/* Chat Input */}
             <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              {attachmentError && (
+                <Typography variant="caption" sx={{ color: 'error.main', display: 'block', mb: 1 }}>{attachmentError}</Typography>
+              )}
+              {pendingAttachment && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, p: 1, borderRadius: 1, bgcolor: 'rgba(79,172,254,0.1)', border: '1px solid rgba(79,172,254,0.3)', width: 'fit-content' }}>
+                  <AttachFileIcon fontSize="small" sx={{ color: '#4facfe' }} />
+                  <Typography variant="caption" sx={{ color: 'white', maxWidth: 200 }} noWrap>{pendingAttachment.name}</Typography>
+                  <IconButton size="small" onClick={() => setPendingAttachment(null)} sx={{ color: 'rgba(255,255,255,0.6)', p: 0.5 }}>
+                    ✕
+                  </IconButton>
+                </Box>
+              )}
               <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', bgcolor: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2 }}>
-                <IconButton sx={{ p: '10px', color: 'rgba(255,255,255,0.6)' }}><AttachFileIcon /></IconButton>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleAttachmentSelect}
+                  style={{ display: 'none' }}
+                  accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.mp3,.ogg,.wav,.m4a,.mp4,.mov"
+                />
+                <IconButton
+                  sx={{ p: '10px', color: 'rgba(255,255,255,0.6)' }}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAttachment}
+                >
+                  {uploadingAttachment ? <CircularProgress size={20} /> : <AttachFileIcon />}
+                </IconButton>
                 <TextField
                   sx={{ ml: 1, flex: 1, '& fieldset': { border: 'none' }, input: { color: 'white' } }}
                   placeholder={`Reply via ${activeThread.source}...`}
@@ -305,16 +386,16 @@ const OmnichannelInbox = () => {
                   onKeyPress={(e) => { if (e.key === 'Enter') handleSend(); }}
                 />
                 <Tooltip title="AI Smart Reply (Requires AI Engine Add-on)">
-                  <IconButton 
-                    color="secondary" 
-                    sx={{ p: '10px' }} 
+                  <IconButton
+                    color="secondary"
+                    sx={{ p: '10px' }}
                     onClick={handleAiSuggest}
                     disabled={aiGenerating}
                   >
                     {aiGenerating ? <CircularProgress size={24} color="secondary" /> : <AiIcon />}
                   </IconButton>
                 </Tooltip>
-                <IconButton color="primary" sx={{ p: '10px' }} onClick={handleSend}>
+                <IconButton color="primary" sx={{ p: '10px' }} onClick={handleSend} disabled={uploadingAttachment}>
                   <SendIcon />
                 </IconButton>
               </Paper>
