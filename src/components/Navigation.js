@@ -302,7 +302,7 @@ const Navigation = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isOpen: desktopOpen, toggleSidebar, openSidebar } = useSidebar();
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
-  const hideNavigationPaths = ['/auth/google/callback'];
+  const hideNavigationPaths = ['/auth/google/callback', '/lead/'];
 
   // Fetch today's attendance function
   const fetchTodayAttendance = async () => {
@@ -549,6 +549,7 @@ const Navigation = () => {
     { label: "Omnichannel Inbox", to: "/crm/inbox", icon: <ContactMailIcon fontSize="small" /> },
     { label: "Deals & Leads", to: "/crm/deals", icon: <MonetizationOnIcon fontSize="small" /> },
     { label: "Contact Management", to: "/crm/contacts", icon: <ContactsIcon fontSize="small" /> },
+    { label: "Lead Capture", to: "/crm/lead-capture", icon: <PersonAddAlt1Icon fontSize="small" /> },
     { label: "Email Marketing", to: "/crm/email-marketing", icon: <EmailIcon fontSize="small" /> },
   ] : [];
 

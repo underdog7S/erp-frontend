@@ -69,6 +69,8 @@ const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
 const DealsPipeline = lazy(() => import('./pages/CRM/DealsPipeline'));
 const TeamChat = lazy(() => import('./pages/CRM/TeamChat'));
+const LeadCapture = lazy(() => import('./pages/CRM/LeadCapture'));
+const PublicLeadForm = lazy(() => import('./pages/PublicLeadForm'));
 
 const LoadingFallback = () => (
   // minHeight (not a fixed 100vh) matches MainContent's own sizing, since
@@ -151,6 +153,8 @@ function App() {
                     <Route path="/crm/email-marketing" element={<AuthCheck><EmailMarketing /></AuthCheck>} />
                     <Route path="/crm/inbox" element={<AuthCheck><OmnichannelInbox /></AuthCheck>} />
                     <Route path="/team-chat" element={<AuthCheck><TeamChat /></AuthCheck>} />
+                    <Route path="/crm/lead-capture" element={<AuthCheck><LeadCapture /></AuthCheck>} />
+                    <Route path="/lead/:key" element={<PublicLeadForm />} />
                     <Route path="/crm/deals" element={<AuthCheck><DealsPipeline /></AuthCheck>} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/register/google" element={<RegistrationForm googleUser={JSON.parse(localStorage.getItem('googleUser') || '{}')} />} />
