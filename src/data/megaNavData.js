@@ -181,7 +181,7 @@ export const MEGA_NAV = [
     key: 'zenerp',
     label: 'ZenERP',
     path: '/erp',
-    tagline: '6 industry verticals',
+    tagline: '7 industry verticals',
     items: [
       {
         key: 'education',
@@ -221,6 +221,19 @@ export const MEGA_NAV = [
         ],
         techStack: ['Django REST Framework', 'PostgreSQL'],
         timeline: '2–3 weeks to go live'
+      },
+      {
+        key: 'manufacturing',
+        label: 'Manufacturing',
+        description: 'Raw material and finished goods inventory, versioned Bills of Materials, production orders, and quality control — the same multi-tenant Django backend as every ZenERP module.',
+        deliverables: [
+          'Raw material & finished goods inventory',
+          'Bill of Materials (BOM) with versioning',
+          'Production order tracking',
+          'Supplier purchase orders & quality checks'
+        ],
+        techStack: ['Django REST Framework', 'PostgreSQL', 'React'],
+        timeline: '3–5 weeks to go live'
       },
       {
         key: 'hotel',

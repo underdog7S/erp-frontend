@@ -152,7 +152,7 @@ const ProductGrid = ({ sectionKey, onBookConsultation, hideInGrid = [] }) => {
 
   // `hideInGrid` keeps items out of the default (unfocused) grid only - a
   // dropdown click with `?focus=<key>` still shows that item's full card.
-  // Used on /erp so the 6 industry verticals aren't listed twice (they
+  // Used on /erp so the 7 industry verticals aren't listed twice (they
   // already have their own richer grid via EnterpriseModules above).
   const items = focus
     ? section.items.filter((i) => i.key === focus)
@@ -213,7 +213,7 @@ export const PublicERP = () => (
           Custom ERP & White Label
         </Typography>
       </Container>
-      <ProductGrid sectionKey="zenerp" hideInGrid={['education', 'pharmacy', 'retail', 'hotel', 'restaurant', 'salon']} />
+      <ProductGrid sectionKey="zenerp" hideInGrid={['education', 'pharmacy', 'retail', 'manufacturing', 'hotel', 'restaurant', 'salon']} />
     </Box>
   </Box>
 );
