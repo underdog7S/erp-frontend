@@ -187,6 +187,11 @@ const AdminUserManagement = () => {
   const handleEditUser = async () => {
     try {
       const formData = new FormData();
+      // The backend's UserEditView requires 'id' (or 'user_id') to know which
+      // profile to edit - userForm only ever holds the editable field values,
+      // never the id, so every edit was failing with "User ID is required"
+      // before this was added.
+      formData.append('id', selectedUser.id);
       Object.entries(userForm).forEach(([key, value]) => {
         if (key === 'assigned_classes') {
           value.forEach(v => formData.append('assigned_classes', v));
@@ -194,16 +199,16 @@ const AdminUserManagement = () => {
           formData.append(key, value);
         }
       });
-      
+
       await api.put(`/users/edit/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       setOpenEditDialog(false);
       resetForm();
       fetchUsers();
     } catch (err) {
-      setError('Failed to update user');
+      setError(err.response?.data?.error || 'Failed to update user');
     }
   };
 
