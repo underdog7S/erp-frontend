@@ -15,7 +15,7 @@ const EnterpriseModules = () => {
             Ready-to-deploy Enterprise Systems
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
-            Looking for something out of the box? Our multi-tenant cloud ERP platform powers businesses across 6 major industries.
+            Looking for something out of the box? Our multi-tenant cloud ERP platform powers businesses across 7 major industries.
           </Typography>
         </Box>
 

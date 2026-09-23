@@ -51,19 +51,19 @@ const faqs = [
       id: 'gen1',
       category: 'general',
       q: 'What is ZenERP?', 
-      a: 'ZenERP is a comprehensive, cloud-based Enterprise Resource Planning solution designed for businesses across six industries: Education, Pharmacy, Retail, Hotel, Restaurant, and Salon. It helps streamline operations, manage resources, and drive business growth with industry-specific modules and real-time analytics.' 
+      a: 'ZenERP is a comprehensive, cloud-based Enterprise Resource Planning solution designed for businesses across seven industries: Education, Pharmacy, Retail, Manufacturing, Hotel, Restaurant, and Salon. It helps streamline operations, manage resources, and drive business growth with industry-specific modules and real-time analytics.'
     },
-    { 
+    {
       id: 'gen2',
       category: 'general',
-      q: 'Is ZenERP suitable for my business?', 
-      a: 'Yes! ZenERP is designed for small to large businesses across multiple industries. Whether you run a school, pharmacy, retail store, hotel, restaurant, or salon, we have specialized modules tailored to your industry needs. Our flexible plans scale with your business growth.' 
+      q: 'Is ZenERP suitable for my business?',
+      a: 'Yes! ZenERP is designed for small to large businesses across multiple industries. Whether you run a school, pharmacy, retail store, factory, hotel, restaurant, or salon, we have specialized modules tailored to your industry needs. Our flexible plans scale with your business growth.'
     },
-    { 
+    {
       id: 'gen3',
       category: 'general',
-      q: 'How many industries does ZenERP support?', 
-      a: 'ZenERP currently supports six industries: Education (25+ schools), Pharmacy (30+ pharmacies), Retail (50+ stores), Hotel (15+ hotels), Restaurant (40+ restaurants), and Salon (35+ salons). We continue to add more industry-specific modules based on customer needs.' 
+      q: 'How many industries does ZenERP support?',
+      a: 'ZenERP currently supports seven industries: Education (25+ schools), Pharmacy (30+ pharmacies), Retail (50+ stores), Manufacturing (raw materials, BOM, and production tracking), Hotel (15+ hotels), Restaurant (40+ restaurants), and Salon (35+ salons). We continue to add more industry-specific modules based on customer needs.'
     },
     { 
       id: 'gen4',

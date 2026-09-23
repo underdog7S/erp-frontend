@@ -1,5 +1,5 @@
 import React from 'react';
-import { School as SchoolIcon, LocalHospital as HealthcareIcon, ShoppingCart as ShoppingCartIcon, Hotel as HotelIcon, Restaurant as RestaurantIcon, Person as PersonIcon, ContentCut as SalonIcon } from '@mui/icons-material';
+import { School as SchoolIcon, LocalHospital as HealthcareIcon, ShoppingCart as ShoppingCartIcon, Hotel as HotelIcon, Restaurant as RestaurantIcon, Person as PersonIcon, ContentCut as SalonIcon, Factory as FactoryIcon } from '@mui/icons-material';
 
 export   const industryModules = [
     {
@@ -55,6 +55,24 @@ export   const industryModules = [
       ],
       stats: "50+ Stores",
       useCases: ["Retail Stores", "Wholesale Businesses", "Distribution"]
+    },
+    {
+      title: "Manufacturing",
+      subtitle: "Production & BOM Solution",
+      icon: <FactoryIcon sx={{ fontSize: 48 }} />,
+      primaryColor: "#455a64", // Industrial blue-grey
+      accentColor: "#78909c",
+      bgGradient: "linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%)",
+      features: [
+        "Raw Material & Finished Goods Inventory",
+        "Bill of Materials (BOM) with versioning",
+        "Production Order Tracking",
+        "Quality Control Checks",
+        "Supplier & Purchase Order Management",
+        "Wholesale Sales & Customer Management"
+      ],
+      stats: "New",
+      useCases: ["Factories", "Workshops", "Wholesale Manufacturers"]
     },
     {
       title: "Hotel Management",

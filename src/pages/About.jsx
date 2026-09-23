@@ -287,7 +287,7 @@ const About = () => {
                 mt: 2
               }}
             >
-              Empowering businesses across six industries with comprehensive, cloud-based ERP solutions designed to streamline operations and drive growth.
+              Empowering businesses across seven industries with comprehensive, cloud-based ERP solutions designed to streamline operations and drive growth.
             </Typography>
           </FadeInOnScroll>
         </Container>
@@ -576,7 +576,7 @@ const About = () => {
               Ready to Transform Your Business?
             </Typography>
             <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-              Serving 6 industries already using ZenERP to streamline operations
+              Serving 7 industries already using ZenERP to streamline operations
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
               <Button

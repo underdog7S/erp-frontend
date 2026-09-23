@@ -211,6 +211,7 @@ const RegistrationForm = ({ googleUser: propGoogleUser }) => {
                 <MenuItem value="education">Education Management</MenuItem>
                 <MenuItem value="pharmacy">Pharmacy Management</MenuItem>
                 <MenuItem value="retail">Retail & Wholesale</MenuItem>
+                <MenuItem value="manufacturing">Manufacturing</MenuItem>
                 <MenuItem value="hotel">Hotel</MenuItem>
                 <MenuItem value="restaurant">Restaurant</MenuItem>
                 <MenuItem value="salon">Salon</MenuItem>

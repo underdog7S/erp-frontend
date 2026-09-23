@@ -292,6 +292,7 @@ const Register = () => {
                     <MenuItem value="Education">Education Management</MenuItem>
                     <MenuItem value="Pharmacy">Pharmacy Management</MenuItem>
                     <MenuItem value="Retail">Retail & Wholesale</MenuItem>
+                    <MenuItem value="Manufacturing">Manufacturing</MenuItem>
                     <MenuItem value="Hotel">Hotel</MenuItem>
                     <MenuItem value="Restaurant">Restaurant</MenuItem>
                     <MenuItem value="Salon">Salon</MenuItem>
