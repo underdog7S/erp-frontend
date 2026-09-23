@@ -531,6 +531,7 @@ const Navigation = () => {
 
   const crmItems = user ? [
     { label: "Omnichannel Inbox", to: "/crm/inbox", icon: <ContactMailIcon fontSize="small" /> },
+    { label: "Deals & Leads", to: "/crm/deals", icon: <MonetizationOnIcon fontSize="small" /> },
     { label: "Contact Management", to: "/crm/contacts", icon: <ContactsIcon fontSize="small" /> },
     { label: "Email Marketing", to: "/crm/email-marketing", icon: <EmailIcon fontSize="small" /> },
   ] : [];
