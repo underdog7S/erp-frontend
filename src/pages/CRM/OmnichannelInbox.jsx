@@ -13,7 +13,7 @@ import {
   AttachFile as AttachFileIcon,
   MoreVert as MoreVertIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
 
 const BYOK_PLANS = ['platform', 'enterprise'];
@@ -29,6 +29,7 @@ const getSourceIcon = (source) => {
 
 const OmnichannelInbox = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [threads, setThreads] = useState([]);
   const [messages, setMessages] = useState([]);
   const [activeThreadId, setActiveThreadId] = useState(null);
@@ -47,8 +48,13 @@ const OmnichannelInbox = () => {
         setLoading(true);
         const res = await api.get('/omnichannel/threads/');
         setThreads(res.data);
-        if (res.data.length > 0) {
-          handleSelectThread(res.data[0].id);
+        // Deep-link support: /crm/inbox?thread=<id>, e.g. from "Message
+        // this contact" in Contact Management. Falls back to the first
+        // thread when there's no ?thread= param or it's not found.
+        const requestedId = parseInt(searchParams.get('thread'), 10);
+        const targetId = res.data.some(t => t.id === requestedId) ? requestedId : res.data[0]?.id;
+        if (targetId) {
+          handleSelectThread(targetId);
         }
       } catch (err) {
         console.error("Failed to load threads", err);

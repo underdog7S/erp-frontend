@@ -8,11 +8,14 @@ import {
 import {
   Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon,
   MoreVert as MoreVertIcon, Search as SearchIcon, FilterList as FilterIcon,
-  Phone as PhoneIcon, Email as EmailIcon, Business as BusinessIcon
+  Phone as PhoneIcon, Email as EmailIcon, Business as BusinessIcon,
+  Sms as SmsIcon, WhatsApp as WhatsAppIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 
 const ContactManagement = () => {
+  const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -212,6 +215,21 @@ const ContactManagement = () => {
     setSelectedContact(null);
   };
 
+  const [messageError, setMessageError] = useState(null);
+
+  const handleStartConversation = async (channel) => {
+    const contact = selectedContact;
+    handleMenuClose();
+    if (!contact) return;
+    try {
+      const res = await api.post(`/crm/contacts/${contact.id}/start-conversation/`, { channel });
+      navigate(`/crm/inbox?thread=${res.data.thread_id}`);
+    } catch (err) {
+      setMessageError(err.response?.data?.error || `Failed to start ${channel} conversation`);
+      console.error('Error starting conversation:', err);
+    }
+  };
+
   const getContactTypeColor = (type) => {
     const colors = {
       student: 'primary',
@@ -252,6 +270,12 @@ const ContactManagement = () => {
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
+        </Alert>
+      )}
+
+      {messageError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setMessageError(null)}>
+          {messageError}
         </Alert>
       )}
 
@@ -463,6 +487,24 @@ const ContactManagement = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
+        {selectedContact?.phone && (
+          <MenuItem onClick={() => handleStartConversation('sms')}>
+            <SmsIcon sx={{ mr: 1 }} fontSize="small" />
+            Message via SMS
+          </MenuItem>
+        )}
+        {selectedContact?.phone && (
+          <MenuItem onClick={() => handleStartConversation('whatsapp')}>
+            <WhatsAppIcon sx={{ mr: 1 }} fontSize="small" />
+            Message via WhatsApp
+          </MenuItem>
+        )}
+        {selectedContact?.email && (
+          <MenuItem onClick={() => handleStartConversation('email')}>
+            <EmailIcon sx={{ mr: 1 }} fontSize="small" />
+            Send Email
+          </MenuItem>
+        )}
         <MenuItem onClick={() => {
           handleOpenDialog(selectedContact);
           handleMenuClose();
