@@ -180,6 +180,17 @@ const MODULE_DEFINITIONS = {
       ],
     },
   ],
+  manufacturing: [
+    {
+      key: 'manufacturing-ops',
+      label: 'Manufacturing',
+      icon: <FactoryIcon fontSize="small" />,
+      items: [
+        { label: 'Manufacturing Home', to: '/manufacturing', icon: <FactoryIcon fontSize="small" /> },
+        { label: 'Payments', to: '/payment?industry=manufacturing', icon: <AttachMoneyIcon fontSize="small" /> },
+      ],
+    },
+  ],
   hotel: [
     {
       key: 'hotel-ops',
@@ -518,6 +529,7 @@ const Navigation = () => {
     education: 'Education',
     pharmacy: 'Pharmacy',
     retail: 'Retail',
+    manufacturing: 'Manufacturing',
     hotel: 'Hospitality',
     restaurant: 'Restaurant',
     salon: 'Salon',

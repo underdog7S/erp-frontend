@@ -54,6 +54,7 @@ const AdvancedReporting = lazy(() => import('./pages/Education/AdvancedReporting
 const ExamManagement = lazy(() => import('./pages/Education/ExamManagement'));
 const PharmacyDashboard = lazy(() => import('./pages/Pharmacy/PharmacyDashboard'));
 const RetailDashboard = lazy(() => import('./pages/Retail/RetailDashboard'));
+const ManufacturingDashboard = lazy(() => import('./pages/Manufacturing/ManufacturingDashboard'));
 const HotelDashboard = lazy(() => import('./pages/Hotel/HotelDashboard'));
 const RestaurantDashboard = lazy(() => import('./pages/Restaurant/RestaurantDashboard'));
 const SalonDashboard = lazy(() => import('./pages/Salon/SalonDashboard'));
@@ -140,6 +141,7 @@ function App() {
                     <Route path="/education/exams" element={<AuthCheck><ExamManagement /></AuthCheck>} />
                     <Route path="/pharmacy" element={<AuthCheck><PharmacyDashboard /></AuthCheck>} />
                     <Route path="/retail" element={<AuthCheck><RetailDashboard /></AuthCheck>} />
+                    <Route path="/manufacturing" element={<AuthCheck><ManufacturingDashboard /></AuthCheck>} />
                     <Route path="/hotel" element={<AuthCheck><HotelDashboard /></AuthCheck>} />
                     <Route path="/restaurant" element={<AuthCheck><RestaurantDashboard /></AuthCheck>} />
                     <Route path="/salon" element={<AuthCheck><SalonDashboard /></AuthCheck>} />

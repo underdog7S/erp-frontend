@@ -12,6 +12,7 @@ const loaders = {
   '/education/exams': () => import('./pages/Education/ExamManagement'),
   '/pharmacy': () => import('./pages/Pharmacy/PharmacyDashboard'),
   '/retail': () => import('./pages/Retail/RetailDashboard'),
+  '/manufacturing': () => import('./pages/Manufacturing/ManufacturingDashboard'),
   '/hotel': () => import('./pages/Hotel/HotelDashboard'),
   '/restaurant': () => import('./pages/Restaurant/RestaurantDashboard'),
   '/salon': () => import('./pages/Salon/SalonDashboard'),
