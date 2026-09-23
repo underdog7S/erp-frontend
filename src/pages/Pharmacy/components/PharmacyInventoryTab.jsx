@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Chip } from '@mui/material';
+import { UploadFile as UploadFileIcon } from '@mui/icons-material';
 import api from '../../../services/api';
+import CsvImportDialog from '../../../components/CsvImportDialog';
 
 const PharmacyInventoryTab = () => {
   const [medicines, setMedicines] = useState([]);
@@ -9,7 +11,8 @@ const PharmacyInventoryTab = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingMedicine, setEditingMedicine] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  
+  const [openImportDialog, setOpenImportDialog] = useState(false);
+
   const [medicineForm, setMedicineForm] = useState({
     name: '', generic_name: '', batch_number: '', expiry_date: '', quantity: '', unit_price: ''
   });
@@ -65,7 +68,12 @@ const PharmacyInventoryTab = () => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">Medicine Inventory</Typography>
-        <Button variant="contained" onClick={() => handleOpenDialog()}>Add Medicine</Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => setOpenImportDialog(true)}>
+            Bulk Import
+          </Button>
+          <Button variant="contained" onClick={() => handleOpenDialog()}>Add Medicine</Button>
+        </Box>
       </Box>
 
       {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
@@ -123,6 +131,15 @@ const PharmacyInventoryTab = () => {
       <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
         <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>{snackbar.message}</Alert>
       </Snackbar>
+
+      <CsvImportDialog
+        open={openImportDialog}
+        onClose={() => setOpenImportDialog(false)}
+        importUrl="/pharmacy/medicines/import/"
+        templateType="medicine"
+        label="Medicines"
+        onImported={fetchMedicines}
+      />
     </Box>
   );
 };

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Chip } from '@mui/material';
+import { UploadFile as UploadFileIcon } from '@mui/icons-material';
 import api from '../../../services/api';
+import CsvImportDialog from '../../../components/CsvImportDialog';
 
 const RetailInventoryTab = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openImportDialog, setOpenImportDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   
@@ -65,7 +68,12 @@ const RetailInventoryTab = () => {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">Inventory Management</Typography>
-        <Button variant="contained" onClick={() => handleOpenDialog()}>Add Product</Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => setOpenImportDialog(true)}>
+            Bulk Import
+          </Button>
+          <Button variant="contained" onClick={() => handleOpenDialog()}>Add Product</Button>
+        </Box>
       </Box>
 
       {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
@@ -120,6 +128,16 @@ const RetailInventoryTab = () => {
       <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
         <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>{snackbar.message}</Alert>
       </Snackbar>
+
+      <CsvImportDialog
+        open={openImportDialog}
+        onClose={() => setOpenImportDialog(false)}
+        importUrl="/retail/products/import/"
+        templateType="product"
+        label="Products"
+        onImported={fetchProducts}
+        note="Imported products are added to your catalog. You'll still need to add stock for them in Inventory separately, since stock is tracked per warehouse."
+      />
     </Box>
   );
 };
