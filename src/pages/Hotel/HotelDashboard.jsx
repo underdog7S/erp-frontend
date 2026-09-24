@@ -9,14 +9,17 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import useUrlTab from '../../hooks/useUrlTab';
 
 // Modularized Tabs
 import HotelBookingsTab from './components/HotelBookingsTab';
 import HotelHousekeepingTab from './components/HotelHousekeepingTab';
 import HotelRoomsTab from './components/HotelRoomsTab';
 
+const HOTEL_TABS = ['reservations', 'housekeeping', 'rooms'];
+
 const HotelDashboard = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(HOTEL_TABS);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const navigate = useNavigate();

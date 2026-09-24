@@ -11,6 +11,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import useUrlTab from '../../hooks/useUrlTab';
 
 // Modularized Tabs
 import RetailInventoryTab from './components/RetailInventoryTab';
@@ -19,8 +20,10 @@ import RetailCustomersTab from './components/RetailCustomersTab';
 import RetailAnalyticsTab from './components/RetailAnalyticsTab';
 import RetailTransitTab from './components/RetailTransitTab';
 
+const RETAIL_TABS = ['inventory', 'sales', 'customers', 'analytics', 'transit'];
+
 const RetailDashboard = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(RETAIL_TABS);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const navigate = useNavigate();

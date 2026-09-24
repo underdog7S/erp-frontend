@@ -9,6 +9,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import useUrlTab from '../../hooks/useUrlTab';
 
 // Modularized Tabs
 import SalonAppointmentsTab from './components/SalonAppointmentsTab';
@@ -16,8 +17,10 @@ import SalonStaffTab from './components/SalonStaffTab';
 import SalonCommissionTab from './components/SalonCommissionTab';
 import SalonServicesTab from './components/SalonServicesTab';
 
+const SALON_TABS = ['appointments', 'staff', 'services', 'commissions'];
+
 const SalonDashboard = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(SALON_TABS);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const navigate = useNavigate();

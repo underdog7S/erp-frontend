@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 
 import api from '../../services/api';
+import useUrlTab from '../../hooks/useUrlTab';
 
 // Modularized Tabs
 import PharmacyInventoryTab from './components/PharmacyInventoryTab';
@@ -15,8 +16,10 @@ import PharmacySuppliersTab from './components/PharmacySuppliersTab';
 import PharmacyPrescriptionsTab from './components/PharmacyPrescriptionsTab';
 import PharmacyBillingTab from './components/PharmacyBillingTab';
 
+const PHARMACY_TABS = ['inventory', 'suppliers', 'prescriptions', 'billing'];
+
 const PharmacyDashboard = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(PHARMACY_TABS);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
 

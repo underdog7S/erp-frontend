@@ -9,14 +9,17 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import useUrlTab from '../../hooks/useUrlTab';
 
 // Modularized Tabs
 import RestaurantPOSTab from './components/RestaurantPOSTab';
 import RestaurantKDSTab from './components/RestaurantKDSTab';
 import RestaurantMenuTab from './components/RestaurantMenuTab';
 
+const RESTAURANT_TABS = ['pos', 'kitchen', 'menu'];
+
 const RestaurantDashboard = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(RESTAURANT_TABS);
   const [userProfile, setUserProfile] = useState(null);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const navigate = useNavigate();

@@ -98,11 +98,11 @@ const MODULE_DEFINITIONS = {
       icon: <PersonIcon fontSize="small" />,
       items: [
         { label: 'Education Home', to: '/education', icon: <SchoolIcon fontSize="small" /> },
-        { label: 'Student Directory', to: '/education?tab=1', icon: <PersonIcon fontSize="small" />, badgeKey: 'studentDirectory' },
-        { label: 'Classes', to: '/education?tab=0', icon: <ClassIcon fontSize="small" /> },
+        { label: 'Student Directory', to: '/education?tab=students', icon: <PersonIcon fontSize="small" />, badgeKey: 'studentDirectory' },
+        { label: 'Classes', to: '/education?tab=classes', icon: <ClassIcon fontSize="small" /> },
         { label: 'Timetable', to: '/education/timetable', icon: <ScheduleIcon fontSize="small" /> },
-        { label: 'Academic Terms', to: '/education?tab=5', icon: <CalendarTodayIcon fontSize="small" /> },
-        { label: 'Subjects & Units', to: '/education?tab=6', icon: <LibraryBooksIcon fontSize="small" /> },
+        { label: 'Academic Terms', to: '/education?tab=academic', icon: <CalendarTodayIcon fontSize="small" /> },
+        { label: 'Subjects & Units', to: '/education?tab=academic', icon: <LibraryBooksIcon fontSize="small" /> },
       ],
     },
     {
@@ -110,9 +110,9 @@ const MODULE_DEFINITIONS = {
       label: 'Assessments & Reports',
       icon: <AssessmentIcon fontSize="small" />,
       items: [
-        { label: 'Assessments', to: '/education?tab=8', icon: <AssessmentIcon fontSize="small" /> },
-        { label: 'Marks Entry', to: '/education?tab=9', icon: <GradeIcon fontSize="small" /> },
-        { label: 'Report Cards', to: '/education?tab=10', icon: <AssessmentIcon fontSize="small" /> },
+        { label: 'Assessments', to: '/education?tab=grading', icon: <AssessmentIcon fontSize="small" /> },
+        { label: 'Marks Entry', to: '/education?tab=grading', icon: <GradeIcon fontSize="small" /> },
+        { label: 'Report Cards', to: '/education?tab=grading', icon: <AssessmentIcon fontSize="small" /> },
         { label: 'Exam Management', to: '/education/exams', icon: <AssignmentIcon fontSize="small" /> },
         { label: 'Advanced Reporting', to: '/education/reports', icon: <BarChartIcon fontSize="small" /> },
       ],
@@ -122,9 +122,9 @@ const MODULE_DEFINITIONS = {
       label: 'Finance & Dues',
       icon: <AttachMoneyIcon fontSize="small" />,
       items: [
-        { label: 'Fee Structures', to: '/education?tab=0', icon: <AttachMoneyIcon fontSize="small" /> },
-        { label: 'Fee Collections', to: '/education?tab=2', icon: <AttachMoneyIcon fontSize="small" />, badgeKey: 'feeCollections' },
-        { label: 'Attendance', to: '/education?tab=3', icon: <EventAvailableIcon fontSize="small" />, badgeKey: 'attendance' },
+        { label: 'Fee Structures', to: '/education?tab=fees', icon: <AttachMoneyIcon fontSize="small" /> },
+        { label: 'Fee Collections', to: '/education?tab=fees', icon: <AttachMoneyIcon fontSize="small" />, badgeKey: 'feeCollections' },
+        { label: 'Attendance', to: '/education?tab=attendance', icon: <EventAvailableIcon fontSize="small" />, badgeKey: 'attendance' },
         { label: 'Public Fee Portal', to: '/pay-fees', icon: <PaymentIcon fontSize="small" /> },
       ],
     },
@@ -133,9 +133,9 @@ const MODULE_DEFINITIONS = {
       label: 'Analytics & Certificates',
       icon: <BarChartIcon fontSize="small" />,
       items: [
-        { label: 'Education Analytics', to: '/education?tab=11', icon: <BarChartIcon fontSize="small" /> },
-        { label: 'Transfer Certificates', to: '/education?tab=12', icon: <DescriptionIcon fontSize="small" /> },
-        { label: 'Admission Applications', to: '/education?tab=13', icon: <PersonAddAlt1Icon fontSize="small" /> },
+        { label: 'Education Analytics', to: '/education?tab=analytics', icon: <BarChartIcon fontSize="small" /> },
+        { label: 'Transfer Certificates', to: '/education?tab=administration', icon: <DescriptionIcon fontSize="small" /> },
+        { label: 'Admission Applications', to: '/education?tab=administration', icon: <PersonAddAlt1Icon fontSize="small" /> },
       ],
     },
     {
@@ -143,7 +143,7 @@ const MODULE_DEFINITIONS = {
       label: 'Settings & Admin',
       icon: <SettingsIcon fontSize="small" />,
       items: [
-        { label: 'Education Settings', to: '/education?tab=14', icon: <SettingsIcon fontSize="small" />, roles: ['admin', 'principal'] },
+        { label: 'Education Settings', to: '/education?tab=administration', icon: <SettingsIcon fontSize="small" />, roles: ['admin', 'principal'] },
       ],
     },
   ],
@@ -154,8 +154,8 @@ const MODULE_DEFINITIONS = {
       icon: <LocalPharmacyIcon fontSize="small" />,
       items: [
         { label: 'Pharmacy Home', to: '/pharmacy', icon: <LocalPharmacyIcon fontSize="small" /> },
-        { label: 'Inventory & Stock', to: '/pharmacy?section=inventory', icon: <Inventory2Icon fontSize="small" /> },
-        { label: 'Sales & Prescriptions', to: '/pharmacy?section=sales', icon: <ReceiptLongIcon fontSize="small" /> },
+        { label: 'Inventory & Stock', to: '/pharmacy?tab=inventory', icon: <Inventory2Icon fontSize="small" /> },
+        { label: 'Sales & Prescriptions', to: '/pharmacy?tab=billing', icon: <ReceiptLongIcon fontSize="small" /> },
       ],
     },
     {
@@ -174,9 +174,8 @@ const MODULE_DEFINITIONS = {
       icon: <StorefrontIcon fontSize="small" />,
       items: [
         { label: 'Retail Home', to: '/retail', icon: <StorefrontIcon fontSize="small" /> },
-        { label: 'Catalog & Inventory', to: '/retail?section=inventory', icon: <Inventory2Icon fontSize="small" /> },
-        { label: 'POS & Orders', to: '/retail?section=orders', icon: <PointOfSaleIcon fontSize="small" /> },
-        { label: 'Promotions', to: '/retail?section=promotions', icon: <LocalOfferIcon fontSize="small" /> },
+        { label: 'Catalog & Inventory', to: '/retail?tab=inventory', icon: <Inventory2Icon fontSize="small" /> },
+        { label: 'POS & Orders', to: '/retail?tab=sales', icon: <PointOfSaleIcon fontSize="small" /> },
         { label: 'Payments', to: '/payment?industry=retail', icon: <AttachMoneyIcon fontSize="small" /> },
       ],
     },
@@ -199,8 +198,8 @@ const MODULE_DEFINITIONS = {
       icon: <HotelIcon fontSize="small" />,
       items: [
         { label: 'Hotel Home', to: '/hotel', icon: <HotelIcon fontSize="small" /> },
-        { label: 'Rooms & Services', to: '/hotel?section=rooms', icon: <RoomServiceIcon fontSize="small" /> },
-        { label: 'Bookings & Reservations', to: '/hotel?section=bookings', icon: <CalendarTodayIcon fontSize="small" /> },
+        { label: 'Rooms & Services', to: '/hotel?tab=rooms', icon: <RoomServiceIcon fontSize="small" /> },
+        { label: 'Bookings & Reservations', to: '/hotel?tab=reservations', icon: <CalendarTodayIcon fontSize="small" /> },
         { label: 'Guest Payments', to: '/payment?industry=hotel', icon: <AttachMoneyIcon fontSize="small" /> },
       ],
     },
@@ -212,8 +211,7 @@ const MODULE_DEFINITIONS = {
       icon: <RestaurantIcon fontSize="small" />,
       items: [
         { label: 'Restaurant Home', to: '/restaurant', icon: <RestaurantMenuIcon fontSize="small" /> },
-        { label: 'Menu & Orders', to: '/restaurant?section=menu', icon: <FastfoodIcon fontSize="small" /> },
-        { label: 'Reservations & Tables', to: '/restaurant?section=reservations', icon: <LocalDiningIcon fontSize="small" /> },
+        { label: 'Menu & Orders', to: '/restaurant?tab=menu', icon: <FastfoodIcon fontSize="small" /> },
         { label: 'Payments', to: '/payment?industry=restaurant', icon: <AttachMoneyIcon fontSize="small" /> },
       ],
     },
@@ -225,7 +223,7 @@ const MODULE_DEFINITIONS = {
       icon: <SpaIcon fontSize="small" />,
       items: [
         { label: 'Salon Home', to: '/salon', icon: <ContentCutIcon fontSize="small" /> },
-        { label: 'Appointments', to: '/salon?section=appointments', icon: <SpaIcon fontSize="small" /> },
+        { label: 'Appointments', to: '/salon?tab=appointments', icon: <SpaIcon fontSize="small" /> },
       ],
     },
     {
@@ -233,7 +231,7 @@ const MODULE_DEFINITIONS = {
       label: 'Services & Stylists',
       icon: <BrushIcon fontSize="small" />,
       items: [
-        { label: 'Services & Stylists', to: '/salon?section=services', icon: <BrushIcon fontSize="small" /> },
+        { label: 'Services & Stylists', to: '/salon?tab=services', icon: <BrushIcon fontSize="small" /> },
         { label: 'Salon CRM', to: '/salon/crm', icon: <ContactsIcon fontSize="small" /> },
       ],
     },

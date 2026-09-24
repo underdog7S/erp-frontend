@@ -12,6 +12,7 @@ import {
 } from '@mui/icons-material';
 
 import api from '../services/api';
+import useUrlTab from '../hooks/useUrlTab';
 import FeeManagement from '../components/FeeManagement';
 
 // Modularized Tabs
@@ -23,8 +24,10 @@ import GradingTab from './Education/components/GradingTab';
 import EducationAnalyticsTab from './Education/components/EducationAnalyticsTab';
 import AdministrationTab from './Education/components/AdministrationTab';
 
+const EDUCATION_TABS = ['classes', 'students', 'attendance', 'grading', 'academic', 'fees', 'analytics', 'administration'];
+
 const Education = () => {
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useUrlTab(EDUCATION_TABS);
   
   // Global Data loaded once for use across tabs (like Classes)
   const [classes, setClasses] = useState([]);
