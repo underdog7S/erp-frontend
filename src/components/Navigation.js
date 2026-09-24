@@ -178,6 +178,7 @@ const MODULE_DEFINITIONS = {
         { label: 'Retail Home', to: '/retail', icon: <StorefrontIcon fontSize="small" /> },
         { label: 'Catalog & Inventory', to: '/retail?tab=inventory', icon: <Inventory2Icon fontSize="small" /> },
         { label: 'POS & Orders', to: '/retail?tab=sales', icon: <PointOfSaleIcon fontSize="small" /> },
+        { label: 'Purchasing & Transfers', to: '/retail?tab=procurement', icon: <ShoppingCartIcon fontSize="small" /> },
         { label: 'Payments', to: '/payment?industry=retail', icon: <AttachMoneyIcon fontSize="small" /> },
       ],
     },
