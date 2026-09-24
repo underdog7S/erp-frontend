@@ -69,6 +69,7 @@ const EmailMarketing = lazy(() => import('./pages/CRM/EmailMarketing'));
 const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
 const DealsPipeline = lazy(() => import('./pages/CRM/DealsPipeline'));
 const TeamChat = lazy(() => import('./pages/CRM/TeamChat'));
+const ChangePassword = lazy(() => import('./pages/Settings/ChangePassword'));
 const LeadCapture = lazy(() => import('./pages/CRM/LeadCapture'));
 const PublicLeadForm = lazy(() => import('./pages/PublicLeadForm'));
 
@@ -167,6 +168,7 @@ function App() {
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
                     <Route path="/settings" element={<AuthCheck><SettingsHub /></AuthCheck>} />
+                    <Route path="/settings/password" element={<AuthCheck><ChangePassword /></AuthCheck>} />
                     <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
                     <Route path="/settings/integrations" element={<AuthCheck><Integrations /></AuthCheck>} />
                     <Route path="/settings/users" element={<AuthCheck><AdminUserManagement /></AuthCheck>} />

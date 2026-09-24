@@ -227,6 +227,12 @@ export const useNotifications = (options = {}) => {
       // Stop if component unmounted or circuit breaker triggered
       if (!isPolling) return;
 
+      // Nobody is looking at a hidden tab: skip this round and check again later
+      if (typeof document !== 'undefined' && document.hidden) {
+        timeoutId = setTimeout(poll, currentInterval);
+        return;
+      }
+
       // Cancel previous request if still in flight
       if (abortController) {
         abortController.abort();

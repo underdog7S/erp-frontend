@@ -12,6 +12,11 @@ Disallow: /retail/
 Disallow: /hotel/
 Disallow: /restaurant/
 Disallow: /salon/
+Disallow: /manufacturing/
+Disallow: /crm/
+Disallow: /settings/
+Disallow: /team-chat
+Disallow: /lead/
 Disallow: /payment/
 Disallow: /verify-email/
 Disallow: /error/

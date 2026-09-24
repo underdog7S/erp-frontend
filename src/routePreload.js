@@ -22,6 +22,7 @@ const loaders = {
   '/crm/email-marketing': () => import('./pages/CRM/EmailMarketing'),
   '/crm/inbox': () => import('./pages/CRM/OmnichannelInbox'),
   '/team-chat': () => import('./pages/CRM/TeamChat'),
+  '/settings/password': () => import('./pages/Settings/ChangePassword'),
   '/crm/lead-capture': () => import('./pages/CRM/LeadCapture'),
   '/crm/deals': () => import('./pages/CRM/DealsPipeline'),
   '/admin': () => import('./pages/AdminEnhanced'),

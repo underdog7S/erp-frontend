@@ -336,25 +336,38 @@ export const MEGA_NAV = [
       },
       {
         key: 'ai-scoring',
-        label: 'AI Lead Scoring',
-        description: 'Sentiment analysis on incoming messages flags hot leads automatically, using the same AI pipeline available across ZenVerse.',
+        label: 'AI Lead Replies',
+        description: 'AI answers customer messages in your inbox, can check live inventory, and logs a CRM lead when someone shows interest - using the same AI pipeline available across ZenVerse.',
         deliverables: [
-          'Sentiment analysis on incoming messages',
-          'Automatic hot-lead flagging',
-          'Configurable scoring rules',
-          'Weekly lead-quality summary'
+          'AI replies inside the omnichannel inbox',
+          'Live inventory lookup from chat',
+          'Automatic CRM lead creation on request',
+          'Usage tracking per plan'
         ],
         techStack: ['OpenAI', 'Django REST Framework'],
         timeline: '1–2 weeks'
       },
       {
+        key: 'lead-capture',
+        label: 'Lead Capture & Service Area',
+        description: 'A website enquiry widget or shareable link with a consent tick. Every lead is flagged in or out of your service radius, so you know who is worth a visit.',
+        deliverables: [
+          'Embeddable enquiry button and hosted form',
+          'Consent recorded with every lead',
+          'Distance from your service centre',
+          'In-area / out-of-area lead filter'
+        ],
+        techStack: ['OpenStreetMap', 'Django REST Framework'],
+        timeline: '1 week'
+      },
+      {
         key: 'analytics',
-        label: 'Analytics & Broadcast',
-        description: 'Revenue forecasting, pipeline velocity, and mass WhatsApp/SMS campaigns — PostgreSQL-backed reporting with exportable dashboards.',
+        label: 'Analytics & Email Campaigns',
+        description: 'Revenue forecasting, pipeline velocity, and email campaigns to consented contacts — PostgreSQL-backed reporting with exportable dashboards. WhatsApp and SMS are opt-in, one-to-one conversations.',
         deliverables: [
           'Revenue forecasting',
           'Pipeline velocity reports',
-          'Mass WhatsApp/SMS campaigns',
+          'Email campaigns to consented contacts',
           'Exportable dashboards'
         ],
         techStack: ['PostgreSQL', 'React charts'],

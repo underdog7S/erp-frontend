@@ -403,6 +403,18 @@ const Pricing = () => {
           ))}
         </Grid>
 
+        {/* Which modules each plan includes */}
+        <Box sx={{ mt: 8, textAlign: 'center' }}>
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
+            Every plan includes all seven industry modules
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720, mx: 'auto' }}>
+            Education, Pharmacy, Retail, Hotel, Restaurant, Salon and Manufacturing (bill of materials, production orders,
+            purchasing and quality checks). Plans differ in team size, storage, messaging quotas and support - not in which
+            industry tools you can use.
+          </Typography>
+        </Box>
+
         {/* Additional Information */}
         <Box sx={{ mt: 8, textAlign: 'center' }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>

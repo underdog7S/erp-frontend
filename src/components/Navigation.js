@@ -59,6 +59,7 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import SecurityIcon from '@mui/icons-material/Security';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -540,6 +541,7 @@ const Navigation = () => {
     { label: "Dashboard", to: "/dashboard", icon: <DashboardIcon fontSize="small" /> },
     ...(user ? [{ label: "Team Chat", to: "/team-chat", icon: <ForumIcon fontSize="small" /> }] : []),
     { label: "Payment Center", to: "/payment", icon: <PaymentIcon fontSize="small" /> },
+    ...(user ? [{ label: "Change Password", to: "/settings/password", icon: <SecurityIcon fontSize="small" /> }] : []),
     ...(showPublicFeePortal
       ? [{ label: "Public Fee Portal", to: "/pay-fees", icon: <AttachMoneyIcon fontSize="small" /> }]
       : []),
@@ -603,6 +605,15 @@ const Navigation = () => {
       return;
     }
 
+    // The analytics endpoint is plan-gated (Pro and up). Once it has answered 403,
+    // don't ask again this session - every Starter tenant was re-hitting it on each page load.
+    let analyticsBlocked = false;
+    try { analyticsBlocked = sessionStorage.getItem('edu_analytics_blocked') === '1'; } catch (e) { /* storage unavailable */ }
+    if (analyticsBlocked) {
+      setEducationStats(DEFAULT_EDUCATION_STATS);
+      return;
+    }
+
     const fetchEducationStats = async () => {
       try {
         const { data } = await api.get('/education/analytics/');
@@ -622,6 +633,9 @@ const Navigation = () => {
           classesWithDues,
         });
       } catch (err) {
+        if (err.response && err.response.status === 403) {
+          try { sessionStorage.setItem('edu_analytics_blocked', '1'); } catch (e) { /* storage unavailable */ }
+        }
         if (isMounted) {
           setEducationStats(DEFAULT_EDUCATION_STATS);
         }
