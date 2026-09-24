@@ -4,7 +4,9 @@ import {
   LocalPharmacy as PharmacyIcon, 
   LocalShipping as ShippingIcon, 
   Receipt as ReceiptIcon, 
-  Description as PrescriptionIcon
+  Description as PrescriptionIcon,
+  ShoppingCart as PurchaseIcon,
+  EventBusy as ExpiryIcon
 } from '@mui/icons-material';
 
 import api from '../../services/api';
@@ -15,8 +17,10 @@ import PharmacyInventoryTab from './components/PharmacyInventoryTab';
 import PharmacySuppliersTab from './components/PharmacySuppliersTab';
 import PharmacyPrescriptionsTab from './components/PharmacyPrescriptionsTab';
 import PharmacyBillingTab from './components/PharmacyBillingTab';
+import PharmacyPurchaseTab from './components/PharmacyPurchaseTab';
+import PharmacyExpiryTab from './components/PharmacyExpiryTab';
 
-const PHARMACY_TABS = ['inventory', 'suppliers', 'prescriptions', 'billing'];
+const PHARMACY_TABS = ['inventory', 'suppliers', 'prescriptions', 'billing', 'purchases', 'expiry'];
 
 const PharmacyDashboard = () => {
   const [tab, setTab] = useUrlTab(PHARMACY_TABS);
@@ -79,6 +83,8 @@ const PharmacyDashboard = () => {
           <Tab icon={<ShippingIcon />} label="Suppliers" />
           <Tab icon={<PrescriptionIcon />} label="Prescriptions" />
           <Tab icon={<ReceiptIcon />} label="Billing" />
+          <Tab icon={<PurchaseIcon />} label="Purchase Orders" />
+          <Tab icon={<ExpiryIcon />} label="Expiry & Batches" />
         </Tabs>
       </Box>
 
@@ -87,6 +93,8 @@ const PharmacyDashboard = () => {
         {tab === 1 && <PharmacySuppliersTab />}
         {tab === 2 && <PharmacyPrescriptionsTab />}
         {tab === 3 && <PharmacyBillingTab />}
+        {tab === 4 && <PharmacyPurchaseTab />}
+        {tab === 5 && <PharmacyExpiryTab />}
       </Box>
     </Box>
   );

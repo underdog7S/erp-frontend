@@ -156,6 +156,8 @@ const MODULE_DEFINITIONS = {
         { label: 'Pharmacy Home', to: '/pharmacy', icon: <LocalPharmacyIcon fontSize="small" /> },
         { label: 'Inventory & Stock', to: '/pharmacy?tab=inventory', icon: <Inventory2Icon fontSize="small" /> },
         { label: 'Sales & Prescriptions', to: '/pharmacy?tab=billing', icon: <ReceiptLongIcon fontSize="small" /> },
+        { label: 'Purchase Orders', to: '/pharmacy?tab=purchases', icon: <ShoppingCartIcon fontSize="small" /> },
+        { label: 'Expiry & Batches', to: '/pharmacy?tab=expiry', icon: <Inventory2Icon fontSize="small" /> },
       ],
     },
     {
