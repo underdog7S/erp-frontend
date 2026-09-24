@@ -13,7 +13,6 @@ import {
 } from '@mui/icons-material';
 import api from '../services/api';
 
-console.log('ExportImportManager rendered');
 
 const ExportImportManager = ({ module, dataType, onExport, onImport }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -112,9 +111,7 @@ const ExportImportManager = ({ module, dataType, onExport, onImport }) => {
   };
 
   const handleFileChange = (event) => {
-    console.log('DIALOG handleFileChange called');
     const file = event.target.files[0];
-    console.log('Selected file:', file);
     setImportFile(file);
     setImportPreview([]);
 
@@ -135,7 +132,6 @@ const ExportImportManager = ({ module, dataType, onExport, onImport }) => {
           return row;
         });
         setImportPreview(preview);
-        console.log('Preview:', preview);
       };
       reader.readAsText(file);
     } else {

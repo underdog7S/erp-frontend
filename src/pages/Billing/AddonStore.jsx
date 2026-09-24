@@ -56,7 +56,10 @@ const AddonStore = () => {
   const fetchTransactions = async () => {
     try {
       const response = await api.get('/paymenttransactions/');
-      const billingOnly = (response.data || []).filter(t => t.sector === 'general' || t.sector === 'plan');
+      // DRF's default pagination wraps results in { count, next, previous,
+      // results }, not a bare array - handle both shapes defensively.
+      const list = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+      const billingOnly = list.filter(t => t.sector === 'general' || t.sector === 'plan');
       setTransactions(billingOnly);
     } catch (error) {
       console.error("Failed to fetch payment history:", error);

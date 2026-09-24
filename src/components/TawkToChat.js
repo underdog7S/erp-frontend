@@ -43,11 +43,9 @@ const TawkToChat = ({
 
         // Listen for chat events
         window.Tawk_API.onLoad = function() {
-          console.log('Tawk.to chat loaded');
         };
 
         window.Tawk_API.onStatusChange = function(status) {
-          console.log('Chat status:', status);
         };
       }
     };

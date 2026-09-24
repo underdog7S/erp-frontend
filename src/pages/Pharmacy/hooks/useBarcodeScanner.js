@@ -36,7 +36,6 @@ export const useBarcodeScanner = ({
              onMedicineFound(medicineResponse);
           }
         } catch (error) {
-           console.log('Barcode not found globally', error);
            if (onBarcodeNotFound) {
              onBarcodeNotFound(codeToProcess, error);
            }

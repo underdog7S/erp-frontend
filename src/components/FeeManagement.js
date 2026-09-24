@@ -158,7 +158,6 @@ const FeeManagement = () => {
         api.get('/education/students/')
       ]);
 
-      console.log('Fee structures response:', structuresRes.data);
       const toArray = (data) => Array.isArray(data) ? data : (data?.results ? data.results : []);
       setFeeStructures(toArray(structuresRes.data));
       setFeePayments(toArray(paymentsRes.data));
@@ -259,9 +258,7 @@ const FeeManagement = () => {
         academic_year: structureForm.academic_year
       };
 
-      console.log('Submitting fee structure:', structureData);
       const response = await api.post('/education/fees/', structureData);
-      console.log('Fee structure response:', response.data);
       
       setOpenStructureDialog(false);
       resetStructureForm();
