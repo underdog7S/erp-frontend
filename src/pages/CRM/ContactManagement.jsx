@@ -24,6 +24,8 @@ const ContactManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
   const [filterLifecycle, setFilterLifecycle] = useState('');
+  const [filterSource, setFilterSource] = useState('');
+  const [filterArea, setFilterArea] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [tabValue, setTabValue] = useState(0);
@@ -52,7 +54,7 @@ const ContactManagement = () => {
     fetchContacts();
     fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterType, filterLifecycle]);
+  }, [filterType, filterLifecycle, filterSource, filterArea]);
 
   // Cancels a still-in-flight contacts request when a newer one supersedes
   // it, so fast typing (handleSearch fires a request per keystroke once >=2
@@ -72,6 +74,8 @@ const ContactManagement = () => {
       if (effectiveSearch) params.search = effectiveSearch;
       if (filterType) params.contact_type = filterType;
       if (filterLifecycle) params.lifecycle_stage = filterLifecycle;
+      if (filterSource) params.lead_source = filterSource;
+      if (filterArea) params.within_service_area = filterArea;
 
       const response = await api.get('/crm/contacts/', { params, signal: controller.signal });
       // Handle both paginated and non-paginated responses
@@ -353,6 +357,26 @@ const ContactManagement = () => {
               </Select>
             </FormControl>
           </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Lead Source</InputLabel>
+              <Select value={filterSource} label="Lead Source" onChange={(e) => setFilterSource(e.target.value)}>
+                <MenuItem value="">All Sources</MenuItem>
+                <MenuItem value="website_form">Website enquiry form</MenuItem>
+                <MenuItem value="osm_prospect">Prospect finder</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Service Area</InputLabel>
+              <Select value={filterArea} label="Service Area" onChange={(e) => setFilterArea(e.target.value)}>
+                <MenuItem value="">Any distance</MenuItem>
+                <MenuItem value="true">Inside service area</MenuItem>
+                <MenuItem value="false">Outside service area</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
           <Grid item xs={12} md={2}>
             <Button
               fullWidth
@@ -361,6 +385,8 @@ const ContactManagement = () => {
               onClick={() => {
                 setFilterType('');
                 setFilterLifecycle('');
+                setFilterSource('');
+                setFilterArea('');
                 setSearchTerm('');
               }}
             >

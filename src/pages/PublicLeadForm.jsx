@@ -70,7 +70,7 @@ const PublicLeadForm = () => {
             <FormControlLabel
               sx={{ mt: 1, alignItems: 'flex-start' }}
               control={<Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />}
-              label={<Typography variant="body2">I agree that {config.business_name} may contact me about my enquiry using the details I gave.</Typography>}
+              label={<Typography variant="body2">I agree that {config.business_name} may contact me about my enquiry using the details I gave. See our <a href="/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>.</Typography>}
             />
             {error && <Alert severity="error" sx={{ my: 1 }}>{error}</Alert>}
             <Button type="submit" variant="contained" fullWidth size="large" sx={{ mt: 1 }}
