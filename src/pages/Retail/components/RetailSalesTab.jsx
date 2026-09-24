@@ -1,79 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Chip } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Box, Typography, Button, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead,
+  TableRow, Paper, Chip, TextField, MenuItem
+} from '@mui/material';
 import api from '../../../services/api';
+import PosDialog from '../../../components/PosDialog';
 
+const asList = (d) => (Array.isArray(d) ? d : (d.results || []));
+const money = (n) => `₹${(Number(n) || 0).toFixed(2)}`;
+
+// Counter sales: pick products, GST is worked out per line, stock leaves the chosen warehouse.
 const RetailSalesTab = () => {
   const [sales, setSales] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [warehouse, setWarehouse] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-  
-  const [saleForm, setSaleForm] = useState({
-    customer_id: '', payment_method: 'CASH', total_amount: ''
-  });
+  const [error, setError] = useState('');
+  const [posOpen, setPosOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
-  const fetchSales = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get("/retail/sales/");
-      setSales(Array.isArray(res.data) ? res.data : (res.data.results || []));
-    } catch (err) {
-      setError("Failed to load sales.");
+      const [s, w] = await Promise.all([
+        api.get('/retail/sales/', { params: search ? { search } : {} }), api.get('/retail/warehouses/'),
+      ]);
+      setSales(asList(s.data));
+      const list = asList(w.data);
+      setWarehouses(list);
+      setWarehouse(prev => prev || (list.find(x => x.is_primary) || list[0] || {}).id || '');
+      setError('');
+    } catch (e) {
+      setError('Failed to load sales.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [search]);
+  useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
 
-  useEffect(() => { fetchSales(); }, []);
-
-  const handleOpenDialog = () => {
-    setSaleForm({ customer_id: '', payment_method: 'CASH', total_amount: '' });
-    setOpenDialog(true);
-  };
-
-  const handleSave = async () => {
-    try {
-      await api.post(`/retail/sales/`, saleForm);
-      setSnackbar({ open: true, message: 'Sale recorded!', severity: 'success' });
-      fetchSales();
-      setOpenDialog(false);
-    } catch {
-      setSnackbar({ open: true, message: 'Failed to record sale.', severity: 'error' });
-    }
+  const config = {
+    searchUrl: '/retail/products/',
+    searchLabel: 'Search product by name',
+    lineKey: 'product',
+    submitUrl: '/retail/sales/',
+    extra: { warehouse },
+    toItem: (p) => ({
+      id: p.id, name: p.name, sub: p.sku, price: Number(p.selling_price), mrp: Number(p.mrp),
+      stock: p.total_stock, gstRate: p.gst_rate, inclusive: p.price_includes_tax,
+    }),
   };
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h6">Point of Sale & History</Typography>
-        <Button variant="contained" onClick={handleOpenDialog}>New Sale</Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+        <Typography variant="h6">Point of sale &amp; history</Typography>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <TextField size="small" label="Search invoice or customer" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Button variant="contained" onClick={() => setPosOpen(true)} disabled={warehouses.length === 0}>New Sale</Button>
+        </Box>
       </Box>
+      {warehouses.length === 0 && !loading && <Alert severity="info" sx={{ mb: 2 }}>Add a warehouse (your shop or store room) before making sales, so stock can be taken from it.</Alert>}
 
       {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
         <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Invoice #</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Customer</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Payment Method</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
+          <Table size="small">
+            <TableHead><TableRow>
+              <TableCell>Invoice</TableCell><TableCell>Date</TableCell><TableCell>Customer</TableCell>
+              <TableCell align="right">GST</TableCell><TableCell align="right">Total</TableCell><TableCell>Payment</TableCell>
+            </TableRow></TableHead>
             <TableBody>
-              {sales.map(row => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{new Date(row.created_at).toLocaleDateString()}</TableCell>
-                  <TableCell>{row.customer?.name || 'Walk-in'}</TableCell>
-                  <TableCell>${row.total_amount}</TableCell>
-                  <TableCell>{row.payment_method}</TableCell>
-                  <TableCell>
-                    <Chip size="small" color={row.payment_status === 'PAID' ? 'success' : 'warning'} label={row.payment_status || 'PAID'} />
-                  </TableCell>
+              {sales.length === 0 && <TableRow><TableCell colSpan={6} align="center">No sales yet.</TableCell></TableRow>}
+              {sales.map(s => (
+                <TableRow key={s.id} hover>
+                  <TableCell>{s.invoice_number}</TableCell>
+                  <TableCell>{new Date(s.sale_date).toLocaleString()}</TableCell>
+                  <TableCell>{s.customer_name || 'Walk-in'}</TableCell>
+                  <TableCell align="right">{Number(s.tax_amount) ? money(s.tax_amount) : '-'}</TableCell>
+                  <TableCell align="right">{money(s.total_amount)}</TableCell>
+                  <TableCell><Chip size="small" color={s.payment_status === 'PAID' ? 'success' : 'warning'} label={`${s.payment_method} · ${s.payment_status}`} /></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -81,22 +85,12 @@ const RetailSalesTab = () => {
         </TableContainer>
       )}
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>New Sale</DialogTitle>
-        <DialogContent>
-          <TextField name="total_amount" label="Total Amount" type="number" value={saleForm.total_amount} onChange={e => setSaleForm({...saleForm, total_amount: e.target.value})} fullWidth margin="dense" />
-          <TextField name="payment_method" label="Payment Method" value={saleForm.payment_method} onChange={e => setSaleForm({...saleForm, payment_method: e.target.value})} fullWidth margin="dense" />
-          <Alert severity="info" sx={{ mt: 2 }}>In a real implementation, you would select products here to build the invoice.</Alert>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>Complete Sale</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({ ...snackbar, open: false })}>
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar({ ...snackbar, open: false })}>{snackbar.message}</Alert>
-      </Snackbar>
+      <PosDialog open={posOpen} onClose={() => setPosOpen(false)} title="New sale" config={config} onDone={load}
+        extraControls={warehouses.length > 1 ? (
+          <TextField select size="small" label="Sell from" value={warehouse} onChange={(e) => setWarehouse(e.target.value)} sx={{ mb: 1, minWidth: 200 }}>
+            {warehouses.map(w => <MenuItem key={w.id} value={w.id}>{w.name}</MenuItem>)}
+          </TextField>
+        ) : null} />
     </Box>
   );
 };
