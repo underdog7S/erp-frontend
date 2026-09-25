@@ -560,6 +560,7 @@ const Navigation = () => {
     { label: "Settings Hub", to: "/settings", icon: <SettingsIcon fontSize="small" /> },
     { label: "Team Members", to: "/settings/users", icon: <PeopleIcon fontSize="small" /> },
     { label: "Accounting", to: "/accounting", icon: <MonetizationOnIcon fontSize="small" /> },
+    { label: "Staff & Payroll", to: "/hr", icon: <PeopleIcon fontSize="small" /> },
     { label: "Admin Console", to: "/admin", icon: <AdminPanelSettingsIcon fontSize="small" /> },
     { label: "SaaS Billing & Add-ons", to: "/settings/billing", icon: <MonetizationOnIcon fontSize="small" /> },
     { label: "BYOK Integrations", to: "/settings/integrations", icon: <IntegrationInstructionsIcon fontSize="small" /> },
