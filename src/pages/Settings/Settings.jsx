@@ -22,8 +22,15 @@ const settingsSections = [
     path: '/settings/billing',
   },
   {
-    title: 'Public Branding',
-    description: 'Customize your tenant logo, company name, and public-facing settings.',
+    title: 'Online Payments (Razorpay)',
+    description: 'Connect your own Razorpay account so parents and customers pay you directly.',
+    icon: <PaymentIcon sx={{ fontSize: 40 }} />,
+    color: '#3395ff',
+    path: '/settings/razorpay',
+  },
+  {
+    title: 'Public Pages & API',
+    description: 'Your public web address, online booking, orders and admissions, and API key.',
     icon: <TuneIcon sx={{ fontSize: 40 }} />,
     color: '#ff9800',
     path: '/admin/public-settings',

@@ -168,8 +168,9 @@ function App() {
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                     <Route path="/admin" element={<ProtectedAdminRoute><AdminEnhanced /></ProtectedAdminRoute>} />
-                    <Route path="/admin/public-settings" element={<ProtectedAdminRoute><AdminPublicSettings /></ProtectedAdminRoute>} />
-                    <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
+                    <Route path="/admin/public-settings" element={<AuthCheck><AdminPublicSettings /></AuthCheck>} />
+                    <Route path="/admin/razorpay-settings" element={<AuthCheck><RazorpaySettings /></AuthCheck>} />
+                    <Route path="/settings/razorpay" element={<AuthCheck><RazorpaySettings /></AuthCheck>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
                     <Route path="/settings" element={<AuthCheck><SettingsHub /></AuthCheck>} />
                     <Route path="/hr" element={<AuthCheck><HR /></AuthCheck>} />
