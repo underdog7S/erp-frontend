@@ -21,7 +21,7 @@ const AttendanceTab = ({ classes = [] }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get(`/education/attendance/class-status/?class_id=${studentClass}&date=${attendanceDate}`);
+      const res = await api.get(`/education/class-attendance-status/?class_id=${studentClass}&date=${attendanceDate}`);
       setAttendanceStatus(res.data);
       // Pre-select students who are already marked present
       const presentIds = res.data.filter(item => item.present).map(item => item.student.id);
