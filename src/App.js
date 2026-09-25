@@ -70,6 +70,7 @@ const OmnichannelInbox = lazy(() => import('./pages/CRM/OmnichannelInbox'));
 const DealsPipeline = lazy(() => import('./pages/CRM/DealsPipeline'));
 const TeamChat = lazy(() => import('./pages/CRM/TeamChat'));
 const ChangePassword = lazy(() => import('./pages/Settings/ChangePassword'));
+const ActivateInvite = lazy(() => import('./pages/ActivateInvite'));
 const LeadCapture = lazy(() => import('./pages/CRM/LeadCapture'));
 const PublicLeadForm = lazy(() => import('./pages/PublicLeadForm'));
 
@@ -179,6 +180,7 @@ function App() {
                     <Route path="/zen-web" element={<PublicWeb />} />
                     <Route path="/zen-consult" element={<PublicConsult />} />
                     <Route path="/white-label" element={<PublicWhiteLabel />} />
+                    <Route path="/activate" element={<ActivateInvite />} />
                     <Route path="/verify-email" element={<EmailVerification />} />
                     <Route path="/pay-fees" element={<PublicFeePayment />} />
                     

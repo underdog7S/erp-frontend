@@ -171,6 +171,11 @@ const AdminUserManagement = () => {
     setInviteError('');
     try {
       const res = await api.post('/users/invite/', inviteForm);
+      if (res.data.email_sent === false) {
+        // Keep the dialog open so the admin can copy the link and send it themselves
+        setInviteError(`${res.data.message} ${res.data.activation_link}`);
+        return;
+      }
       setInviteSuccess(res.data.message || `Invitation sent to ${inviteForm.email}.`);
       setInviteForm({ email: '', role: 'staff' });
       setTimeout(() => {
