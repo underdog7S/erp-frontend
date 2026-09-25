@@ -133,6 +133,8 @@ const FinishedGoodsTab = () => {
           <TextField label="Selling Price" type="number" value={form.selling_price} onChange={e => setForm({ ...form, selling_price: e.target.value })} fullWidth margin="dense" />
           <TextField label="MRP" type="number" value={form.mrp} onChange={e => setForm({ ...form, mrp: e.target.value })} fullWidth margin="dense" />
           <TextField label="Reorder Level" type="number" value={form.reorder_level} onChange={e => setForm({ ...form, reorder_level: e.target.value })} fullWidth margin="dense" />
+          <TextField label="HSN code" value={form.hsn_code || ''} onChange={e => setForm({ ...form, hsn_code: e.target.value })} fullWidth margin="dense" inputProps={{ maxLength: 8 }} />
+          <TextField label="GST %" type="number" value={form.gst_rate ?? 0} onChange={e => setForm({ ...form, gst_rate: e.target.value })} fullWidth margin="dense" helperText="Added on top of the selling price on sales orders. 0 = no tax." />
           <TextField label="Max Stock Level" type="number" value={form.max_stock_level} onChange={e => setForm({ ...form, max_stock_level: e.target.value })} fullWidth margin="dense" />
         </DialogContent>
         <DialogActions>

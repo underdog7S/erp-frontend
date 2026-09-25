@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Switch,
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, Chip
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, Chip, FormControlLabel
 } from '@mui/material';
 import api from '../../../services/api';
 
@@ -37,6 +37,8 @@ const SalonServicesTab = () => {
       } else {
         const body = new FormData();  // the service endpoint accepts an image, so it takes multipart
         ['name', 'category', 'duration_minutes', 'price'].forEach(k => body.append(k, form[k] ?? ''));
+        body.append('gst_rate', form.gst_rate ?? 0);
+        body.append('price_includes_tax', form.price_includes_tax === false ? 'false' : 'true');
         body.append('is_active', form.is_active === false ? 'false' : 'true');
         if (form.id) await api.patch(`/salon/services/${form.id}/`, body); else await api.post('/salon/services/', body);
       }
@@ -87,6 +89,8 @@ const SalonServicesTab = () => {
             </TextField>
             <TextField fullWidth margin="dense" type="number" label="Duration (minutes)" value={form.duration_minutes ?? ''} onChange={set('duration_minutes')} />
             <TextField required fullWidth margin="dense" type="number" label="Price (₹)" value={form.price ?? ''} onChange={set('price')} />
+            <TextField fullWidth margin="dense" type="number" label="GST %" value={form.gst_rate ?? 0} onChange={set('gst_rate')} helperText="0 = no tax" />
+            <FormControlLabel control={<Switch checked={form.price_includes_tax !== false} onChange={(e) => setForm({ ...form, price_includes_tax: e.target.checked })} />} label="Price includes GST" />
           </>)}
           {err && <Alert severity="error" sx={{ mt: 1 }}>{err}</Alert>}
         </DialogContent>

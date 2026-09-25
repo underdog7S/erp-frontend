@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Switch,
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, Divider, Chip
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, Divider, Chip, FormControlLabel
 } from '@mui/material';
 import api from '../../../services/api';
 
@@ -101,6 +101,8 @@ const RestaurantMenuTab = () => {
               {cats.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
             </TextField>
             <TextField required fullWidth margin="dense" type="number" label="Price (₹)" value={form.price ?? ''} onChange={set('price')} />
+            <TextField fullWidth margin="dense" type="number" label="GST %" value={form.gst_rate ?? 0} onChange={set('gst_rate')} helperText="0 = no tax" />
+            <FormControlLabel control={<Switch checked={form.price_includes_tax !== false} onChange={(e) => setForm({ ...form, price_includes_tax: e.target.checked })} />} label="Price includes GST" />
           </>)}
           {dlg === 'cat' && (<>
             <TextField required fullWidth margin="dense" label="Name" value={form.name || ''} onChange={set('name')} />

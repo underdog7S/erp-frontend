@@ -29,6 +29,13 @@ const settingsSections = [
     path: '/admin/public-settings',
   },
   {
+    title: 'Business Details',
+    description: 'Your GST number, used on invoices to choose CGST/SGST or IGST.',
+    icon: <TuneIcon sx={{ fontSize: 40 }} />,
+    color: '#9c27b0',
+    path: '/settings/business',
+  },
+  {
     title: 'Security',
     description: 'Role-based access control, user management, and permission settings.',
     icon: <SecurityIcon sx={{ fontSize: 40 }} />,

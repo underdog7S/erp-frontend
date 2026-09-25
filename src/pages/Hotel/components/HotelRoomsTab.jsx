@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Button, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Chip,
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Alert, Snackbar, Switch, FormControlLabel
 } from '@mui/material';
 import api from '../../../services/api';
 
@@ -86,6 +86,8 @@ const HotelRoomsTab = () => {
           {dlg === 'type' ? (<>
             <TextField required fullWidth margin="dense" label="Name" value={form.name || ''} onChange={set('name')} />
             <TextField required fullWidth margin="dense" type="number" label="Rate per night (₹)" value={form.base_rate ?? ''} onChange={set('base_rate')} />
+            <TextField fullWidth margin="dense" type="number" label="GST %" value={form.gst_rate ?? 0} onChange={set('gst_rate')} helperText="Hotel rooms: 12% up to ₹7,500 a night, 18% above (check with your accountant)" />
+            <FormControlLabel control={<Switch checked={!!form.price_includes_tax} onChange={(e) => setForm({ ...form, price_includes_tax: e.target.checked })} />} label="Rate already includes GST" />
           </>) : (<>
             <TextField required fullWidth margin="dense" label="Room number" value={form.room_number || ''} onChange={set('room_number')} />
             <TextField select fullWidth margin="dense" label="Room type" value={form.room_type || ''} onChange={set('room_type')}>
