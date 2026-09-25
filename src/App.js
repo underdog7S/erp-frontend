@@ -72,6 +72,7 @@ const TeamChat = lazy(() => import('./pages/CRM/TeamChat'));
 const ChangePassword = lazy(() => import('./pages/Settings/ChangePassword'));
 const ActivateInvite = lazy(() => import('./pages/ActivateInvite'));
 const BusinessDetails = lazy(() => import('./pages/Settings/BusinessDetails'));
+const Accounting = lazy(() => import('./pages/Accounting/Accounting'));
 const LeadCapture = lazy(() => import('./pages/CRM/LeadCapture'));
 const PublicLeadForm = lazy(() => import('./pages/PublicLeadForm'));
 
@@ -170,6 +171,7 @@ function App() {
                     <Route path="/admin/razorpay-settings" element={<ProtectedAdminRoute><RazorpaySettings /></ProtectedAdminRoute>} />
                     <Route path="/payment" element={<AuthCheck><Payment /></AuthCheck>} />
                     <Route path="/settings" element={<AuthCheck><SettingsHub /></AuthCheck>} />
+                    <Route path="/accounting" element={<AuthCheck><Accounting /></AuthCheck>} />
                     <Route path="/settings/business" element={<AuthCheck><BusinessDetails /></AuthCheck>} />
                     <Route path="/settings/password" element={<AuthCheck><ChangePassword /></AuthCheck>} />
                     <Route path="/settings/billing" element={<AuthCheck><AddonStore /></AuthCheck>} />
