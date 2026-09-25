@@ -18,7 +18,7 @@ const AdministrationTab = ({ canAccessSettings }) => {
   const fetchTransferCerts = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/education/transfer-certificates/');
+      const res = await api.get('/education/tc/');
       setTransferCerts(res.data);
     } catch {
       // Ignore errors for now
