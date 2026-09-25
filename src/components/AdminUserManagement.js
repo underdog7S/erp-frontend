@@ -176,12 +176,9 @@ const AdminUserManagement = () => {
         setInviteError(`${res.data.message} ${res.data.activation_link}`);
         return;
       }
-      setInviteSuccess(res.data.message || `Invitation sent to ${inviteForm.email}.`);
+      // Keep the dialog open with the link, so it can be sent by hand if the email does not arrive
+      setInviteSuccess(`${res.data.message}${res.data.activation_link ? ` ${res.data.activation_link}` : ''}`);
       setInviteForm({ email: '', role: 'staff' });
-      setTimeout(() => {
-        setOpenInviteDialog(false);
-        setInviteSuccess('');
-      }, 1800);
     } catch (err) {
       setInviteError(err.response?.data?.error || 'Failed to send invitation');
     } finally {
