@@ -88,7 +88,7 @@ const PublicFeePayment = () => {
           setPaymentData(response.data);
           initializeRazorpay(response.data.payment.checkout_data);
         } else {
-          setSuccess('Payment record created. Please contact school for payment processing.');
+          setError('Online payment could not be started. Please contact the school.');
         }
       }
     } catch (err) {
@@ -102,13 +102,21 @@ const PublicFeePayment = () => {
     if (window.Razorpay) {
       const options = {
         ...checkoutData,
-        handler: function (response) {
-          setSuccess(`Payment successful! Payment ID: ${response.razorpay_payment_id}`);
+        handler: async function (response) {
           setPaymentData(null);
-          // Optionally refresh fee status
-          setTimeout(() => {
-            checkFeeStatus();
-          }, 2000);
+          try {
+            // The fee is recorded only after the payment is verified with Razorpay
+            const res = await axios.post(`${API_BASE}/education/public/fee-payment/confirm/`, {
+              tenant_id: parseInt(formData.tenant_id),
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            setSuccess(`Payment successful and recorded${res.data.receipt_number ? ` (receipt ${res.data.receipt_number})` : ''}. Payment ID: ${response.razorpay_payment_id}`);
+          } catch (err) {
+            setSuccess(`Payment received (ID ${response.razorpay_payment_id}). It is still being confirmed: check the fee status again in a minute, and contact the school if it does not update.`);
+          }
+          checkFeeStatus();
         },
         prefill: checkoutData.prefill,
         theme: {
