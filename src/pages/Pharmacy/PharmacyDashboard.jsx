@@ -6,7 +6,9 @@ import {
   Receipt as ReceiptIcon, 
   Description as PrescriptionIcon,
   ShoppingCart as PurchaseIcon,
-  EventBusy as ExpiryIcon
+  EventBusy as ExpiryIcon,
+  AssignmentReturn as ReturnIcon,
+  CardGiftcard as LoyaltyIcon
 } from '@mui/icons-material';
 
 import api from '../../services/api';
@@ -19,8 +21,10 @@ import PharmacyPrescriptionsTab from './components/PharmacyPrescriptionsTab';
 import PharmacyBillingTab from './components/PharmacyBillingTab';
 import PharmacyPurchaseTab from './components/PharmacyPurchaseTab';
 import PharmacyExpiryTab from './components/PharmacyExpiryTab';
+import PharmacyReturnsTab from './components/PharmacyReturnsTab';
+import PharmacyLoyaltyTab from './components/PharmacyLoyaltyTab';
 
-const PHARMACY_TABS = ['inventory', 'suppliers', 'prescriptions', 'billing', 'purchases', 'expiry'];
+const PHARMACY_TABS = ['inventory', 'suppliers', 'prescriptions', 'billing', 'purchases', 'expiry', 'returns', 'loyalty'];
 
 const PharmacyDashboard = () => {
   const [tab, setTab] = useUrlTab(PHARMACY_TABS);
@@ -85,6 +89,8 @@ const PharmacyDashboard = () => {
           <Tab icon={<ReceiptIcon />} label="Billing" />
           <Tab icon={<PurchaseIcon />} label="Purchase Orders" />
           <Tab icon={<ExpiryIcon />} label="Expiry & Batches" />
+          <Tab icon={<ReturnIcon />} label="Returns" />
+          <Tab icon={<LoyaltyIcon />} label="Loyalty" />
         </Tabs>
       </Box>
 
@@ -95,6 +101,8 @@ const PharmacyDashboard = () => {
         {tab === 3 && <PharmacyBillingTab />}
         {tab === 4 && <PharmacyPurchaseTab />}
         {tab === 5 && <PharmacyExpiryTab />}
+        {tab === 6 && <PharmacyReturnsTab />}
+        {tab === 7 && <PharmacyLoyaltyTab />}
       </Box>
     </Box>
   );

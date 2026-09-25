@@ -158,6 +158,8 @@ const MODULE_DEFINITIONS = {
         { label: 'Sales & Prescriptions', to: '/pharmacy?tab=billing', icon: <ReceiptLongIcon fontSize="small" /> },
         { label: 'Purchase Orders', to: '/pharmacy?tab=purchases', icon: <ShoppingCartIcon fontSize="small" /> },
         { label: 'Expiry & Batches', to: '/pharmacy?tab=expiry', icon: <Inventory2Icon fontSize="small" /> },
+        { label: 'Returns', to: '/pharmacy?tab=returns', icon: <ReceiptLongIcon fontSize="small" /> },
+        { label: 'Loyalty', to: '/pharmacy?tab=loyalty', icon: <ReceiptLongIcon fontSize="small" /> },
       ],
     },
     {
