@@ -83,7 +83,7 @@ const SalesTab = () => {
       fetchAll();
       setSnackbar({ open: true, message: 'Item added - finished goods stock updated.', severity: 'success' });
     } catch (err) {
-      setSnackbar({ open: true, message: err.response?.data?.error || 'Failed to add item.', severity: 'error' });
+      setSnackbar({ open: true, message: err.response?.data?.error || err.response?.data?.quantity?.[0] || 'Failed to add item.', severity: 'error' });
     }
   };
 
