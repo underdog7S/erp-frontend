@@ -5,6 +5,7 @@ import {
   Paper, Snackbar, Chip, MenuItem, Grid, Divider
 } from '@mui/material';
 import api from '../../../services/api';
+import { openPdf } from '../../../utils/openPdf';
 
 const PO_STATUS_COLORS = { DRAFT: 'default', ORDERED: 'info', PARTIAL_RECEIVED: 'warning', RECEIVED: 'success', CANCELLED: 'error' };
 
@@ -161,6 +162,7 @@ const ProcurementTab = () => {
                   <TableCell><Chip size="small" color={PO_STATUS_COLORS[po.status]} label={po.status.replace('_', ' ')} /></TableCell>
                   <TableCell>
                     <Button size="small" onClick={() => setManagePo(po)}>Items</Button>
+                    <Button size="small" onClick={async () => { if (!(await openPdf(`/manufacturing/purchase-orders/${po.id}/pdf/`))) setSnackbar({ open: true, message: 'Could not open the PDF.', severity: 'error' }); }}>PDF</Button>
                     {po.status !== 'RECEIVED' && po.status !== 'CANCELLED' && po.items?.length > 0 && (
                       <Button size="small" color="success" onClick={() => openReceiveDialog(po)}>Receive</Button>
                     )}

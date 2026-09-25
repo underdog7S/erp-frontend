@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import api from '../../../services/api';
+import { openPdf } from '../../../utils/openPdf';
 
 const asList = (d) => (Array.isArray(d) ? d : (d.results || []));
 const STATUS_COLOR = { DRAFT: 'default', ORDERED: 'primary', RECEIVED: 'success', CANCELLED: 'error' };
@@ -139,6 +140,7 @@ const PharmacyPurchaseTab = () => {
                 <TableCell align="right">₹{Number(po.total_amount).toFixed(2)}</TableCell>
                 <TableCell><Chip size="small" color={STATUS_COLOR[po.status] || 'default'} label={po.status} /></TableCell>
                 <TableCell align="right">
+                  <Button size="small" onClick={async () => { if (!(await openPdf(`/pharmacy/purchase-orders/${po.id}/pdf/`))) setToast('Could not open the PDF.'); }}>PDF</Button>
                   {po.status === 'DRAFT' && <Button size="small" onClick={() => setStatus(po, 'ORDERED')}>Mark ordered</Button>}
                   {(po.status === 'DRAFT' || po.status === 'ORDERED') && po.items.length > 0 && (
                     <Button size="small" variant="outlined" sx={{ ml: 1 }} onClick={() => openReceive(po)}>Receive stock</Button>

@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import api from '../../../services/api';
+import { openPdf } from '../../../utils/openPdf';
 
 const asList = (d) => (Array.isArray(d) ? d : (d.results || []));
 const today = () => new Date().toISOString().slice(0, 10);
@@ -152,6 +153,7 @@ const RetailProcurementTab = () => {
                   <TableCell align="right">₹{Number(po.total_amount).toFixed(2)}</TableCell>
                   <TableCell><Chip size="small" color={PO_COLOR[po.status]} label={po.status.replace('_', ' ')} /></TableCell>
                   <TableCell align="right">
+                    <Button size="small" onClick={async () => { if (!(await openPdf(`/retail/purchase-orders/${po.id}/pdf/`))) setToast('Could not open the PDF.'); }}>PDF</Button>
                     {['DRAFT', 'ORDERED', 'PARTIAL_RECEIVED'].includes(po.status) && po.items.length > 0 && !noWarehouses && (
                       <Button size="small" variant="outlined" onClick={() => openReceive(po)}>Receive goods</Button>
                     )}

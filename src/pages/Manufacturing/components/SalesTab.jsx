@@ -5,6 +5,7 @@ import {
   Paper, Snackbar, Chip, MenuItem, Grid, Divider
 } from '@mui/material';
 import api from '../../../services/api';
+import { openPdf } from '../../../utils/openPdf';
 
 const SO_STATUS_COLORS = { DRAFT: 'default', CONFIRMED: 'info', DISPATCHED: 'warning', DELIVERED: 'success', CANCELLED: 'error' };
 
@@ -123,7 +124,10 @@ const SalesTab = () => {
                   <TableCell>{so.customer_name}</TableCell>
                   <TableCell>₹{so.total_amount}</TableCell>
                   <TableCell><Chip size="small" color={SO_STATUS_COLORS[so.status]} label={so.status} /></TableCell>
-                  <TableCell><Button size="small" onClick={() => setManageSo(so)}>Items</Button></TableCell>
+                  <TableCell>
+                    <Button size="small" onClick={() => setManageSo(so)}>Items</Button>
+                    <Button size="small" onClick={async () => { if (!(await openPdf(`/manufacturing/sales-orders/${so.id}/pdf/`))) setSnackbar({ open: true, message: 'Could not open the PDF.', severity: 'error' }); }}>PDF</Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {salesOrders.length === 0 && (
