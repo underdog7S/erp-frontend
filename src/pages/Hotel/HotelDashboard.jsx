@@ -15,8 +15,9 @@ import useUrlTab from '../../hooks/useUrlTab';
 import HotelBookingsTab from './components/HotelBookingsTab';
 import HotelHousekeepingTab from './components/HotelHousekeepingTab';
 import HotelRoomsTab from './components/HotelRoomsTab';
+import HotelRoomServiceTab from './components/HotelRoomServiceTab';
 
-const HOTEL_TABS = ['reservations', 'housekeeping', 'rooms'];
+const HOTEL_TABS = ['reservations', 'housekeeping', 'rooms', 'roomservice'];
 
 const HotelDashboard = () => {
   const [tab, setTab] = useUrlTab(HOTEL_TABS);
@@ -124,6 +125,7 @@ const HotelDashboard = () => {
             <Tab icon={<KingBedIcon />} iconPosition="start" label="Reservations" />
             <Tab icon={<CleaningServicesIcon />} iconPosition="start" label="Housekeeping" />
             <Tab icon={<MeetingRoomIcon />} iconPosition="start" label="Room Matrix" />
+          <Tab icon={<CleaningServicesIcon />} iconPosition="start" label="Room Service" />
           </Tabs>
         </Box>
 
@@ -132,6 +134,7 @@ const HotelDashboard = () => {
           {tab === 0 && <HotelBookingsTab />}
           {tab === 1 && <HotelHousekeepingTab />}
           {tab === 2 && <HotelRoomsTab />}
+          {tab === 3 && <HotelRoomServiceTab />}
         </Box>
 
       </Box>

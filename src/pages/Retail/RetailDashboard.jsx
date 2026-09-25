@@ -18,10 +18,9 @@ import RetailInventoryTab from './components/RetailInventoryTab';
 import RetailSalesTab from './components/RetailSalesTab';
 import RetailCustomersTab from './components/RetailCustomersTab';
 import RetailAnalyticsTab from './components/RetailAnalyticsTab';
-import RetailTransitTab from './components/RetailTransitTab';
 import RetailProcurementTab from './components/RetailProcurementTab';
 
-const RETAIL_TABS = ['inventory', 'sales', 'customers', 'analytics', 'transit', 'procurement'];
+const RETAIL_TABS = ['inventory', 'sales', 'customers', 'analytics', 'procurement'];
 
 const RetailDashboard = () => {
   const [tab, setTab] = useUrlTab(RETAIL_TABS);
@@ -128,7 +127,6 @@ const RetailDashboard = () => {
             <Tab icon={<SalesIcon />} iconPosition="start" label="Sales & POS" />
             <Tab icon={<PeopleIcon />} iconPosition="start" label="Customers" />
             <Tab icon={<TimelineIcon />} iconPosition="start" label="Analytics" />
-            <Tab icon={<ShippingIcon />} iconPosition="start" label="Transit" />
           <Tab icon={<InventoryIcon />} iconPosition="start" label="Procurement" />
           </Tabs>
         </Box>
@@ -139,8 +137,7 @@ const RetailDashboard = () => {
           {tab === 1 && <RetailSalesTab />}
           {tab === 2 && <RetailCustomersTab />}
           {tab === 3 && <RetailAnalyticsTab />}
-          {tab === 4 && <RetailTransitTab />}
-          {tab === 5 && <RetailProcurementTab />}
+          {tab === 4 && <RetailProcurementTab />}
         </Box>
 
       </Box>
