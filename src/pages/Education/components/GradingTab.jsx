@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Tabs, Tab, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControl, InputLabel, Select, MenuItem, CircularProgress, Alert, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Snackbar, Grid, Card, CardContent } from '@mui/material';
 import api from '../../../services/api';
+import { openPdf } from '../../../utils/openPdf';
 
 const GradingTab = ({ students = [], subjects = [], terms = [], academicYears = [] }) => {
   const [subTab, setSubTab] = useState(0);
@@ -257,21 +258,41 @@ const MarksEntrySubTab = ({ data, students, assessments, refresh, showSnackbar }
 const ReportCardsSubTab = ({ students, academicYears, terms, showSnackbar }) => {
   const [form, setForm] = useState({ student_id: "", academic_year_id: "", term_id: "", teacher_remarks: "", principal_remarks: "", conduct_grade: "", issued_date: new Date().toISOString().split('T')[0] });
   const [generating, setGenerating] = useState(false);
+  const [cards, setCards] = useState([]);
+  const [loadingCards, setLoadingCards] = useState(true);
+
+  const loadCards = async () => {
+    setLoadingCards(true);
+    try {
+      const res = await api.get('/education/reportcards/');
+      setCards(Array.isArray(res.data) ? res.data : (res.data.results || []));
+    } catch {
+      showSnackbar("Failed to load generated report cards.", "error");
+    } finally {
+      setLoadingCards(false);
+    }
+  };
+  useEffect(() => { loadCards(); }, []);
 
   const handleGenerate = async () => {
-    if (!form.student_id || !form.academic_year_id) {
-      showSnackbar("Student and Academic Year are required", "warning");
+    if (!form.student_id || !form.academic_year_id || !form.term_id) {
+      showSnackbar("Student, Academic Year and Term are required", "warning");
       return;
     }
     setGenerating(true);
     try {
-      await api.post(`/education/report-cards/generate/`, form);
+      await api.post(`/education/reportcards/generate/`, form);
       showSnackbar("Report Card Generated successfully!");
-    } catch {
-      showSnackbar("Failed to generate report card", "error");
+      loadCards();
+    } catch (e) {
+      showSnackbar(e.response?.data?.error || "Failed to generate report card", "error");
     } finally {
       setGenerating(false);
     }
+  };
+
+  const downloadCard = async (card) => {
+    if (!(await openPdf(`/education/reportcards/${card.id}/pdf/`))) showSnackbar('Could not open the report card PDF.', 'error');
   };
 
   return (
@@ -297,8 +318,8 @@ const ReportCardsSubTab = ({ students, academicYears, terms, showSnackbar }) => 
           </Grid>
           <Grid item xs={12} sm={4}>
             <FormControl fullWidth>
-              <InputLabel>Term</InputLabel>
-              <Select value={form.term_id} onChange={e => setForm({...form, term_id: e.target.value})} label="Term">
+              <InputLabel>Term *</InputLabel>
+              <Select value={form.term_id} onChange={e => setForm({...form, term_id: e.target.value})} label="Term *">
                 {terms.map(t => <MenuItem key={t.id} value={t.id}>{t.name}</MenuItem>)}
               </Select>
             </FormControl>
@@ -321,6 +342,32 @@ const ReportCardsSubTab = ({ students, academicYears, terms, showSnackbar }) => 
             {generating ? <CircularProgress size={24} /> : 'Generate Report Card'}
           </Button>
         </Box>
+
+        <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>Generated report cards</Typography>
+        {loadingCards ? <CircularProgress size={24} /> : (
+          <TableContainer component={Paper} variant="outlined">
+            <Table size="small">
+              <TableHead><TableRow>
+                <TableCell>Student</TableCell><TableCell>Year</TableCell><TableCell>Term</TableCell>
+                <TableCell align="right">Percentage</TableCell><TableCell>Grade</TableCell><TableCell align="right">Rank</TableCell><TableCell />
+              </TableRow></TableHead>
+              <TableBody>
+                {cards.length === 0 && <TableRow><TableCell colSpan={7} align="center">No report cards generated yet.</TableCell></TableRow>}
+                {cards.map(c => (
+                  <TableRow key={c.id}>
+                    <TableCell>{c.student_name}</TableCell>
+                    <TableCell>{c.academic_year_name}</TableCell>
+                    <TableCell>{c.term_name}</TableCell>
+                    <TableCell align="right">{c.percentage}%</TableCell>
+                    <TableCell>{c.grade}</TableCell>
+                    <TableCell align="right">{c.rank_in_class ?? '-'}</TableCell>
+                    <TableCell align="right"><Button size="small" onClick={() => downloadCard(c)}>PDF</Button></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </CardContent>
     </Card>
   );
